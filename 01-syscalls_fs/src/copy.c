@@ -9,14 +9,14 @@ void copy(const char *src, const char *dst)
   src_fd = open(src, O_RDONLY);
   if (src_fd == -1)
   {
-    print_error("Failed to open src file\n");
+    perror("Failed to open src file\n");
     exit(EXIT_FAILURE);
   }
 
   dst_fd = open(dst, O_WRONLY | O_CREAT | O_TRUNC, 0644);
   if (dst_fd == -1)
   {
-    print_error("Failed to open dst file\n");
+    perror("Failed to open dst file");
     close(src_fd);
     exit(EXIT_FAILURE);
   }
@@ -26,7 +26,7 @@ void copy(const char *src, const char *dst)
     bytes_written = write(dst_fd, buffer, bytes_read);
     if (bytes_written != bytes_read)
     {
-      print_error("Failed to write to dst file\n");
+      perror("Failed to write to dst file");
       close(src_fd);
       close(dst_fd);
       exit(EXIT_FAILURE);
@@ -34,7 +34,7 @@ void copy(const char *src, const char *dst)
   }
 
   if (bytes_read == -1)
-    print_error("Failed to read from src file\n");
+    perror("Failed to read from src file");
 
   close(src_fd);
   close(dst_fd);
