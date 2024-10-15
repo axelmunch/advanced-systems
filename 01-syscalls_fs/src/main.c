@@ -131,7 +131,7 @@ int main(int argc, char** argv)
      */
     if (bin_input_param == NULL || bin_output_param == NULL)
     {
-        dprintf(STDERR, "Bad usage! See HELP [--help|-h]\n");
+        print_error("Bad usage! See HELP [--help|-h]\n");
         // Freeing allocated data
         free_if_needed(bin_input_param);
         free_if_needed(bin_output_param);
