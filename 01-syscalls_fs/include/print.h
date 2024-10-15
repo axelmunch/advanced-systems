@@ -1,3 +1,6 @@
+#ifndef PRINT_H
+#define PRINT_H
+
 #include "constants.h"
 #include <stdarg.h>
 #include <stdbool.h>
@@ -11,3 +14,5 @@ void print(const char* format, ...);
 void print_error(const char* format, ...);
 void set_verbose_mode(bool mode);
 bool get_verbose_mode();
+
+#endif // PRINT_H
