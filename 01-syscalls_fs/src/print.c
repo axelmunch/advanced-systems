@@ -1,5 +1,7 @@
 #include "../include/print.h"
 
+bool is_verbose_mode = false;
+
 void _print_generic(int fd, const char* format, va_list args)
 {
     char buffer[BUFFER_SIZE];
@@ -20,6 +22,11 @@ void print_generic(int fd, const char* format, ...)
 
 void print(const char* format, ...)
 {
+    if(!get_verbose_mode())
+    {
+        return;
+    }
+
     va_list args;
 
     va_start(args, format);
@@ -38,4 +45,14 @@ void print_error(const char* format, ...)
     _print_generic(STDERR, format, args);
 
     va_end(args);
+}
+
+void set_verbose_mode(bool mode)
+{
+    is_verbose_mode = mode;
+}
+
+bool get_verbose_mode()
+{
+    return is_verbose_mode;
 }
