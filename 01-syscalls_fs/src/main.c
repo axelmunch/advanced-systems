@@ -6,7 +6,7 @@
 #include <getopt.h>
 #include "../include/constants.h"
 #include "../include/print.h"
-
+#include "../include/copy.h"
 
 
 /**
@@ -99,7 +99,7 @@ int main(int argc, char** argv)
             //input param
             if (optarg)
             {
-                bin_input_param = dup_optarg_str();         
+                bin_input_param = dup_optarg_str();
             }
             break;
             case 'o':
@@ -148,7 +148,8 @@ int main(int argc, char** argv)
 
     // Business logic must be implemented at this point
 
-    /* LOREM IPSUM DOT SIR AMET */
+    copy(bin_input_param, bin_output_param);
+
     if(is_verbose_mode)
     {
         print("...\n");

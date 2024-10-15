@@ -35,6 +35,7 @@ void copy(const char *src, const char *dst)
 
   if (bytes_read == -1)
     perror("Failed to read from src file");
+
   close(src_fd);
   close(dst_fd);
 }
