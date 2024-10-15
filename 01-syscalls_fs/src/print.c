@@ -1,4 +1,4 @@
-#include "../include/print.h"
+#include "print.h"
 
 void _print_generic(int fd, const char* format, va_list args)
 {

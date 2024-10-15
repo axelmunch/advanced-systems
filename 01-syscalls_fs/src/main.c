@@ -4,9 +4,9 @@
 #include <errno.h>
 
 #include <getopt.h>
-#include "../include/constants.h"
-#include "../include/print.h"
-#include "../include/copy.h"
+#include "constants.h"
+#include "print.h"
+#include "copy.h"
 
 
 /**

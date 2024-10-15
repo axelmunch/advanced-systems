@@ -1,4 +1,4 @@
-#include "../include/copy.h"
+#include "copy.h"
 
 void copy(const char *src, const char *dst)
 {
