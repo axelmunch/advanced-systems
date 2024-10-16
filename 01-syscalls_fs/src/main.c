@@ -97,6 +97,14 @@ void print_help(char **argv, binary_params_t *params)
 }
 
 /**
+ * Binary options string
+ * (linked to optionn declaration)
+ *
+ * \see man 3 getopt_long or getopt
+ */
+const char* binary_optstr = "hvi:o:";
+
+/**
  * Binary main loop
  *
  * \return 1 if it exits successfully
@@ -110,7 +118,7 @@ int main(int argc, char **argv)
     int opt = -1;
     int opt_idx = -1;
 
-    while ((opt = getopt_long(argc, argv, "hvi:o:", binary_opts, &opt_idx)) != -1) 
+    while ((opt = getopt_long(argc, argv, binary_optstr, binary_opts, &opt_idx)) != -1) 
     {
         switch (opt) 
         {
