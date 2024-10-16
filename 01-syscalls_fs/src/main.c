@@ -52,6 +52,14 @@ static struct option binary_opts[] = {
 };
 
 /**
+ * Binary options string
+ * (linked to optionn declaration)
+ *
+ * \see man 3 getopt_long or getopt
+ */
+const char* binary_optstr = "hvi:o:";
+
+/**
  * Struct to store binary parameters
  */
 typedef struct {
@@ -97,12 +105,39 @@ void print_help(char **argv, binary_params_t *params)
 }
 
 /**
- * Binary options string
- * (linked to optionn declaration)
- *
- * \see man 3 getopt_long or getopt
+ * Parse binary options
  */
-const char* binary_optstr = "hvi:o:";
+void parse_options(int argc, char **argv, binary_params_t *params)
+{
+    int opt = -1;
+    int opt_idx = -1;
+
+    while ((opt = getopt_long(argc, argv, binary_optstr, binary_opts, &opt_idx)) != -1)
+    {
+        switch (opt)
+        {
+        case 'i':
+            // Input param
+            if (optarg) 
+                params->input = dup_optarg_str();
+            break;
+        case 'o':
+            // Output param
+            if (optarg)
+                params->output = dup_optarg_str();
+            break;
+        case 'v':
+            // Verbose mode
+            set_verbose_mode(true);
+            break;
+        case 'h':
+            print_help(argv, params);
+            break;
+        default:
+            break;
+        }
+    }
+}
 
 /**
  * Binary main loop
@@ -114,35 +149,8 @@ int main(int argc, char **argv)
     // Binary parameters initialization
     binary_params_t params = {0};
 
-    // Parsing options
-    int opt = -1;
-    int opt_idx = -1;
-
-    while ((opt = getopt_long(argc, argv, binary_optstr, binary_opts, &opt_idx)) != -1) 
-    {
-        switch (opt) 
-        {
-        case 'i':
-            // Input param
-            if (optarg) 
-                params.input = dup_optarg_str();
-            break;
-        case 'o':
-            // Output param
-            if (optarg)
-                params.output = dup_optarg_str();
-            break;
-        case 'v':
-            // Verbose mode
-            set_verbose_mode(true);
-            break;
-        case 'h':
-            print_help(argv, &params);
-            break;
-        default:
-            break;
-        }
-    }
+    // Parsing binary options
+    parse_options(argc, argv, &params);
 
     // Checking binary requirements
     check_requirements(&params);
