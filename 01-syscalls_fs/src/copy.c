@@ -1,10 +1,3 @@
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include "constants.h"
-#include "print.h"
 #include "copy.h"
 
 int open_file(const char *filename, int flags, mode_t mode) 
@@ -57,7 +50,7 @@ void copy(const char *src, const char *dst)
     print("[+] Copying %s to %s\n", src, dst);
 
     print("[+] Opening %s file for reading...\n", src);
-    int src_fd = open_file(src, O_RDONLY);
+    int src_fd = open_file(src, O_RDONLY, 0);
     print("[+] Source file opened successfully\n");
 
     print("[+] Opening %s file for writing...\n", dst);
