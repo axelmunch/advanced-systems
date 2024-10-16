@@ -1,3 +1,6 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
 #define STDOUT 1
 #define STDERR 2
 
@@ -12,3 +15,5 @@
   -v, --verbose : enable *verbose* mode\n\
   -h, --help    : display this help\n\
 "
+
+#endif // CONSTANTS_H
