@@ -83,9 +83,9 @@ void check_requirements(binary_params_t *params)
 }
 
 /**
- * Function to print the binary parameters
+ * Function to show the binary parameters
  */
-void print_parameters(const binary_params_t *params, bool verbose_mode) 
+void show_parameters(const binary_params_t *params, bool verbose_mode) 
 {
     print("** PARAMS **\n%-8s: %s\n%-8s: %s\n%-8s: %d\n",
           "input", params->input,
@@ -96,7 +96,7 @@ void print_parameters(const binary_params_t *params, bool verbose_mode)
 /**
  * Print help and exit
  */
-void print_help(char **argv, binary_params_t *params) 
+void show_help(char **argv, binary_params_t *params) 
 {
     print_generic(STDOUT, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
     free_if_needed(params->input);
@@ -131,7 +131,7 @@ void parse_options(int argc, char **argv, binary_params_t *params)
             set_verbose_mode(true);
             break;
         case 'h':
-            print_help(argv, params);
+            show_help(argv, params);
             break;
         default:
             break;
@@ -156,7 +156,7 @@ int main(int argc, char **argv)
     check_requirements(&params);
 
     // Printing params if verbose mode is enabled
-    print_parameters(&params, get_verbose_mode());
+    show_parameters(&params, get_verbose_mode());
 
     // Business logic must be implemented at this point
     copy(params.input, params.output);
