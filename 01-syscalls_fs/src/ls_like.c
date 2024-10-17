@@ -10,8 +10,11 @@ void ls_like(const char *path)
         list_directory(dir);
     }
     else
+    {
         perror("Couldn't open the directory");
-    return 0;
+        closedir(dir);
+        exit(EXIT_FAILURE);
+    }
 }
 
 void list_directory(DIR *dir)
@@ -19,16 +22,17 @@ void list_directory(DIR *dir)
     struct dirent *file;
     struct stat file_stat;
 
-    while (file = readdir(dir))
+    while ((file = readdir(dir)) != NULL)
     {
         if (stat(file->d_name, &file_stat) == -1)
         {
             perror("Couldn't get file status");
-            return;
+            continue;
         }
         printf("%d %d %ld %s %s\n", file_stat.st_mode, file_stat.st_uid, file_stat.st_size, parse_time(file_stat.st_mtime), file->d_name);
     }
 }
+
 
 char* parse_time(time_t time)
 {
@@ -50,8 +54,10 @@ void show_permissions()
 
 char* get_username()
 {
+    return "null";
 }
 
 char* get_groupname()
 {
+    return "null";
 }

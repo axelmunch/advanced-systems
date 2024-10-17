@@ -7,6 +7,7 @@
 #include "constants.h"
 #include "print.h"
 #include "copy.h"
+#include "ls_like.h"
 
 /**
  * Procedure checks if variable must be free
@@ -160,6 +161,15 @@ int main(int argc, char **argv)
 
     // Business logic must be implemented at this point
     copy(params.input, params.output);
+    
+    // if (argc == 1)
+    // {
+    //     ls_like(".");
+    // }
+    // else
+    // {
+    //     ls_like(argv[1]);
+    // }
 
     // Freeing allocated data
     free_if_needed(params.input);
