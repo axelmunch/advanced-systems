@@ -16,7 +16,7 @@
  * \see man 3 free
  * \return void
  */
-void free_if_needed(void *to_free) 
+void free_if_needed(void *to_free)
 {
     if (to_free != NULL)
         free(to_free);
@@ -25,15 +25,15 @@ void free_if_needed(void *to_free)
 /**
  * Duplicate the option argument string (optarg)
  */
-char *dup_optarg_str() 
+char *dup_optarg_str()
 {
     char *str = NULL;
-    if (optarg != NULL) 
+    if (optarg != NULL)
     {
         str = strndup(optarg, MAX_PATH_LENGTH);
-        if (str == NULL) 
+        if (str == NULL)
         {
-            perror(strerror(errno));
+            print_error("");
         }
     }
     return str;
@@ -71,9 +71,9 @@ typedef struct {
  * Checking binary requirements
  * (could be defined in a separate function)
  */
-void check_requirements(binary_params_t *params) 
+void check_requirements(binary_params_t *params)
 {
-    if (params->input == NULL || params->output == NULL) 
+    if (params->input == NULL || params->output == NULL)
     {
         print_error("Bad usage! See HELP [--help|-h]\n");
         free_if_needed(params->input);
@@ -85,7 +85,7 @@ void check_requirements(binary_params_t *params)
 /**
  * Function to show the binary parameters
  */
-void show_parameters(const binary_params_t *params, bool verbose_mode) 
+void show_parameters(const binary_params_t *params, bool verbose_mode)
 {
     print("** PARAMS **\n%-8s: %s\n%-8s: %s\n%-8s: %d\n",
           "input", params->input,
@@ -96,7 +96,7 @@ void show_parameters(const binary_params_t *params, bool verbose_mode)
 /**
  * Print help and exit
  */
-void show_help(char **argv, binary_params_t *params) 
+void show_help(char **argv, binary_params_t *params)
 {
     print_generic(STDOUT, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
     free_if_needed(params->input);
@@ -118,7 +118,7 @@ void parse_options(int argc, char **argv, binary_params_t *params)
         {
         case 'i':
             // Input param
-            if (optarg) 
+            if (optarg)
                 params->input = dup_optarg_str();
             break;
         case 'o':
@@ -144,7 +144,7 @@ void parse_options(int argc, char **argv, binary_params_t *params)
  *
  * \return 1 if it exits successfully
  */
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
     // Binary parameters initialization
     binary_params_t params = {0};

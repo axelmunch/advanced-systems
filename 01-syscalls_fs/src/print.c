@@ -43,6 +43,11 @@ void print_error(const char* format, ...)
     va_start(args, format);
 
     _print_generic(STDERR, format, args);
+    if (strlen(format) > 0)
+    {
+        print_generic(STDERR, ": ");
+    }
+    print_generic(STDERR, "%s\n", strerror(errno));
 
     va_end(args);
 }

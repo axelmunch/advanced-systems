@@ -1,27 +1,27 @@
 #include "copy.h"
 
-int open_file(const char *filename, int flags, mode_t mode) 
+int open_file(const char *filename, int flags, mode_t mode)
 {
     int fd = open(filename, flags, mode);
-    if (fd == -1) 
+    if (fd == -1)
     {
-        perror("[!] Failed to open file");
+        print_error("[!] Failed to open file");
         exit(EXIT_FAILURE);
     }
     return fd;
 }
 
-void copy_file_data(int src_fd, int dst_fd) 
+void copy_file_data(int src_fd, int dst_fd)
 {
     char buffer[BUFFER_SIZE];
     ssize_t bytes_read, bytes_written;
 
-    while ((bytes_read = read(src_fd, buffer, sizeof(buffer))) > 0) 
+    while ((bytes_read = read(src_fd, buffer, sizeof(buffer))) > 0)
     {
         bytes_written = write(dst_fd, buffer, bytes_read);
-        if (bytes_written != bytes_read) 
+        if (bytes_written != bytes_read)
         {
-            perror("[!] Error writing to destination file");
+            print_error("[!] Error writing to destination file");
             close(src_fd);
             close(dst_fd);
             exit(EXIT_FAILURE);
@@ -31,21 +31,21 @@ void copy_file_data(int src_fd, int dst_fd)
 
     if (bytes_read == -1)
     {
-        perror("[!] Error reading from source file");
+        print_error("[!] Error reading from source file");
         exit(EXIT_FAILURE);
     }
 }
 
-void close_file(int fd) 
+void close_file(int fd)
 {
-    if (close(fd) == -1) 
+    if (close(fd) == -1)
     {
-        perror("[!] Failed to close file");
+        print_error("[!] Failed to close file");
         exit(EXIT_FAILURE);
     }
 }
 
-void copy(const char *src, const char *dst) 
+void copy(const char *src, const char *dst)
 {
     print("[+] Copying %s to %s\n", src, dst);
 

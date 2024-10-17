@@ -1,5 +1,5 @@
 #include "reverse.h"
 
-void reverse(char *src, char *dst) {
+void reverse(const char *src, const char *dst) {
 
 }

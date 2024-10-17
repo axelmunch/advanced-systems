@@ -2,6 +2,7 @@
 #define PRINT_H
 
 #include "constants.h"
+#include <errno.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
