@@ -11,7 +11,8 @@
 #include "constants.h"
 
 void ls_like(const char *path);
-void parse_time(time_t time);
+void list_directory(DIR *dir);
+char* parse_time(time_t time);
 void show_filetype();
 void show_permissions();
 char* get_username();
