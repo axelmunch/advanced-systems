@@ -6,14 +6,15 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
+#include <time.h>
 #include "print.h"
 #include "constants.h"
 
-void list_contents(const char *path);
+void ls_like(const char *path);
+void parse_time(time_t time);
+void show_filetype();
 void show_permissions();
-void get_username();
-void get_groupname();
-void show_parameters();
-void show_atime();
+char* get_username();
+char* get_groupname();
 
 #endif // LS_LIKE_H
