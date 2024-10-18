@@ -34,11 +34,19 @@ void list_directory(DIR *dir)
 }
 
 
+/**
+ * Parse time to string
+ * @param time
+ * @return string
+ * Format time: %b %d %H:%M (ex: Jan 01 00:00)
+ */
 char* parse_time(time_t time)
 {
-    char *time_str;
-    time_str = ctime(&time);
-    time_str[strlen(time_str) - 1] = '\0'; // Pour aucun retour à la ligne
+    static char time_str[STR_SIZE];
+    struct tm *broken_time = localtime(&time);
+    
+    strftime(time_str, STR_SIZE, "%b %d %H:%M", broken_time);
+    
     return time_str;
 }
 

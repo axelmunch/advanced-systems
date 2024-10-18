@@ -11,6 +11,9 @@
 #include "print.h"
 #include "constants.h"
 
+#define STR_SIZE 100
+
+
 void ls_like(const char *path);
 void list_directory(DIR *dir);
 char* parse_time(time_t time);
