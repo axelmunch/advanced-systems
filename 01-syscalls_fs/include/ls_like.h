@@ -17,10 +17,11 @@
 
 
 #define STR_SIZE 100
+#define MAX_PATH_LENGTH 4096
 
 
 void ls_like(const char *path);
-void list_directory(DIR *dir);
+void list_directory(DIR *dir, const char *path);
 char* parse_time(time_t time);
 void show_filetype();
 void show_permissions();

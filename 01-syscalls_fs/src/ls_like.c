@@ -7,7 +7,7 @@ void ls_like(const char *path)
     dir = opendir(path);
     if (dir != NULL)
     {
-        list_directory(dir);
+        list_directory(dir, path);
     }
     else
     {
@@ -19,16 +19,26 @@ void ls_like(const char *path)
 
 // TO_DO: gerer le cas fichier, et les chemins absolu j'ai des erreurs
 
-void list_directory(DIR *dir)
+void list_directory(DIR *dir, const char *path)
 {
     struct dirent *file;
     struct stat file_stat;
+    char full_path[MAX_PATH_LENGTH];
 
     while ((file = readdir(dir)) != NULL)
     {
-        stat(file->d_name, &file_stat);
+        snprintf(full_path, MAX_PATH_LENGTH, "%s/%s", path, file->d_name);
+
+        if (stat(full_path, &file_stat) == -1)
+        {
+            perror("[ERROR] stat");
+            closedir(dir);
+            exit(EXIT_FAILURE);
+        }
         printf("%d %s %s %ld %s %s\n", file_stat.st_mode, get_owner(file_stat.st_uid), get_group(file_stat.st_gid), file_stat.st_size, parse_time(file_stat.st_mtime), file->d_name);
     }
+
+    closedir(dir);
 }
 
 
