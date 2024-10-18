@@ -162,6 +162,7 @@ int main(int argc, char **argv)
     // Business logic must be implemented at this point
     copy(params.input, params.output);
     
+    // ls_like logic (à extraire)
     // if (argc == 1)
     // {
     //     ls_like(".");

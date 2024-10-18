@@ -8,8 +8,13 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
+
 #include "print.h"
 #include "constants.h"
+
 
 #define STR_SIZE 100
 
@@ -19,7 +24,7 @@ void list_directory(DIR *dir);
 char* parse_time(time_t time);
 void show_filetype();
 void show_permissions();
-char* get_username();
-char* get_groupname();
+char* get_owner(uid_t uid);
+char* get_group(gid_t gid);
 
 #endif // LS_LIKE_H

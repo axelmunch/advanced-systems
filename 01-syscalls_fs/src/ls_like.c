@@ -17,6 +17,8 @@ void ls_like(const char *path)
     }
 }
 
+// TO_DO: gerer le cas fichier, et les chemins absolu j'ai des erreurs
+
 void list_directory(DIR *dir)
 {
     struct dirent *file;
@@ -29,7 +31,7 @@ void list_directory(DIR *dir)
             perror("Couldn't get file status");
             continue;
         }
-        printf("%d %d %ld %s %s\n", file_stat.st_mode, file_stat.st_uid, file_stat.st_size, parse_time(file_stat.st_mtime), file->d_name);
+        printf("%d %s %s %ld %s %s\n", file_stat.st_mode, get_owner(file_stat.st_uid), get_group(file_stat.st_gid), file_stat.st_size, parse_time(file_stat.st_mtime), file->d_name);
     }
 }
 
@@ -60,12 +62,20 @@ void show_permissions()
 
 }
 
-char* get_username()
-{
-    return "null";
-}
+/**
+ * Get owner and group of the file by uid and gid with struct passwd and struct group
+ * @return owner
+ * @return group
+ * @return null if not found
+ */
 
-char* get_groupname()
+char* get_owner(uid_t uid)
 {
-    return "null";
+    return getpwuid(uid)->pw_name;
+}
+    
+
+char* get_group(gid_t gid)
+{
+    return getgrgid(gid)->gr_name;
 }
