@@ -29,7 +29,7 @@ void list_directory(DIR *dir, const char *path)
     {
         snprintf(full_path, MAX_PATH_LENGTH, "%s/%s", path, file->d_name);
 
-        if (stat(full_path, &file_stat) == -1)
+        if (stat(file->d_name, &file_stat) == -1)
         {
             perror("[ERROR] stat");
             closedir(dir);
@@ -41,31 +41,30 @@ void list_directory(DIR *dir, const char *path)
     closedir(dir);
 }
 
-
 /**
  * Parse time to string
  * @param time
  * @return string
  * Format time: %b %d %H:%M (ex: Jan 01 00:00)
  */
-char* parse_time(time_t time)
+char *parse_time(time_t time)
 {
     static char time_str[STR_SIZE];
     struct tm *broken_time = localtime(&time);
-    
+
     strftime(time_str, STR_SIZE, "%b %d %H:%M", broken_time);
-    
+
     return time_str;
 }
 
-void show_filetype()
+char get_filetype(mode_t mode)
 {
-    
+    return 0;
 }
 
-void show_permissions()
+char *get_permissions(mode_t mode)
 {
-
+    return "";
 }
 
 /**
@@ -75,13 +74,12 @@ void show_permissions()
  * @return null if not found
  */
 
-char* get_owner(uid_t uid)
+char *get_owner(uid_t uid)
 {
     return getpwuid(uid)->pw_name;
 }
-    
 
-char* get_group(gid_t gid)
+char *get_group(gid_t gid)
 {
     return getgrgid(gid)->gr_name;
 }

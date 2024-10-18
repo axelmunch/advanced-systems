@@ -23,8 +23,8 @@
 void ls_like(const char *path);
 void list_directory(DIR *dir, const char *path);
 char* parse_time(time_t time);
-void show_filetype();
-void show_permissions();
+char get_filetype(mode_t mode);
+char* get_permissions(mode_t mode);
 char* get_owner(uid_t uid);
 char* get_group(gid_t gid);
 
