@@ -26,11 +26,7 @@ void list_directory(DIR *dir)
 
     while ((file = readdir(dir)) != NULL)
     {
-        if (stat(file->d_name, &file_stat) == -1)
-        {
-            perror("Couldn't get file status");
-            continue;
-        }
+        stat(file->d_name, &file_stat);
         printf("%d %s %s %ld %s %s\n", file_stat.st_mode, get_owner(file_stat.st_uid), get_group(file_stat.st_gid), file_stat.st_size, parse_time(file_stat.st_mtime), file->d_name);
     }
 }
