@@ -22,8 +22,8 @@ void copy_file_data(int src_fd, int dst_fd)
         if (bytes_written != bytes_read)
         {
             print_error("[!] Error writing to destination file");
-            close(src_fd);
-            close(dst_fd);
+            close_file(src_fd);
+            close_file(dst_fd);
             exit(EXIT_FAILURE);
         }
         print("[DEBUG] Wrote %ld bytes to destination\n", bytes_written);

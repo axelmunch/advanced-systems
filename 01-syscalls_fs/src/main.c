@@ -7,6 +7,9 @@
 #include "constants.h"
 #include "print.h"
 #include "copy.h"
+#include "reverse.h"
+
+bool reverse_mode = false;
 
 /**
  * Procedure checks if variable must be free
@@ -48,6 +51,7 @@ static struct option binary_opts[] = {
     {"verbose", no_argument,       0, 'v'},
     {"input",   required_argument, 0, 'i'},
     {"output",  required_argument, 0, 'o'},
+    {"reverse", required_argument, 0, 'r'},
     {0,         0,                 0,  0}
 };
 
@@ -57,7 +61,7 @@ static struct option binary_opts[] = {
  *
  * \see man 3 getopt_long or getopt
  */
-const char* binary_optstr = "hvi:o:";
+const char* binary_optstr = "hvri:o:";
 
 /**
  * Struct to store binary parameters
@@ -126,6 +130,9 @@ void parse_options(int argc, char **argv, binary_params_t *params)
             if (optarg)
                 params->output = dup_optarg_str();
             break;
+        case 'r':
+            reverse_mode = true;
+            break;
         case 'v':
             // Verbose mode
             set_verbose_mode(true);
@@ -159,7 +166,14 @@ int main(int argc, char **argv)
     show_parameters(&params, get_verbose_mode());
 
     // Business logic must be implemented at this point
-    copy(params.input, params.output);
+    if(reverse_mode)
+    {
+        reverse(params.input, params.output);
+    }
+    else
+    {
+        copy(params.input, params.output);
+    }
 
     // Freeing allocated data
     free_if_needed(params.input);
