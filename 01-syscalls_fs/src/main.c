@@ -7,6 +7,7 @@
 #include "constants.h"
 #include "print.h"
 #include "copy.h"
+#include "ls_like.h"
 #include "reverse.h"
 
 bool reverse_mode = false;
@@ -174,6 +175,16 @@ int main(int argc, char **argv)
     {
         copy(params.input, params.output);
     }
+
+    // ls_like logic
+    // if (argc == 1)
+    // {
+    //     ls_like(".");
+    // }
+    // else
+    // {
+    //     ls_like(argv[1]);
+    // }
 
     // Freeing allocated data
     free_if_needed(params.input);
