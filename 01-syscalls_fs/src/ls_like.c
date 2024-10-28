@@ -20,6 +20,7 @@ void ls_like(const char *path)
 /**
  * List all files in a directory
  * @param dir
+ * @param path
  * @return void
  *
  * Format: permissions owner group size time filename
@@ -128,7 +129,6 @@ char *get_permissions(mode_t perm)
  * @return group
  * @return null if not found
  */
-
 char *get_owner(uid_t uid)
 {
     return getpwuid(uid)->pw_name;

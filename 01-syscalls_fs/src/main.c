@@ -11,6 +11,7 @@
 #include "reverse.h"
 
 bool reverse_mode = false;
+bool list_mode = false;
 
 /**
  * Procedure checks if variable must be free
@@ -53,6 +54,7 @@ static struct option binary_opts[] = {
     {"input",   required_argument, 0, 'i'},
     {"output",  required_argument, 0, 'o'},
     {"reverse", required_argument, 0, 'r'},
+    {"list",    required_argument, 0, 'l'},
     {0,         0,                 0,  0}
 };
 
@@ -62,7 +64,7 @@ static struct option binary_opts[] = {
  *
  * \see man 3 getopt_long or getopt
  */
-const char* binary_optstr = "hvri:o:";
+const char* binary_optstr = "hvrli:o:";
 
 /**
  * Struct to store binary parameters
@@ -80,7 +82,7 @@ void check_requirements(binary_params_t *params)
 {
     if (params->input == NULL || params->output == NULL)
     {
-        print_error("Bad usage! See HELP [--help|-h]\n");
+        print_error("Bad usage! See HELP [--help|-h]");
         free_if_needed(params->input);
         free_if_needed(params->output);
         exit(EXIT_FAILURE);
@@ -106,7 +108,7 @@ void show_help(char **argv, binary_params_t *params)
     print_generic(STDOUT, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
     free_if_needed(params->input);
     free_if_needed(params->output);
-    exit(EXIT_SUCCESS);
+    exit(EXIT_FAILURE);
 }
 
 /**
@@ -132,7 +134,12 @@ void parse_options(int argc, char **argv, binary_params_t *params)
                 params->output = dup_optarg_str();
             break;
         case 'r':
+            // Reverse mode
             reverse_mode = true;
+            break;
+        case 'l':
+            // List mode
+            list_mode = true;
             break;
         case 'v':
             // Verbose mode
@@ -163,7 +170,7 @@ int main(int argc, char **argv)
     // Checking binary requirements
     check_requirements(&params);
 
-    // Printing params if verbose mode is enabled
+    // Printing params if verbose mode is enabledm
     show_parameters(&params, get_verbose_mode());
 
     // Business logic must be implemented at this point
@@ -171,20 +178,14 @@ int main(int argc, char **argv)
     {
         reverse(params.input, params.output);
     }
+    else if (list_mode)
+    {
+        ls_like(params.input);
+    }
     else
     {
         copy(params.input, params.output);
     }
-
-    // ls_like logic
-    // if (argc == 1)
-    // {
-    //     ls_like(".");
-    // }
-    // else
-    // {
-    //     ls_like(argv[1]);
-    // }
 
     // Freeing allocated data
     free_if_needed(params.input);

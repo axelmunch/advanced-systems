@@ -12,7 +12,8 @@
 #define USAGE_PARAMS "OPTIONS:\n\
   -i, --input  INPUT_FILE  : input file\n\
   -o, --output OUTPUT_FILE : output file\n\
-  -r --reverse  : reverse file content\n\
+  -r, --reverse  : reverse file content\n\
+  -l, --list : list files and directory\n\
   -v, --verbose : enable *verbose* mode\n\
   -h, --help    : display this help\n\
 "

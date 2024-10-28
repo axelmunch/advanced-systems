@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -c
+CFLAGS=-Wall -c -g
 LDFLAGS=-I ./include/
 
 SRC_DIR=./src
@@ -22,11 +22,11 @@ AR_NAME=archive_$(EXEC).tar.gz
 
 
 all: $(SRC) $(EXEC)
-    
+
 %.o:%.c
 	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
-$(EXEC): $(OBJ) 
+$(EXEC): $(OBJ)
 	$(CC) -o $(BIN_DIR)/$@ -Wall $(LDFLAGS) $(OBJ)
 
 $(GEXEC):
@@ -52,7 +52,7 @@ gcov: $(GEXEC)
 package: gcov doc all
 	rm -rf $(AR_NAME)
 	tar cvfz $(AR_NAME) ./*
-clean:	
+clean:
 	rm -rf $(OBJ)
 
 mrproper: clean
