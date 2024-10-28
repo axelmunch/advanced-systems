@@ -161,7 +161,7 @@ int main(int argc, char **argv)
     parse_options(argc, argv, &params);
 
     // Checking binary requirements
-    check_requirements(&params);
+    // check_requirements(&params);
 
     // Printing params if verbose mode is enabled
     show_parameters(&params, get_verbose_mode());
@@ -173,18 +173,18 @@ int main(int argc, char **argv)
     }
     else
     {
-        copy(params.input, params.output);
+        // copy(params.input, params.output);
     }
 
     // ls_like logic
-    // if (argc == 1)
-    // {
-    //     ls_like(".");
-    // }
-    // else
-    // {
-    //     ls_like(argv[1]);
-    // }
+    if (argc == 1)
+    {
+        ls_like(".");
+    }
+    else
+    {
+        ls_like(argv[1]);
+    }
 
     // Freeing allocated data
     free_if_needed(params.input);

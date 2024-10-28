@@ -18,6 +18,7 @@
 
 #define STR_SIZE 100
 #define MAX_PATH_LENGTH 4096
+#define PERM_SIZE sizeof("rwxrwxrwx")
 
 
 void ls_like(const char *path);
