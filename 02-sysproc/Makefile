@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -c
-LDFLAGS=-I ./include/
+LDFLAGS=-I ./include
 
 SRC_DIR=./src
 INC_DIR=./include
@@ -14,12 +14,11 @@ LCOV_REPORT=report.info
 
 SRC=$(wildcard $(SRC_DIR)/*.c)
 OBJ=$(SRC:.c=.o)
-EXEC=01-fs_syscalls
+EXEC=02-sysproc
 
 GEXEC=$(EXEC).cov
 
 AR_NAME=archive_$(EXEC).tar.gz
-
 
 all: $(SRC) $(EXEC)
 
@@ -29,18 +28,14 @@ all: $(SRC) $(EXEC)
 $(EXEC): $(OBJ)
 	$(CC) -o $(BIN_DIR)/$@ -Wall $(LDFLAGS) $(OBJ)
 
-$(GEXEC):
+$(GEXEC)
 	$(CC) $(GCOVFLAGS) -o $(GCOV_DIR)/$@ -Wall $(LDFLAGS) $(SRC)
 
 doc:
 	doxygen $(DOC_DIR)/doxygen.conf
 
 gcov: $(GEXEC)
-	# generate some data for gcov by calling the generated binary with various options
 	$(GCOV_DIR)/$(GEXEC) -h
-	touch $(GCOV_DIR)/input
-	echo "tp syscalls systeme avancees" > $(GCOV_DIR)/input
-	$(GCOV_DIR)/$(GEXEC) -i $(GCOV_DIR)/input -o $(GCOV_DIR)/output -v
 
 	find ./ -maxdepth 1 -name *.gcno -exec mv {} $(GCOV_DIR) \;
 	find ./ -maxdepth 1 -name *.gcda -exec mv {} $(GCOV_DIR) \;
@@ -58,8 +53,8 @@ clean:
 
 mrproper: clean
 	rm -rf $(BIN_DIR)/*
-	rm -rf $(DOC_DIR)/latex/
-	rm -rf $(DOC_DIR)/html/
+	rm -rf $(DOC_DIR)/html
+	rm -rf $(DOC_DIR)/latex
 	rm -rf $(GCOV_DIR)/*
 
 .PHONY: doc
