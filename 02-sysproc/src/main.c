@@ -6,13 +6,13 @@
 #include <getopt.h>
 #include "constants.h"
 #include "fork_yourself.h"
+#include "redirect.h"
 
 typedef enum
 {
     FORK_MODE = 0,
     REDIRECT_MODE,
     PIPE_MODE,
-    UNKNOW_MODE
 } command_mode;
 
 /**
@@ -54,7 +54,7 @@ static struct option binary_opts[] = {
     {"help", no_argument, 0, 'h'},
     {"verbose", no_argument, 0, 'v'},
     {"fork-yourself", no_argument, 0, 'f'},
-    {"redirect", no_argument, 0, 'r'},
+    {"redirect", required_argument, 0, 'r'},
     {"pipe", no_argument, 0, 'p'},
     {0, 0, 0, 0}};
 
@@ -64,7 +64,7 @@ static struct option binary_opts[] = {
  *
  * \see man 3 getopt_long or getopt
  */
-const char *binary_optstr = "hvfrpi:o:";
+const char *binary_optstr = "hvfr:pi:o:";
 
 /**
  * Print help and exit
@@ -87,7 +87,7 @@ void show_parameters(bool verbose_mode)
 /**
  * Parse binary options
  */
-void parse_options(int argc, char **argv, command_mode *mode)
+void parse_options(int argc, char **argv, command_mode *mode, char **program_name)
 {
     int opt = -1;
     int opt_idx = -1;
@@ -101,6 +101,8 @@ void parse_options(int argc, char **argv, command_mode *mode)
             break;
         case 'r':
             *mode = REDIRECT_MODE;
+            if (optarg)
+                *program_name = dup_optarg_str();
             break;
         case 'p':
             *mode = PIPE_MODE;
@@ -125,10 +127,11 @@ void parse_options(int argc, char **argv, command_mode *mode)
  */
 int main(int argc, char **argv)
 {
-    command_mode mode = UNKNOW_MODE;
+    command_mode mode;
+    char *program_name = NULL;
 
     // Parsing binary options
-    parse_options(argc, argv, &mode);
+    parse_options(argc, argv, &mode, &program_name);
 
     // Printing params if verbose mode is enabled
     show_parameters(get_verbose_mode());
@@ -140,11 +143,11 @@ int main(int argc, char **argv)
         fork_yourself();
         break;
     case REDIRECT_MODE:
+        redirect(program_name);
         break;
     case PIPE_MODE:
         break;
     default:
-        print_error("Unknown mode");
         exit(EXIT_FAILURE);
         break;
     }

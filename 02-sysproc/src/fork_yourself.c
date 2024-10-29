@@ -8,19 +8,19 @@ int fork_yourself(void)
 
     if (pid == -1)
     {
-        perror("fork");
+        print_error("fork");
         return EXIT_FAILURE;
     }
     else if (pid == 0)
     {
-        printf("[INFO] Child process: PID=%d, PPID=%d\n", getpid(), getppid());
+        print_generic(STDOUT_FILENO, "\tChild: PID=%d, PPID=%d\n", getpid(), getppid());
         exit(getpid() % 10);
     }
     else
     {
         pid_t child_pid = wait(&status);
-        printf("[INFO] Parent process: Child_PID=%d\n", child_pid);
-        printf("[SUCCESS] Child exited with code: %d\n", WEXITSTATUS(status));
+        print_generic(STDOUT_FILENO, "Parent: Child_PID=%d\n", child_pid);
+        print_generic(STDOUT_FILENO, "Child exited with code: %d\n", WEXITSTATUS(status));
     }
 
     return EXIT_SUCCESS;
