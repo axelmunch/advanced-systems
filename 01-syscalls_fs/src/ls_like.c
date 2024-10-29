@@ -32,7 +32,7 @@ void list_directory(DIR *dir, const char *path)
     struct stat file_stat;
     char full_path[MAX_PATH_LENGTH];
 
-    printf("[INFO] Listing directory %s\n", path);
+    print("[INFO] Listing directory %s\n", path);
 
     while ((file = readdir(dir)) != NULL)
     {
@@ -42,12 +42,12 @@ void list_directory(DIR *dir, const char *path)
             perror("[ERROR] stat");
             continue;
         }
-        printf("%c%s %s %s %ld %s %s\n",
-               get_filetype(file_stat.st_mode),
-               get_permissions(file_stat.st_mode),
-               get_owner(file_stat.st_uid),
-               get_group(file_stat.st_gid), file_stat.st_size,
-               parse_time(file_stat.st_mtime), file->d_name);
+        print_generic(STDOUT_FILENO, "%c%s %s %s %ld %s %s\n",
+                      get_filetype(file_stat.st_mode),
+                      get_permissions(file_stat.st_mode),
+                      get_owner(file_stat.st_uid),
+                      get_group(file_stat.st_gid), file_stat.st_size,
+                      parse_time(file_stat.st_mtime), file->d_name);
     }
 
     closedir(dir);

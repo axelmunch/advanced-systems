@@ -49,14 +49,13 @@ char *dup_optarg_str()
  * (must end with {0,0,0,0})
  */
 static struct option binary_opts[] = {
-    {"help",    no_argument,       0, 'h'},
-    {"verbose", no_argument,       0, 'v'},
-    {"input",   required_argument, 0, 'i'},
-    {"output",  required_argument, 0, 'o'},
+    {"help", no_argument, 0, 'h'},
+    {"verbose", no_argument, 0, 'v'},
+    {"input", required_argument, 0, 'i'},
+    {"output", required_argument, 0, 'o'},
     {"reverse", required_argument, 0, 'r'},
-    {"list",    required_argument, 0, 'l'},
-    {0,         0,                 0,  0}
-};
+    {"list", required_argument, 0, 'l'},
+    {0, 0, 0, 0}};
 
 /**
  * Binary options string
@@ -64,12 +63,13 @@ static struct option binary_opts[] = {
  *
  * \see man 3 getopt_long or getopt
  */
-const char* binary_optstr = "hvrli:o:";
+const char *binary_optstr = "hvrli:o:";
 
 /**
  * Struct to store binary parameters
  */
-typedef struct {
+typedef struct
+{
     char *input;
     char *output;
 } binary_params_t;
@@ -105,7 +105,7 @@ void show_parameters(const binary_params_t *params, bool verbose_mode)
  */
 void show_help(char **argv, binary_params_t *params)
 {
-    print_generic(STDOUT, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
+    print_generic(STDOUT_FILENO, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
     free_if_needed(params->input);
     free_if_needed(params->output);
     exit(EXIT_FAILURE);
@@ -174,7 +174,7 @@ int main(int argc, char **argv)
     show_parameters(&params, get_verbose_mode());
 
     // Business logic must be implemented at this point
-    if(reverse_mode)
+    if (reverse_mode)
     {
         reverse(params.input, params.output);
     }

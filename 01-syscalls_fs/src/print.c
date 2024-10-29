@@ -31,7 +31,7 @@ void print(const char* format, ...)
 
     va_start(args, format);
 
-    _print_generic(STDOUT, format, args);
+    _print_generic(STDOUT_FILENO, format, args);
 
     va_end(args);
 }
@@ -42,12 +42,12 @@ void print_error(const char* format, ...)
 
     va_start(args, format);
 
-    _print_generic(STDERR, format, args);
+    _print_generic(STDERR_FILENO, format, args);
     if (strlen(format) > 0)
     {
-        print_generic(STDERR, ": ");
+        print_generic(STDERR_FILENO, ": ");
     }
-    print_generic(STDERR, "%s\n", strerror(errno));
+    print_generic(STDERR_FILENO, "%s\n", strerror(errno));
 
     va_end(args);
 }

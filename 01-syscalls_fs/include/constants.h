@@ -1,13 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#define STDOUT 1
-#define STDERR 2
-
 #define BUFFER_SIZE 4096
-
 #define MAX_PATH_LENGTH 4096
-
 #define USAGE_SYNTAX "[OPTIONS] -i INPUT -o OUTPUT"
 #define USAGE_PARAMS "OPTIONS:\n\
   -i, --input  INPUT_FILE  : input file\n\
