@@ -20,7 +20,7 @@ int fork_yourself(void)
     {
         pid_t child_pid = wait(&status);
         printf("[INFO] Parent process: Child_PID=%d\n", child_pid);
-        printf("[SUCCESS] Child exit code: %d\n", WEXITSTATUS(status));
+        printf("[SUCCESS] Child exited with code: %d\n", WEXITSTATUS(status));
     }
 
     return EXIT_SUCCESS;

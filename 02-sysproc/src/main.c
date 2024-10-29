@@ -5,6 +5,15 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include "constants.h"
+#include "fork_yourself.h"
+
+typedef enum
+{
+    FORK_MODE = 0,
+    REDIRECT_MODE,
+    PIPE_MODE,
+    UNKNOW_MODE
+} command_mode;
 
 /**
  * Procedure checks if variable must be free
@@ -42,12 +51,12 @@ char *dup_optarg_str()
  * (must end with {0,0,0,0})
  */
 static struct option binary_opts[] = {
-    {"help",    no_argument,       0, 'h'},
-    {"verbose", no_argument,       0, 'v'},
-    {"input",   required_argument, 0, 'i'},
-    {"output",  required_argument, 0, 'o'},
-    {0,         0,                 0,  0}
-};
+    {"help", no_argument, 0, 'h'},
+    {"verbose", no_argument, 0, 'v'},
+    {"fork-yourself", no_argument, 0, 'f'},
+    {"redirect", no_argument, 0, 'r'},
+    {"pipe", no_argument, 0, 'p'},
+    {0, 0, 0, 0}};
 
 /**
  * Binary options string
@@ -55,57 +64,30 @@ static struct option binary_opts[] = {
  *
  * \see man 3 getopt_long or getopt
  */
-const char* binary_optstr = "hvi:o:";
+const char *binary_optstr = "hvfrpi:o:";
 
 /**
- * Struct to store binary parameters
+ * Print help and exit
  */
-typedef struct {
-    char *input;
-    char *output;
-} binary_params_t;
-
-/**
- * Checking binary requirements
- * (could be defined in a separate function)
- */
-void check_requirements(binary_params_t *params)
+void show_help(char **argv)
 {
-    if (params->input == NULL || params->output == NULL)
-    {
-        print_error("Bad usage! See HELP [--help|-h]");
-        free_if_needed(params->input);
-        free_if_needed(params->output);
-        exit(EXIT_FAILURE);
-    }
+    print_generic(STDOUT, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
+    exit(EXIT_FAILURE);
 }
 
 /**
  * Function to show the binary parameters
  */
-void show_parameters(const binary_params_t *params, bool verbose_mode)
+void show_parameters(bool verbose_mode)
 {
-    print("** PARAMS **\n%-8s: %s\n%-8s: %s\n%-8s: %d\n",
-          "input", params->input,
-          "output", params->output,
+    print("** PARAMS **\n%-8s: %d\n",
           "verbose", verbose_mode);
-}
-
-/**
- * Print help and exit
- */
-void show_help(char **argv, binary_params_t *params)
-{
-    print_generic(STDOUT, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
-    free_if_needed(params->input);
-    free_if_needed(params->output);
-    exit(EXIT_FAILURE);
 }
 
 /**
  * Parse binary options
  */
-void parse_options(int argc, char **argv, binary_params_t *params)
+void parse_options(int argc, char **argv, command_mode *mode)
 {
     int opt = -1;
     int opt_idx = -1;
@@ -114,22 +96,21 @@ void parse_options(int argc, char **argv, binary_params_t *params)
     {
         switch (opt)
         {
-        case 'i':
-            // Input param
-            if (optarg)
-                params->input = dup_optarg_str();
+        case 'f':
+            *mode = FORK_MODE;
             break;
-        case 'o':
-            // Output param
-            if (optarg)
-                params->output = dup_optarg_str();
+        case 'r':
+            *mode = REDIRECT_MODE;
+            break;
+        case 'p':
+            *mode = PIPE_MODE;
             break;
         case 'v':
             // Verbose mode
             set_verbose_mode(true);
             break;
         case 'h':
-            show_help(argv, params);
+            show_help(argv);
             break;
         default:
             break;
@@ -144,23 +125,29 @@ void parse_options(int argc, char **argv, binary_params_t *params)
  */
 int main(int argc, char **argv)
 {
-    // Binary parameters initialization
-    binary_params_t params = {0};
+    command_mode mode = UNKNOW_MODE;
 
     // Parsing binary options
-    parse_options(argc, argv, &params);
+    parse_options(argc, argv, &mode);
 
-    // Checking binary requirements
-    check_requirements(&params);
+    // Printing params if verbose mode is enabled
+    show_parameters(get_verbose_mode());
 
-    // Printing params if verbose mode is enabledm
-    show_parameters(&params, get_verbose_mode());
-
-    // Business logic must be implemented at this point
-
-    // Freeing allocated data
-    free_if_needed(params.input);
-    free_if_needed(params.output);
+    // Running binary depending on the mode
+    switch (mode)
+    {
+    case FORK_MODE:
+        fork_yourself();
+        break;
+    case REDIRECT_MODE:
+        break;
+    case PIPE_MODE:
+        break;
+    default:
+        print_error("Unknown mode");
+        exit(EXIT_FAILURE);
+        break;
+    }
 
     return EXIT_SUCCESS;
 }

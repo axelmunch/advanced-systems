@@ -6,12 +6,11 @@
 #define STR_SIZE 256
 #define BUFFER_SIZE 4096
 #define MAX_PATH_LENGTH 4096
-#define USAGE_SYNTAX "[OPTIONS] -i INPUT -o OUTPUT"
+#define USAGE_SYNTAX "[OPTIONS]"
 #define USAGE_PARAMS "OPTIONS:\n\
-  -i, --input  INPUT_FILE  : input file\n\
-  -o, --output OUTPUT_FILE : output file\n\
-  -r, --reverse  : reverse file content\n\
-  -l, --list : list files and directory\n\
+  -f, --fork : fork yourself mode\n\
+  -r, --redirect  : redirect mode\n\
+  -p, --pipe : pipe mode\n\
   -v, --verbose : enable *verbose* mode\n\
   -h, --help    : display this help\n\
 "

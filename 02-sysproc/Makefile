@@ -28,7 +28,7 @@ all: $(SRC) $(EXEC)
 $(EXEC): $(OBJ)
 	$(CC) -o $(BIN_DIR)/$@ -Wall $(LDFLAGS) $(OBJ)
 
-$(GEXEC)
+$(GEXEC):
 	$(CC) $(GCOVFLAGS) -o $(GCOV_DIR)/$@ -Wall $(LDFLAGS) $(SRC)
 
 doc:
