@@ -174,13 +174,13 @@ int main(int argc, char **argv)
     show_parameters(&params, get_verbose_mode());
 
     // Business logic must be implemented at this point
-    if (reverse_mode)
-    {
-        reverse(params.input, params.output);
-    }
-    else if (list_mode)
+    if (list_mode)
     {
         ls_like(params.input);
+    }
+    else if (reverse_mode)
+    {
+        reverse(params.input, params.output);
     }
     else
     {
