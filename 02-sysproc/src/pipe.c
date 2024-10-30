@@ -19,19 +19,20 @@ void pipe_process(int pipe_fd[2], pid_t pid)
 {    
     if (pipe(pipe_fd) == -1)
     {
-        perror("pipe");
+        print_error("pipe");
         exit(EXIT_FAILURE);
     }
 
     pid = fork();
     if (pid == -1)
     {
-        perror("fork");
+        print_error("fork");
         exit(EXIT_FAILURE);
     }
     else if (pid == 0)
     {
         /* Child implementation */
+        
     }
     else
     {

@@ -9,6 +9,7 @@
 #include "copy.h"
 #include "ls_like.h"
 #include "reverse.h"
+#include "typedef.h"
 
 bool reverse_mode = false;
 bool list_mode = false;
@@ -65,14 +66,6 @@ static struct option binary_opts[] = {
  */
 const char *binary_optstr = "hvrli:o:";
 
-/**
- * Struct to store binary parameters
- */
-typedef struct
-{
-    char *input;
-    char *output;
-} binary_params_t;
 
 /**
  * Checking binary requirements

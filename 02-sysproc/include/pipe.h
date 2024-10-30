@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include "print.h"
 #include "pipe.h"
 
 int exec_ps(char *arg, ...);

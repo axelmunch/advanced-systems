@@ -7,14 +7,7 @@
 #include "constants.h"
 #include "fork_yourself.h"
 #include "redirect.h"
-
-typedef enum
-{
-    FORK_MODE = 0,
-    REDIRECT_MODE,
-    PIPE_MODE,
-    UNKNOWN_MODE
-} command_mode;
+#include "typedef.h"
 
 /**
  * Procedure checks if variable must be free
@@ -84,19 +77,17 @@ void show_help(char **argv)
  */
 int check_requirements(command_mode mode, char *program_name)
 {
-    if (mode == UNKNOWN_MODE)
-    {
+    if (mode == UNDEFINED_MODE) {
         print_generic(STDERR_FILENO, "[ERROR] No valid mode specified! See HELP [--help|-h].\n");
         return EXIT_FAILURE;
     }
 
-    if (mode == REDIRECT_MODE && program_name == NULL)
-    {
+    if (mode == REDIRECT_MODE && program_name == NULL) {
         print_generic(STDERR_FILENO, "[ERROR] Redirect mode requires an argument! See HELP [--help|-h]\n");
         return EXIT_FAILURE;
     }
 
-    return EXIT_SUCCESS;
+     return EXIT_SUCCESS;
 }
 
 /**
@@ -116,7 +107,7 @@ void parse_options(int argc, char **argv, command_mode *mode, char **program_nam
     int opt = -1;
     int opt_idx = -1;
 
-    *mode = UNKNOWN_MODE;
+    *mode = UNDEFINED_MODE;
 
     while ((opt = getopt_long(argc, argv, binary_optstr, binary_opts, &opt_idx)) != -1)
     {
