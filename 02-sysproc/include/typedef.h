@@ -9,6 +9,4 @@ typedef enum
     UNDEFINED_MODE
 } command_mode;
 
-
-
 #endif // TYPEDEF_H

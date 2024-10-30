@@ -8,6 +8,7 @@
 #include "fork_yourself.h"
 #include "redirect.h"
 #include "typedef.h"
+#include "pipe.h"
 
 /**
  * Procedure checks if variable must be free
@@ -56,7 +57,7 @@ static struct option binary_opts[] = {
  * Binary options string
  * (linked to optionn declaration)
  *
- * \see man 3 getopt_long or getopt
+ * see man 3 getopt_long or getopt
  */
 const char *binary_optstr = "hvfr:p";
 
@@ -125,7 +126,6 @@ void parse_options(int argc, char **argv, command_mode *mode, char **program_nam
             *mode = PIPE_MODE;
             break;
         case 'v':
-            // Verbose mode
             set_verbose_mode(true);
             break;
         case 'h':
@@ -166,6 +166,7 @@ int main(int argc, char **argv)
         redirect(program_name);
         break;
     case PIPE_MODE:
+        pipe_process();
         break;
     default:
         break;
