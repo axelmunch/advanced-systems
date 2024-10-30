@@ -41,7 +41,7 @@ void pipe_process()
     {
         close(pipe_fd[1]);
         dup2(pipe_fd[0], STDIN_FILENO);
-        exec_grep("^wrkt");
+        exec_grep("^root");
     }
 
 }
