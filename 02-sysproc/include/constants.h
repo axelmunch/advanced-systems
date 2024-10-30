@@ -1,8 +1,6 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#define STDOUT 1
-#define STDERR 2
 #define STR_SIZE 256
 #define BUFFER_SIZE 4096
 #define MAX_PATH_LENGTH 4096

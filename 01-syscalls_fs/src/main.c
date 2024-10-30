@@ -82,7 +82,7 @@ void check_requirements(binary_params_t *params)
 {
     if (params->input == NULL || params->output == NULL)
     {
-        print_error("Bad usage! See HELP [--help|-h]");
+        print_generic(STDERR_FILENO, "Bad usage! See HELP [--help|-h]");
         free_if_needed(params->input);
         free_if_needed(params->output);
         exit(EXIT_FAILURE);

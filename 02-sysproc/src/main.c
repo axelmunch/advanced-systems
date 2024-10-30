@@ -13,6 +13,7 @@ typedef enum
     FORK_MODE = 0,
     REDIRECT_MODE,
     PIPE_MODE,
+    UNKNOWN_MODE
 } command_mode;
 
 /**
@@ -64,15 +65,36 @@ static struct option binary_opts[] = {
  *
  * \see man 3 getopt_long or getopt
  */
-const char *binary_optstr = "hvfr:pi:o:";
+const char *binary_optstr = "hvfr:p";
 
 /**
  * Print help and exit
  */
 void show_help(char **argv)
 {
-    print_generic(STDOUT, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
+    print_generic(STDOUT_FILENO, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
     exit(EXIT_FAILURE);
+}
+
+/**
+ * Checking binary requirements
+ * @param mode The command mode
+ * @param redirect_arg The argument for redirect mode
+ * @return int
+ */
+int check_requirements(command_mode mode, char *program_name)
+{
+    if (mode == UNKNOWN_MODE) {
+        print_generic(STDERR_FILENO, "[ERROR] No valid mode specified! See HELP [--help|-h].\n");
+        return EXIT_FAILURE;
+    }
+
+    if (mode == REDIRECT_MODE && program_name == NULL) {
+        print_generic(STDERR_FILENO, "[ERROR] Redirect mode requires an argument! See HELP [--help|-h]\n");
+        return EXIT_FAILURE;
+    }
+
+     return EXIT_SUCCESS;
 }
 
 /**
@@ -91,6 +113,8 @@ void parse_options(int argc, char **argv, command_mode *mode, char **program_nam
 {
     int opt = -1;
     int opt_idx = -1;
+
+    *mode = UNKNOWN_MODE;
 
     while ((opt = getopt_long(argc, argv, binary_optstr, binary_opts, &opt_idx)) != -1)
     {
@@ -133,6 +157,9 @@ int main(int argc, char **argv)
     // Parsing binary options
     parse_options(argc, argv, &mode, &program_name);
 
+    // Checking binary requirements
+    check_requirements(mode, program_name);
+
     // Printing params if verbose mode is enabled
     show_parameters(get_verbose_mode());
 
@@ -148,7 +175,6 @@ int main(int argc, char **argv)
     case PIPE_MODE:
         break;
     default:
-        exit(EXIT_FAILURE);
         break;
     }
 
