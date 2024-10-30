@@ -84,17 +84,19 @@ void show_help(char **argv)
  */
 int check_requirements(command_mode mode, char *program_name)
 {
-    if (mode == UNKNOWN_MODE) {
+    if (mode == UNKNOWN_MODE)
+    {
         print_generic(STDERR_FILENO, "[ERROR] No valid mode specified! See HELP [--help|-h].\n");
         return EXIT_FAILURE;
     }
 
-    if (mode == REDIRECT_MODE && program_name == NULL) {
+    if (mode == REDIRECT_MODE && program_name == NULL)
+    {
         print_generic(STDERR_FILENO, "[ERROR] Redirect mode requires an argument! See HELP [--help|-h]\n");
         return EXIT_FAILURE;
     }
 
-     return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
 
 /**
