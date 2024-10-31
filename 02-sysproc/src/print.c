@@ -42,12 +42,18 @@ void print_error(const char *format, ...)
 
     va_start(args, format);
 
+    // Red color
+    print_generic(STDERR_FILENO, "\033[0;31m");
+
     _print_generic(STDERR_FILENO, format, args);
     if (strlen(format) > 0)
     {
         print_generic(STDERR_FILENO, ": ");
     }
     print_generic(STDERR_FILENO, "%s\n", strerror(errno));
+
+    // Reset color
+    print_generic(STDERR_FILENO, "\033[0m");
 
     va_end(args);
 }
