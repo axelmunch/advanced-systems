@@ -15,22 +15,22 @@ void file_info(const char *full_path, const char *file_name)
         print_error("[ERROR] stat");
         return;
     }
-    print("%c%s %s %s %ld %s ",
-          get_filetype(file_stat.st_mode),
-          get_permissions(file_stat.st_mode),
-          get_owner(file_stat.st_uid),
-          get_group(file_stat.st_gid), file_stat.st_size,
-          parse_time(file_stat.st_mtime));
+    print_generic(STDOUT_FILENO, "%c%s %s %s %ld %s ",
+                  get_filetype(file_stat.st_mode),
+                  get_permissions(file_stat.st_mode),
+                  get_owner(file_stat.st_uid),
+                  get_group(file_stat.st_gid), file_stat.st_size,
+                  parse_time(file_stat.st_mtime));
 
     // File name with color
     if (get_filetype(file_stat.st_mode) == 'd')
     {
         // Blue
-        print("\033[0;36m%s\033[0m\n", file_name);
+        print_generic(STDOUT_FILENO, "\033[0;36m%s\033[0m\n", file_name);
     }
     else
     {
-        print("%s\n", file_name);
+        print_generic(STDOUT_FILENO, "%s\n", file_name);
     }
 }
 
