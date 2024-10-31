@@ -1,20 +1,26 @@
 #include "ls_like.h"
 
-void ls_like(const char *path)
+/**
+ * Print file information
+ * @param full_path
+ * @param file_name
+ * @return void
+ */
+void file_info(const char *full_path, const char *file_name)
 {
-    DIR *dir;
+    struct stat file_stat;
 
-    dir = opendir(path);
-    if (dir != NULL)
+    if (lstat(full_path, &file_stat) == -1)
     {
-        list_directory(dir, path);
+        print_error("[ERROR] stat");
+        return;
     }
-    else
-    {
-        perror("Couldn't open the directory");
-        closedir(dir);
-        exit(EXIT_FAILURE);
-    }
+    print_generic(STDOUT_FILENO, "%c%s %s %s %ld %s %s\n",
+                  get_filetype(file_stat.st_mode),
+                  get_permissions(file_stat.st_mode),
+                  get_owner(file_stat.st_uid),
+                  get_group(file_stat.st_gid), file_stat.st_size,
+                  parse_time(file_stat.st_mtime), file_name);
 }
 
 /**
@@ -29,7 +35,6 @@ void ls_like(const char *path)
 void list_directory(DIR *dir, const char *path)
 {
     struct dirent *file;
-    struct stat file_stat;
     char full_path[MAX_PATH_LENGTH];
 
     print("[INFO] Listing directory %s\n", path);
@@ -37,26 +42,49 @@ void list_directory(DIR *dir, const char *path)
     while ((file = readdir(dir)) != NULL)
     {
         snprintf(full_path, MAX_PATH_LENGTH, "%s/%s", path, file->d_name);
-        if (lstat(full_path, &file_stat) == -1)
-        {
-            perror("[ERROR] stat");
-            continue;
-        }
-        print_generic(STDOUT_FILENO, "%c%s %s %s %ld %s %s\n",
-                      get_filetype(file_stat.st_mode),
-                      get_permissions(file_stat.st_mode),
-                      get_owner(file_stat.st_uid),
-                      get_group(file_stat.st_gid), file_stat.st_size,
-                      parse_time(file_stat.st_mtime), file->d_name);
+        file_info(full_path, file->d_name);
     }
 
     closedir(dir);
 }
 
 /**
+ * List information about a file or directory
+ * @param path
+ * @return void
+ */
+void ls_like(const char *path)
+{
+    struct stat path_stat;
+
+    if (lstat(path, &path_stat) == -1)
+    {
+        print_error("[ERROR] stat");
+        return;
+    }
+
+    if (S_ISDIR(path_stat.st_mode))
+    {
+        DIR *dir = opendir(path);
+        if (dir == NULL)
+        {
+            print_error("[ERROR] Couldn't open the directory");
+            return;
+        }
+
+        list_directory(dir, path);
+    }
+    else
+    {
+        file_info(path, path);
+    }
+}
+
+/**
  * Parse time to string
  * @param time
  * @return string
+ *
  * Format time: %b %d %H:%M (ex: Jan 01 00:00)
  */
 char *parse_time(time_t time)
