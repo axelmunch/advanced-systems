@@ -66,10 +66,16 @@ const char *binary_optstr = "hvcrli:o:";
 
 /**
  * Checking binary requirements
- * (could be defined in a separate function)
+ * List mode does not require input and output
+ * Other modes require both input and output
  */
-void check_requirements(binary_params_t *params)
+void check_requirements(binary_params_t *params, command_mode mode)
 {
+    if (mode == LIST_MODE)
+    {
+        return;
+    }
+
     if (params->input == NULL || params->output == NULL)
     {
         print_generic(STDERR_FILENO, "Bad usage! See HELP [--help|-h]\n");
@@ -119,24 +125,19 @@ void parse_options(int argc, char **argv, binary_params_t *params, command_mode 
                 params->input = dup_optarg_str();
             break;
         case 'o':
-            // Output param
             if (optarg)
                 params->output = dup_optarg_str();
             break;
         case 'c':
-            // Copy mode
             *mode = COPY_MODE;
             break;
         case 'r':
-            // Reverse mode
             *mode = REVERSE_MODE;
             break;
         case 'l':
-            // List mode
             *mode = LIST_MODE;
             break;
         case 'v':
-            // Verbose mode
             set_verbose_mode(true);
             break;
         case 'h':
@@ -163,7 +164,7 @@ int main(int argc, char **argv)
     parse_options(argc, argv, &params, &mode);
 
     // Checking binary requirements
-    check_requirements(&params);
+    check_requirements(&params, mode);
 
     // Printing params if verbose mode is enabledm
     show_parameters(&params, get_verbose_mode());

@@ -68,6 +68,11 @@ void ls_like(const char *path)
 {
     struct stat path_stat;
 
+    if (path == NULL)
+    {
+        path = ".";
+    }
+
     if (lstat(path, &path_stat) == -1)
     {
         print_error("[ERROR] stat");
