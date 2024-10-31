@@ -11,9 +11,6 @@
 #include "reverse.h"
 #include "typedef.h"
 
-bool reverse_mode = false;
-bool list_mode = false;
-
 /**
  * Procedure checks if variable must be free
  * (check: ptr != NULL)
@@ -54,8 +51,9 @@ static struct option binary_opts[] = {
     {"verbose", no_argument, 0, 'v'},
     {"input", required_argument, 0, 'i'},
     {"output", required_argument, 0, 'o'},
-    {"reverse", required_argument, 0, 'r'},
-    {"list", required_argument, 0, 'l'},
+    {"reverse", no_argument, 0, 'r'},
+    {"list", no_argument, 0, 'l'},
+    {"copy", no_argument, 0, 'c'},
     {0, 0, 0, 0}};
 
 /**
@@ -64,8 +62,7 @@ static struct option binary_opts[] = {
  *
  * \see man 3 getopt_long or getopt
  */
-const char *binary_optstr = "hvrli:o:";
-
+const char *binary_optstr = "hvcrli:o:";
 
 /**
  * Checking binary requirements
@@ -75,7 +72,7 @@ void check_requirements(binary_params_t *params)
 {
     if (params->input == NULL || params->output == NULL)
     {
-        print_generic(STDERR_FILENO, "Bad usage! See HELP [--help|-h]");
+        print_generic(STDERR_FILENO, "Bad usage! See HELP [--help|-h]\n");
         free_if_needed(params->input);
         free_if_needed(params->output);
         exit(EXIT_FAILURE);
@@ -107,7 +104,7 @@ void show_help(char **argv, binary_params_t *params)
 /**
  * Parse binary options
  */
-void parse_options(int argc, char **argv, binary_params_t *params)
+void parse_options(int argc, char **argv, binary_params_t *params, command_mode *mode)
 {
     int opt = -1;
     int opt_idx = -1;
@@ -126,13 +123,17 @@ void parse_options(int argc, char **argv, binary_params_t *params)
             if (optarg)
                 params->output = dup_optarg_str();
             break;
+        case 'c':
+            // Copy mode
+            *mode = COPY_MODE;
+            break;
         case 'r':
             // Reverse mode
-            reverse_mode = true;
+            *mode = REVERSE_MODE;
             break;
         case 'l':
             // List mode
-            list_mode = true;
+            *mode = LIST_MODE;
             break;
         case 'v':
             // Verbose mode
@@ -156,9 +157,10 @@ int main(int argc, char **argv)
 {
     // Binary parameters initialization
     binary_params_t params = {0};
+    command_mode mode = UNDEFINED_MODE;
 
     // Parsing binary options
-    parse_options(argc, argv, &params);
+    parse_options(argc, argv, &params, &mode);
 
     // Checking binary requirements
     check_requirements(&params);
@@ -167,17 +169,20 @@ int main(int argc, char **argv)
     show_parameters(&params, get_verbose_mode());
 
     // Business logic must be implemented at this point
-    if (list_mode)
+    switch (mode)
     {
-        ls_like(params.input);
-    }
-    else if (reverse_mode)
-    {
-        reverse(params.input, params.output);
-    }
-    else
-    {
+    case COPY_MODE:
         copy(params.input, params.output);
+        break;
+    case REVERSE_MODE:
+        reverse(params.input, params.output);
+        break;
+    case LIST_MODE:
+        ls_like(params.input);
+        break;
+    default:
+        print_error("Undefined mode\n");
+        break;
     }
 
     // Freeing allocated data
