@@ -15,15 +15,17 @@ int exec_echo(char *arg, ...)
     return execlp("/bin/echo", "echo", arg, NULL);
 }
 
-void pipe_process(int pipe_fd[2], pid_t pid)
-{    
+void pipe_process()
+{
+    int pipe_fd[2];
+
     if (pipe(pipe_fd) == -1)
     {
         print_error("pipe");
         exit(EXIT_FAILURE);
     }
 
-    pid = fork();
+    pid_t pid = fork();
     if (pid == -1)
     {
         print_error("fork");
@@ -31,12 +33,17 @@ void pipe_process(int pipe_fd[2], pid_t pid)
     }
     else if (pid == 0)
     {
-        /* Child implementation */
-        
+        close(pipe_fd[0]);
+        dup2(pipe_fd[1], STDOUT_FILENO);
+        exec_ps("eaux");
     }
     else
     {
-        /* Parent implementation */
+        close(pipe_fd[1]);
+        dup2(pipe_fd[0], STDIN_FILENO);
+        exec_grep("^root");
     }
 
 }
+
+// TO DO: add echo if all is OK
