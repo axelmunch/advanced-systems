@@ -35,13 +35,22 @@ void pipe_process()
     {
         close(pipe_fd[0]);
         dup2(pipe_fd[1], STDOUT_FILENO);
-        exec_ps("eaux");
+        if (exec_ps("eaux") == -1)
+        {
+            print_error("[ERROR] exec_ps");
+            exit(EXIT_FAILURE);
+        }
+
     }
     else
     {
         close(pipe_fd[1]);
         dup2(pipe_fd[0], STDIN_FILENO);
-        exec_grep("^root");
+        if (exec_grep("^root") == -1)
+        {
+            print_error("[ERROR] exec_grep");
+            exit(EXIT_FAILURE);
+        }
     }
 
 }

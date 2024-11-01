@@ -46,7 +46,7 @@ void process_parent()
     exit(EXIT_SUCCESS);
 }
 
-void _redirect_process(char *program_name)
+void _redirect_stdout(char *program_name)
 {
     pid_t pid;
     pid = fork();
@@ -66,10 +66,14 @@ void _redirect_process(char *program_name)
     }
 }
 
+void _redirect_stderr(char *program_name)
+{
+}
+
 void redirect(char *program_name)
 {
     show_msg(program_name);
-    _redirect_process(program_name);
+    _redirect_stdout(program_name);
 
     exit(EXIT_SUCCESS);
 }

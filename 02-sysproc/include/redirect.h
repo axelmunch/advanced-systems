@@ -11,7 +11,8 @@ void open_temp();
 int show_msg(char *message);
 void process_child(char *program_name);
 void process_parent();
-void _redirect_process(char *program_name);
+void _redirect_stdout(char *program_name);
+void _redirect_stderr(char *program_name);
 void redirect(char *program_name);
 
 #endif // REDIRECT_H
