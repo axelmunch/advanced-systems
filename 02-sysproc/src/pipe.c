@@ -114,7 +114,7 @@ void pipe_process()
     }
     else if (ps_pid == 0)
     {
-        handle_ps_process(pipe_fd);
+        handle_ps(pipe_fd);
     }
     else
     {
