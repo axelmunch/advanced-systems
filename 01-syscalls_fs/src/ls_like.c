@@ -61,14 +61,14 @@ void file_info(const char *full_path, const char *file_name)
                   get_owner(file_stat.st_uid));
 
     // Group
-    space_quantity = max_size_group - strlen(get_owner(file_stat.st_gid));
+    space_quantity = max_size_group - strlen(get_group(file_stat.st_gid));
     for (int i = 0; i < space_quantity && space_quantity > 0; i++)
     {
         print_generic(STDOUT_FILENO, " ",
-                      get_owner(file_stat.st_gid));
+                      get_group(file_stat.st_gid));
     }
     print_generic(STDOUT_FILENO, "%s ",
-                  get_owner(file_stat.st_gid));
+                  get_group(file_stat.st_gid));
 
     // Size
     space_quantity = max_size_file_size - count_digits(file_stat.st_size);
@@ -105,7 +105,6 @@ void list_directory(const char *path)
 {
     char full_path[MAX_PATH_LENGTH];
 
-    // Count the max size of user, group and file size
     DIR *dir_count_size = opendir(path);
     if (dir_count_size == NULL)
     {
@@ -113,6 +112,7 @@ void list_directory(const char *path)
         return;
     }
 
+    // Count the max size of user, group and file size
     struct dirent *file_count_size;
     while ((file_count_size = readdir(dir_count_size)) != NULL)
     {
