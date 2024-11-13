@@ -1,5 +1,33 @@
 #include "ls_like.h"
 
+int max_size_user;
+int max_size_group;
+int max_size_file_size;
+
+/**
+ * Returns number of digits in a number
+ * @param value
+ * @return int
+ */
+int count_digits(int value)
+{
+    if (value == 0)
+    {
+        return 1;
+    }
+
+    value = abs(value);
+    int count = 0;
+
+    while (value > 0)
+    {
+        value /= 10;
+        count++;
+    }
+
+    return count;
+}
+
 /**
  * Print file information
  * @param full_path
@@ -8,6 +36,8 @@
  */
 void file_info(const char *full_path, const char *file_name)
 {
+    int space_quantity;
+
     struct stat file_stat;
 
     if (lstat(full_path, &file_stat) == -1)
@@ -15,12 +45,41 @@ void file_info(const char *full_path, const char *file_name)
         print_error("[ERROR] stat");
         return;
     }
-    print_generic(STDOUT_FILENO, "%c%s %s %s %ld %s ",
+
+    // User
+    print_generic(STDOUT_FILENO, "%c%s ",
                   get_filetype(file_stat.st_mode),
-                  get_permissions(file_stat.st_mode),
-                  get_owner(file_stat.st_uid),
-                  get_group(file_stat.st_gid), file_stat.st_size,
-                  parse_time(file_stat.st_mtime));
+                  get_permissions(file_stat.st_mode));
+
+    space_quantity = max_size_user - strlen(get_owner(file_stat.st_uid));
+    for (int i = 0; i < space_quantity && space_quantity > 0; i++)
+    {
+        print_generic(STDOUT_FILENO, " ",
+                      get_owner(file_stat.st_uid));
+    }
+    print_generic(STDOUT_FILENO, "%s ",
+                  get_owner(file_stat.st_uid));
+
+    // Group
+    space_quantity = max_size_group - strlen(get_owner(file_stat.st_gid));
+    for (int i = 0; i < space_quantity && space_quantity > 0; i++)
+    {
+        print_generic(STDOUT_FILENO, " ",
+                      get_owner(file_stat.st_gid));
+    }
+    print_generic(STDOUT_FILENO, "%s ",
+                  get_owner(file_stat.st_gid));
+
+    // Size
+    space_quantity = max_size_file_size - count_digits(file_stat.st_size) + 1;
+    for (int i = 0; i < space_quantity && space_quantity > 0; i++)
+    {
+        print_generic(STDOUT_FILENO, " ");
+    }
+    print_generic(STDOUT_FILENO, "%ld ",
+                  file_stat.st_size);
+
+    print_generic(STDOUT_FILENO, "%s ", parse_time(file_stat.st_mtime));
 
     // File name with color
     if (get_filetype(file_stat.st_mode) == 'd')
@@ -66,6 +125,10 @@ void list_directory(DIR *dir, const char *path)
  */
 void ls_like(const char *path)
 {
+    max_size_user = 0;
+    max_size_group = 0;
+    max_size_file_size = 0;
+
     struct stat path_stat;
 
     if (path == NULL)
