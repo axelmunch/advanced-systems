@@ -71,7 +71,7 @@ void file_info(const char *full_path, const char *file_name)
                   get_owner(file_stat.st_gid));
 
     // Size
-    space_quantity = max_size_file_size - count_digits(file_stat.st_size) + 1;
+    space_quantity = max_size_file_size - count_digits(file_stat.st_size);
     for (int i = 0; i < space_quantity && space_quantity > 0; i++)
     {
         print_generic(STDOUT_FILENO, " ");
@@ -95,17 +95,52 @@ void file_info(const char *full_path, const char *file_name)
 
 /**
  * List all files in a directory
- * @param dir
  * @param path
  * @return void
  *
  * Format: permissions owner group size time filename
  * Example: rwxr-xr-- root root 4096 Jan 01 00:00 file.txt
  */
-void list_directory(DIR *dir, const char *path)
+void list_directory(const char *path)
 {
-    struct dirent *file;
     char full_path[MAX_PATH_LENGTH];
+
+    // Count the max size of user, group and file size
+    DIR *dir_count_size = opendir(path);
+    if (dir_count_size == NULL)
+    {
+        print_error("[ERROR] Couldn't open the directory");
+        return;
+    }
+
+    struct dirent *file_count_size;
+    while ((file_count_size = readdir(dir_count_size)) != NULL)
+    {
+        snprintf(full_path, MAX_PATH_LENGTH, "%s/%s", path, file_count_size->d_name);
+
+        struct stat file_stat;
+
+        if (lstat(full_path, &file_stat) == -1)
+        {
+            print_error("[ERROR] stat");
+            return;
+        }
+
+        max_size_user = strlen(get_owner(file_stat.st_uid)) > max_size_user ? strlen(get_owner(file_stat.st_uid)) : max_size_user;
+        max_size_group = strlen(get_group(file_stat.st_gid)) > max_size_group ? strlen(get_group(file_stat.st_gid)) : max_size_group;
+        max_size_file_size = count_digits(file_stat.st_size) > max_size_file_size ? count_digits(file_stat.st_size) : max_size_file_size;
+    }
+
+    closedir(dir_count_size);
+
+    DIR *dir = opendir(path);
+    if (dir == NULL)
+    {
+        print_error("[ERROR] Couldn't open the directory");
+        return;
+    }
+
+    struct dirent *file;
 
     print("[INFO] Listing directory %s\n", path);
 
@@ -144,14 +179,7 @@ void ls_like(const char *path)
 
     if (S_ISDIR(path_stat.st_mode))
     {
-        DIR *dir = opendir(path);
-        if (dir == NULL)
-        {
-            print_error("[ERROR] Couldn't open the directory");
-            return;
-        }
-
-        list_directory(dir, path);
+        list_directory(path);
     }
     else
     {

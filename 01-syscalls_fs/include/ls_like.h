@@ -21,7 +21,7 @@
 
 
 void ls_like(const char *path);
-void list_directory(DIR *dir, const char *path);
+void list_directory(const char *path);
 char* parse_time(time_t time);
 char get_filetype(mode_t mode);
 char* get_permissions(mode_t mode);
