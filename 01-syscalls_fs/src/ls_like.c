@@ -9,14 +9,14 @@ int max_size_file_size;
  * @param value
  * @return int
  */
-int count_digits(int value)
+int count_digits(long long value)
 {
     if (value == 0)
     {
         return 1;
     }
 
-    value = abs(value);
+    value = llabs(value);
     int count = 0;
 
     while (value > 0)
