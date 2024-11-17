@@ -1,6 +1,17 @@
 #include "redirect.h"
 
-void open_temp()
+void exec_program(char *program_name)
+{
+    int ret;
+    ret = execlp(program_name, program_name, NULL);
+    if (ret == -1)
+    {
+        print_error("[ERROR] execlp");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void open_temp(int redirect_fd)
 {
     int tmp_fd;
 
@@ -14,14 +25,14 @@ void open_temp()
     }
     print("[INFO] Created temp file: %s with file descriptor %d\n", template, tmp_fd);
 
-    tmp_fd = dup2(tmp_fd, STDOUT_FILENO);
+    tmp_fd = dup2(tmp_fd, redirect_fd);
     if (tmp_fd == -1)
     {
         perror("dup2");
         close(tmp_fd);
         exit(EXIT_FAILURE);
     }
-    print("[INFO] New file descriaptor of temp file: %d\n", tmp_fd);
+    print("[INFO] New file descriptor of temp file: %d\n", tmp_fd);
 }
 
 int show_msg(char *message)
@@ -30,12 +41,12 @@ int show_msg(char *message)
     return EXIT_SUCCESS;
 }
 
-void process_child(char *program_name)
+void process_child(char *program_name, int redirect_fd)
 {
     print("[INFO] Child process: PID=%d\n", getpid());
-    close(STDOUT_FILENO);
-    open_temp();
-    execlp(program_name, program_name, NULL);
+    close(redirect_fd);
+    open_temp(redirect_fd);
+    exec_program(program_name);
 }
 
 void process_parent()
@@ -46,8 +57,10 @@ void process_parent()
     exit(EXIT_SUCCESS);
 }
 
-void _redirect_stdout(char *program_name)
+void redirect(char *program_name, int redirect_fd)
 {
+    show_msg(program_name);
+
     pid_t pid;
     pid = fork();
 
@@ -58,22 +71,12 @@ void _redirect_stdout(char *program_name)
     }
     else if (pid == 0)
     {
-        process_child(program_name);
+        process_child(program_name, redirect_fd);
     }
     else
     {
         process_parent();
     }
-}
-
-void _redirect_stderr(char *program_name)
-{
-}
-
-void redirect(char *program_name)
-{
-    show_msg(program_name);
-    _redirect_stdout(program_name);
 
     exit(EXIT_SUCCESS);
 }

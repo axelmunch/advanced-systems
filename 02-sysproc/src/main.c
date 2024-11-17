@@ -74,21 +74,23 @@ void show_help(char **argv)
  * Checking binary requirements
  * @param mode The command mode
  * @param redirect_arg The argument for redirect mode
- * @return int
+ * @return void
  */
 int check_requirements(command_mode mode, char *program_name)
 {
-    if (mode == UNDEFINED_MODE) {
-        print_generic(STDERR_FILENO, "[ERROR] No valid mode specified! See HELP [--help|-h].\n");
+    if (mode == UNDEFINED_MODE)
+    {
+        print_error("[ERROR] No valid mode specified! See HELP [--help|-h].");
         return EXIT_FAILURE;
     }
 
-    if (mode == REDIRECT_MODE && program_name == NULL) {
-        print_generic(STDERR_FILENO, "[ERROR] Redirect mode requires an argument! See HELP [--help|-h]\n");
+    if (mode == REDIRECT_MODE && program_name == NULL)
+    {
+        print_error("[ERROR] Redirect mode requires an argument! See HELP [--help|-h]");
         return EXIT_FAILURE;
     }
 
-     return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
 
 /**
@@ -163,7 +165,8 @@ int main(int argc, char **argv)
         fork_yourself();
         break;
     case REDIRECT_MODE:
-        redirect(program_name);
+        redirect(program_name, STDOUT_FILENO);
+        // redirect(program_name, STDERR_FILENO);
         break;
     case PIPE_MODE:
         pipe_process();

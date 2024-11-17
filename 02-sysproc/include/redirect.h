@@ -7,12 +7,11 @@
 #include <sys/wait.h>
 #include "print.h"
 
-void open_temp();
+void open_temp(int redirect_fd);
+void exec_program(char *program_name);
 int show_msg(char *message);
-void process_child(char *program_name);
+void process_child(char *program_name, int redirect_fd);
 void process_parent();
-void _redirect_stdout(char *program_name);
-void _redirect_stderr(char *program_name);
-void redirect(char *program_name);
+void redirect(char *program_name, int redirect_fd);
 
 #endif // REDIRECT_H

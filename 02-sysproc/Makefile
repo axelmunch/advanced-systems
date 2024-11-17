@@ -50,6 +50,7 @@ package: gcov doc all
 
 clean:
 	rm -rf $(OBJ)
+	rm -f /tmp/proc-exercise*
 
 mrproper: clean
 	rm -rf $(BIN_DIR)/*
