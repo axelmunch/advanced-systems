@@ -14,7 +14,7 @@ LCOV_REPORT=report.info
 
 SRC=$(wildcard $(SRC_DIR)/*.c)
 OBJ=$(SRC:.c=.o)
-EXEC=02-sysproc
+EXEC=03-thread_sort
 
 GEXEC=$(EXEC).cov
 

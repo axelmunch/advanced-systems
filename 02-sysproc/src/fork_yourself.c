@@ -1,5 +1,11 @@
 #include "fork_yourself.h"
 
+/**
+ * @brief Fork yourself
+ * @return int
+ *
+ * This function will fork a child process and print the PID and PPID of the child and the PID of the parent.
+ */
 int fork_yourself(void)
 {
     int status;
