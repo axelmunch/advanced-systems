@@ -6,7 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "constants.h"
 
-void thread_sort(int array[]);
+void thread_sort(int tab[]);
+void initialize_array();
+
+extern int tab[SIZE];
 
 #endif // THREAD_SORT_H
