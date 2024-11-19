@@ -7,9 +7,11 @@
 #include <stdlib.h>
 
 #include "constants.h"
+#include "print.h"
 
 void thread_sort(int tab[]);
 void initialize_array();
+void print_array();
 
 extern int tab[SIZE];
 
