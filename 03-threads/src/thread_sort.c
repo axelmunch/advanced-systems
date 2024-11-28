@@ -1,13 +1,12 @@
 #include "thread_sort.h"
 
 int tab[SIZE];
-
+int min, max;
 
 /**
  * @brief Initialize the array with random values
  * @return void
  *
- * This function will initialize the array with random values
  */
 void initialize_array()
 {
@@ -22,7 +21,6 @@ void initialize_array()
  * @brief Print the array
  * @return void
  *
- * This function will print the array
  */
 void print_array()
 {
@@ -31,19 +29,6 @@ void print_array()
         printf("%d ", tab[i]);
     }
     printf("\n");
-}
-
-/**
- * @brief Sort an array using threads
- * @param tab Array to sort
- * @return void
- *
- * This function will create a thread for each half of the array
- */
-
-void thread_sort(int tab[])
-{
-
 }
 
 /**
@@ -82,4 +67,43 @@ int get_max(int tab[])
         }
     }
     return max;
+}
+
+/**
+ * @brief find the min and max values of an array
+ * @param tab Array to find min and max
+ * @param min Pointer to store the min value
+ * @param max Pointer to store the max value
+ * @return void
+ *
+ */
+void find_min_max_sequential(int tab[], int *min, int *max)
+{
+    struct timeval start, end;
+    long seconds, useconds;
+    double mtime;
+
+    gettimeofday(&start, NULL);
+    *min = get_min(tab);
+    *max = get_max(tab);
+    gettimeofday(&end, NULL);
+
+    seconds  = end.tv_sec  - start.tv_sec;
+    useconds = end.tv_usec - start.tv_usec;
+
+    mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
+
+    print_results(mtime);
+}
+
+/**
+ * @brief print the results and the time taken
+ * @return void
+ *
+ */
+void print_results(double time_taken)
+{
+    print_generic(STDOUT_FILENO, "==== RESULTS ====\n");
+    print_generic(STDOUT_FILENO, "Min: %d -- Max: %d\n", min, max);
+    print_generic(STDOUT_FILENO, "Time taken: %f ms\n", time_taken);
 }

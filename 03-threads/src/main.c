@@ -46,6 +46,7 @@ char *dup_optarg_str()
 static struct option binary_opts[] = {
     {"help", no_argument, 0, 'h'},
     {"verbose", no_argument, 0, 'v'},
+    {"thread", required_argument, 0, 't'},
     {0, 0, 0, 0}};
 
 /**
@@ -54,7 +55,7 @@ static struct option binary_opts[] = {
  *
  * see man 3 getopt_long or getopt
  */
-const char *binary_optstr = "hv";
+const char *binary_optstr = "hvt:";
 
 /**
  * Print help and exit
@@ -121,9 +122,9 @@ void parse_options(int argc, char **argv)
 }
 
 /**
- * Binary main loop
+ * @brief Binary main loop
  *
- * \return 1 if it exits successfully
+ * @return EXIT_SUCCESS if it exits successfully
  */
 int main(int argc, char **argv)
 {
@@ -140,7 +141,7 @@ int main(int argc, char **argv)
 
     // Business logic
     initialize_array();
-    print_array();
+    find_min_max_sequential(tab, &min, &max);
 
     return EXIT_SUCCESS;
 }
