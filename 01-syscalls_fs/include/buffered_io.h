@@ -3,15 +3,7 @@
 
 #include <stdbool.h>
 #include "constants.h"
-
-typedef struct
-{
-    int fd;
-    char buffer[BUFFER_SIZE];
-    int index;
-    int buffer_size_taken;
-    bool write_mode; // Write mode. Else: reading only
-} FICHIER;
+#include "typedef.h"
 
 FICHIER *my_open(const char *filename, const char *mode);
 int my_close(FICHIER *f);

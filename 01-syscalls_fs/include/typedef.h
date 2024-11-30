@@ -10,6 +10,9 @@ typedef struct
     char *output;
 } binary_params_t;
 
+/**
+ * Enum to store the command mode
+ */
 typedef enum
 {
     COPY_MODE,
@@ -17,5 +20,17 @@ typedef enum
     LIST_MODE,
     UNDEFINED_MODE
 } command_mode;
+
+/**
+ * Struct to store file information
+ */
+typedef struct
+{
+    int fd;
+    char buffer[BUFFER_SIZE];
+    int index;
+    int buffer_size_taken;
+    bool write_mode; // Write mode. Else: reading only
+} FICHIER;
 
 #endif // TYPEDEF_H
