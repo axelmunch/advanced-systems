@@ -9,6 +9,7 @@
 #include "copy.h"
 #include "ls_like.h"
 #include "reverse.h"
+#include "buffered_io.h"
 #include "typedef.h"
 
 /**
@@ -189,6 +190,50 @@ int main(int argc, char **argv)
     // Freeing allocated data
     free_if_needed(params.input);
     free_if_needed(params.output);
+
+    // Buffered IO
+    print("BUFFERED IO\n");
+    print("----------------\n");
+    // Write
+    print("WRITING\n");
+    print("----------------\n");
+    FICHIER *file_out = my_open("output.txt", "w");
+    if (file_out)
+    {
+        my_putc('T', file_out);
+        my_putc('e', file_out);
+        my_putc('s', file_out);
+        my_putc('t', file_out);
+        my_putc('\n', file_out);
+        my_putc('b', file_out);
+        my_putc('u', file_out);
+        my_putc('f', file_out);
+        my_putc('f', file_out);
+        my_putc('e', file_out);
+        my_putc('r', file_out);
+        my_putc('e', file_out);
+        my_putc('d', file_out);
+        my_putc(' ', file_out);
+        my_putc('I', file_out);
+        my_putc('O', file_out);
+        my_close(file_out);
+    }
+    print("----------------\n");
+    // Read
+    print("READING\n");
+    print("----------------\n");
+    FICHIER *file_in = my_open("output.txt", "r");
+    if (file_in)
+    {
+        int c;
+        while ((c = my_getc(file_in)) != EOF)
+        {
+            print("%c", c);
+        }
+        print("\n");
+        my_close(file_in);
+    }
+    print("----------------\n");
 
     return EXIT_SUCCESS;
 }
