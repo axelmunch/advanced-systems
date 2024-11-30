@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 
     // Business logic
     initialize_array();
-    find_min_max_sequential(tab, &min, &max);
+    find_min_max_sequential(tab, &min, &max, TIME_MSEC);
 
     return EXIT_SUCCESS;
 }

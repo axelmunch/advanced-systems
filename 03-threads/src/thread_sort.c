@@ -12,9 +12,7 @@ void initialize_array()
 {
     srand(time(NULL));
     for (int i = 0; i < SIZE; i++)
-    {
         tab[i] = rand();
-    }
 }
 
 /**
@@ -25,9 +23,8 @@ void initialize_array()
 void print_array()
 {
     for (int i = 0; i < SIZE; i++)
-    {
         printf("%d ", tab[i]);
-    }
+
     printf("\n");
 }
 
@@ -43,9 +40,7 @@ int get_min(int tab[])
     for (int i = 0; i < SIZE; i++)
     {
         if (tab[i] < min)
-        {
             min = tab[i];
-        }
     }
     return min;
 }
@@ -62,9 +57,7 @@ int get_max(int tab[])
     for (int i = 0; i < SIZE; i++)
     {
         if (tab[i] > max)
-        {
             max = tab[i];
-        }
     }
     return max;
 }
@@ -77,7 +70,7 @@ int get_max(int tab[])
  * @return void
  *
  */
-void find_min_max_sequential(int tab[], int *min, int *max)
+void find_min_max_sequential(int tab[], int *min, int *max, double time_unit)
 {
     struct timeval start, end;
     long seconds, useconds;
@@ -88,10 +81,10 @@ void find_min_max_sequential(int tab[], int *min, int *max)
     *max = get_max(tab);
     gettimeofday(&end, NULL);
 
-    seconds  = end.tv_sec  - start.tv_sec;
+    seconds = end.tv_sec - start.tv_sec;
     useconds = end.tv_usec - start.tv_usec;
 
-    mtime = ((seconds) * 1000 + useconds/1000.0) + 0.5;
+    mtime = ((seconds) * time_unit + useconds / time_unit);
 
     print_results(mtime);
 }
@@ -105,5 +98,5 @@ void print_results(double time_taken)
 {
     print_generic(STDOUT_FILENO, "==== RESULTS ====\n");
     print_generic(STDOUT_FILENO, "Min: %d -- Max: %d\n", min, max);
-    print_generic(STDOUT_FILENO, "Time taken: %f ms\n", time_taken);
+    print_generic(STDOUT_FILENO, "Time taken: %f \n", time_taken);
 }

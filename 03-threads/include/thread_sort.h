@@ -14,7 +14,7 @@ void initialize_array();
 void print_array();
 int get_min(int tab[]);
 int get_max(int tab[]);
-void find_min_max_sequential(int tab[], int *min, int *max);
+void find_min_max_sequential(int tab[], int *min, int *max, double time_unit);
 void print_results();
 
 extern int tab[SIZE];
