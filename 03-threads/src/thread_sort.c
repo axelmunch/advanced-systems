@@ -86,7 +86,7 @@ void find_min_max_sequential(int tab[], int *min, int *max, double time_unit)
 
     mtime = ((seconds) * time_unit + useconds / time_unit);
 
-    print_results(mtime);
+    print_results(mtime, time_unit);
 }
 
 /**
@@ -94,9 +94,9 @@ void find_min_max_sequential(int tab[], int *min, int *max, double time_unit)
  * @return void
  *
  */
-void print_results(double time_taken)
+void print_results(double time_taken, double time_unit)
 {
     print_generic(STDOUT_FILENO, "==== RESULTS ====\n");
     print_generic(STDOUT_FILENO, "Min: %d -- Max: %d\n", min, max);
-    print_generic(STDOUT_FILENO, "Time taken: %f \n", time_taken);
+    print_generic(STDOUT_FILENO, "Time taken: %f %s\n", time_taken, time_unit == TIME_MSEC ? "ms" : "secs");
 }
