@@ -1,12 +1,10 @@
 #include "thread_sort.h"
 
 int tab[SIZE];
-int min, max;
 
 /**
  * @brief Initialize the array with random values
  * @return void
- *
  */
 void initialize_array()
 {
@@ -18,7 +16,6 @@ void initialize_array()
 /**
  * @brief Print the array
  * @return void
- *
  */
 void print_array()
 {
@@ -29,37 +26,22 @@ void print_array()
 }
 
 /**
- * @brief get the minimum value of an array
- * @param tab Array to sort
- * @return int
- *
+ * @brief get the minimum and maximum values of an array
+ * @param tab Array to search
+ * @param result Pointer to store the min and max values
+ * @return void
  */
-int get_min(int tab[])
+void get_min_max(int tab[], min_max_t *result)
 {
-    int min = tab[0];
-    for (int i = 0; i < SIZE; i++)
+    result->min = tab[0];
+    result->max = tab[0];
+    for (int i = 1; i < SIZE; i++)
     {
-        if (tab[i] < min)
-            min = tab[i];
+        if (tab[i] < result->min)
+            result->min = tab[i];
+        if (tab[i] > result->max)
+            result->max = tab[i];
     }
-    return min;
-}
-
-/**
- * @brief get the maximum value of an array
- * @param tab Array to sort
- * @return int
- *
- */
-int get_max(int tab[])
-{
-    int max = tab[0];
-    for (int i = 0; i < SIZE; i++)
-    {
-        if (tab[i] > max)
-            max = tab[i];
-    }
-    return max;
 }
 
 /**
@@ -68,35 +50,72 @@ int get_max(int tab[])
  * @param min Pointer to store the min value
  * @param max Pointer to store the max value
  * @return void
- *
  */
-void find_min_max_sequential(int tab[], int *min, int *max, double time_unit)
+void sequential_search(int tab[], min_max_t *result, double time_unit)
 {
     struct timeval start, end;
     long seconds, useconds;
-    double mtime;
+    double time_used;
 
     gettimeofday(&start, NULL);
-    *min = get_min(tab);
-    *max = get_max(tab);
+    get_min_max(tab, result);
     gettimeofday(&end, NULL);
 
     seconds = end.tv_sec - start.tv_sec;
     useconds = end.tv_usec - start.tv_usec;
 
-    mtime = ((seconds) * time_unit + useconds / time_unit);
+    time_used = ((seconds)*time_unit + useconds / time_unit);
 
-    print_results(mtime, time_unit);
+    print_results(result, time_used, time_unit);
+}
+
+/**
+ * @brief find the min and max values of an array using threads
+ * @param tab Array to find min and max
+ * @param min Pointer to store the min value
+ * @param max Pointer to store the max value
+ * @param time_unit Time unit to display
+ * @param thread Number of threads to use
+ * @return void
+ */
+void threaded_search(int tab[], min_max_t *result, double time_unit, int thread)
+{
+    struct timeval start, end;
+    long seconds, useconds;
+    double time_used;
+    pthread_t threads[thread];
+
+    gettimeofday(&start, NULL);
+    get_min_max_threaded(tab, result, thread, threads);
+    gettimeofday(&end, NULL);
+
+    seconds = end.tv_sec - start.tv_sec;
+    useconds = end.tv_usec - start.tv_usec;
+
+    time_used = ((seconds)*time_unit + useconds / time_unit);
+
+    print_results(result, time_used, time_unit);
 }
 
 /**
  * @brief print the results and the time taken
  * @return void
- *
  */
-void print_results(double time_taken, double time_unit)
+void print_results(min_max_t* result, double time_used, double time_unit)
 {
     print_generic(STDOUT_FILENO, "==== RESULTS ====\n");
-    print_generic(STDOUT_FILENO, "Min: %d -- Max: %d\n", min, max);
-    print_generic(STDOUT_FILENO, "Time taken: %f %s\n", time_taken, time_unit == TIME_MSEC ? "ms" : "secs");
+    print_generic(STDOUT_FILENO, "Min: %d -- Max: %d\n", result->min, result->max);
+    print_generic(STDOUT_FILENO, "Time used: %.4f %s\n", time_used, time_unit == TIME_MSEC ? "ms" : "sec");
+}
+
+/**
+ * @brief get the min and max values of an array using threads
+ * @param tab array to find min and max
+ * @param result pointer to store the min and max values
+ * @param thread number of threads to use
+ * @param threads array of threads
+ */
+void get_min_max_threaded(int tab[], min_max_t* result, int thread, pthread_t threads[])
+{
+
 }

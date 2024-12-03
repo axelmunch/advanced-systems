@@ -9,15 +9,16 @@
 
 #include "constants.h"
 #include "print.h"
+#include "typedef.h"
 
 void initialize_array();
 void print_array();
-int get_min(int tab[]);
-int get_max(int tab[]);
-void find_min_max_sequential(int tab[], int *min, int *max, double time_unit);
-void print_results();
+void get_min_max(int tab[], min_max_t *result);
+void get_min_max_threaded(int tab[], min_max_t *result, int thread, pthread_t threads[]);
+void sequential_search(int tab[], min_max_t *result, double time_unit);
+void threaded_search(int tab[], min_max_t *result, double time_unit, int thread);
+void print_results(min_max_t *result, double time_used, double time_unit);
 
 extern int tab[SIZE];
-extern int min, max;
 
 #endif // THREAD_SORT_H

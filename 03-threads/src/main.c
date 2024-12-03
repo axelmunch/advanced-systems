@@ -129,6 +129,7 @@ void parse_options(int argc, char **argv)
 int main(int argc, char **argv)
 {
     int thread = 0;
+    min_max_t min_max;
 
     // Parsing binary options
     parse_options(argc, argv);
@@ -141,7 +142,7 @@ int main(int argc, char **argv)
 
     // Business logic
     initialize_array();
-    find_min_max_sequential(tab, &min, &max, TIME_SEC);
+    sequential_search(tab, &min_max, TIME_MSEC);
 
     return EXIT_SUCCESS;
 }
