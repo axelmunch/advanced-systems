@@ -13,7 +13,6 @@
 #include "typedef.h"
 
 void initialize_array();
-void print_array();
 void get_min_max(min_max_t *result);
 void sequential_search(min_max_t *result, double time_unit);
 void *thread_arg_search(void *arg);
