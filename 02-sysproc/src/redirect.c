@@ -20,7 +20,7 @@ void open_temp(int redirect_fd)
     tmp_fd = mkstemp(template);
     if (tmp_fd == -1)
     {
-        perror("mkstemp");
+        print_error("[ERROR] mkstemp");
         exit(EXIT_FAILURE);
     }
     print("[INFO] Created temp file: %s with file descriptor %d\n", template, tmp_fd);
@@ -28,7 +28,7 @@ void open_temp(int redirect_fd)
     tmp_fd = dup2(tmp_fd, redirect_fd);
     if (tmp_fd == -1)
     {
-        perror("dup2");
+        print_error("[ERROR] dup2");
         close(tmp_fd);
         exit(EXIT_FAILURE);
     }

@@ -102,14 +102,14 @@ void pipe_process()
 
     if (pipe(pipe_fd) == -1)
     {
-        print_error("pipe");
+        print_error("[ERROR] pipe");
         exit(EXIT_FAILURE);
     }
 
     ps_pid = fork();
     if (ps_pid == -1)
     {
-        print_error("fork");
+        print_error("[ERROR] fork");
         exit(EXIT_FAILURE);
     }
     else if (ps_pid == 0)
@@ -121,7 +121,7 @@ void pipe_process()
         grep_pid = fork();
         if (grep_pid == -1)
         {
-            print_error("fork");
+            print_error("[ERROR] fork");
             exit(EXIT_FAILURE);
         }
         else if (grep_pid == 0)
