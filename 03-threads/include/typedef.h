@@ -10,4 +10,15 @@ typedef struct
     int max;
 } min_max_t;
 
+/**
+ * @brief typedef for storing thread data
+ */
+typedef struct
+{
+    int *tab;
+    int start;
+    int end;
+    min_max_t *result;
+} thread_data_t;
+
 #endif // TYPEDEF_H

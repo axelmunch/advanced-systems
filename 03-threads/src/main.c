@@ -66,7 +66,6 @@ void show_help(char **argv)
     exit(EXIT_FAILURE);
 }
 
-
 /**
  * Function to show the binary parameters
  */
@@ -79,21 +78,12 @@ void show_parameters(bool verbose_mode)
 /**
  * Checking binary requirements
  */
-void check_requirements(int argc, char **argv, int *thread)
+void check_requirements(int *num_threads)
 {
-    if (argc > 2)
+    if (*num_threads <= 0)
     {
-        print_generic(STDERR_FILENO, "Error: Too many arguments.\n");
-        show_help(argv);
-    }
-
-    if (argc == 1)
-    {
-        *thread = 2;
-    }
-    else
-    {
-        *thread = atoi(argv[1]);
+        print_generic(STDERR_FILENO, "Bad usage! See HELP [--help|-h]\n");
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -109,6 +99,9 @@ void parse_options(int argc, char **argv)
     {
         switch (opt)
         {
+        case 't':
+            num_threads = atoi(optarg);
+            break;
         case 'v':
             set_verbose_mode(true);
             break;
@@ -128,21 +121,21 @@ void parse_options(int argc, char **argv)
  */
 int main(int argc, char **argv)
 {
-    int thread = 0;
     min_max_t min_max;
 
     // Parsing binary options
     parse_options(argc, argv);
 
     // Checking binary requirements
-    check_requirements(argc, argv, &thread);
+    check_requirements(&num_threads);
 
     // Printing params if verbose mode is enabled
     show_parameters(get_verbose_mode());
 
     // Business logic
     initialize_array();
-    sequential_search(tab, &min_max, TIME_MSEC);
+    sequential_search(&min_max, TIME_MSEC);
+    threaded_search(&min_max, TIME_MSEC, num_threads);
 
     return EXIT_SUCCESS;
 }

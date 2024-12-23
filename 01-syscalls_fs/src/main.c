@@ -55,6 +55,7 @@ static struct option binary_opts[] = {
     {"reverse", no_argument, 0, 'r'},
     {"list", no_argument, 0, 'l'},
     {"copy", no_argument, 0, 'c'},
+    {"buffered", no_argument, 0, 'b'},
     {0, 0, 0, 0}};
 
 /**
@@ -63,7 +64,7 @@ static struct option binary_opts[] = {
  *
  * \see man 3 getopt_long or getopt
  */
-const char *binary_optstr = "hvcrli:o:";
+const char *binary_optstr = "hvcrlbi:o:";
 
 /**
  * Checking binary requirements
@@ -72,7 +73,7 @@ const char *binary_optstr = "hvcrli:o:";
  */
 void check_requirements(binary_params_t *params, command_mode mode)
 {
-    if (mode == LIST_MODE)
+    if (mode == LIST_MODE || mode == BUFFERED_MODE)
     {
         return;
     }
@@ -138,6 +139,9 @@ void parse_options(int argc, char **argv, binary_params_t *params, command_mode 
         case 'l':
             *mode = LIST_MODE;
             break;
+        case 'b':
+            *mode = BUFFERED_MODE;
+            break;
         case 'v':
             set_verbose_mode(true);
             break;
@@ -182,6 +186,9 @@ int main(int argc, char **argv)
     case LIST_MODE:
         ls_like(params.input);
         break;
+    case BUFFERED_MODE:
+        buffered_demo();
+        break;
     default:
         print_error("Undefined mode\n");
         break;
@@ -190,50 +197,6 @@ int main(int argc, char **argv)
     // Freeing allocated data
     free_if_needed(params.input);
     free_if_needed(params.output);
-
-    // Buffered IO
-    print("BUFFERED IO\n");
-    print("----------------\n");
-    // Write
-    print("WRITING\n");
-    print("----------------\n");
-    FICHIER *file_out = my_open("output.txt", "w");
-    if (file_out)
-    {
-        my_putc('T', file_out);
-        my_putc('e', file_out);
-        my_putc('s', file_out);
-        my_putc('t', file_out);
-        my_putc('\n', file_out);
-        my_putc('b', file_out);
-        my_putc('u', file_out);
-        my_putc('f', file_out);
-        my_putc('f', file_out);
-        my_putc('e', file_out);
-        my_putc('r', file_out);
-        my_putc('e', file_out);
-        my_putc('d', file_out);
-        my_putc(' ', file_out);
-        my_putc('I', file_out);
-        my_putc('O', file_out);
-        my_close(file_out);
-    }
-    print("----------------\n");
-    // Read
-    print("READING\n");
-    print("----------------\n");
-    FICHIER *file_in = my_open("output.txt", "r");
-    if (file_in)
-    {
-        int c;
-        while ((c = my_getc(file_in)) != EOF)
-        {
-            print("%c", c);
-        }
-        print("\n");
-        my_close(file_in);
-    }
-    print("----------------\n");
 
     return EXIT_SUCCESS;
 }

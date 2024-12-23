@@ -8,6 +8,7 @@
 #define TIME_MSEC 1e3
 #define USAGE_SYNTAX "[COMMAND] num_thread [OPTIONS] "
 #define USAGE_PARAMS "OPTIONS:\n\
+  -t, --thread  : set the number of threads to use\n\
   -v, --verbose : enable *verbose* mode\n\
   -h, --help    : display this help\n\
 "

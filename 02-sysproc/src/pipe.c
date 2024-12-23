@@ -81,11 +81,11 @@ void handle_parent(pid_t grep_pid)
 
     if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
     {
-        print_generic(STDOUT_FILENO, "root est connecté\n");
+        exec_echo("root est connecté");
     }
     else
     {
-        print_generic(STDOUT_FILENO, "root n'est pas connecté\n");
+        exec_echo("root n'est pas connecté");
     }
 }
 

@@ -2,7 +2,7 @@
 #define TYPEDEF_H
 
 /**
- * Struct to store binary parameters
+ * @brief typedef struct to store binary parameters
  */
 typedef struct
 {
@@ -11,18 +11,19 @@ typedef struct
 } binary_params_t;
 
 /**
- * Enum to store the command mode
+ * @brief enum to store the command mode
  */
 typedef enum
 {
     COPY_MODE,
     REVERSE_MODE,
     LIST_MODE,
+    BUFFERED_MODE,
     UNDEFINED_MODE
 } command_mode;
 
 /**
- * Struct to store file information
+ * @brief typedef struct to store file information
  */
 typedef struct
 {
