@@ -5,8 +5,9 @@
 #define MAX_PATH_LENGTH 4096
 #define USAGE_SYNTAX "[OPTIONS] -i INPUT -o OUTPUT"
 #define USAGE_PARAMS "OPTIONS:\n\
-  -i, --input  INPUT_FILE  : input file\n\
-  -o, --output OUTPUT_FILE : output file\n\
+  -i, --input  INPUT_FILE  : input file (required for copy/reverse)\n\
+  -o, --output OUTPUT_FILE : output file (required for copy/reverse)\n\
+  -c, --copy   : copy file content\n\
   -r, --reverse  : reverse file content\n\
   -l, --list : list files and directory\n\
   -v, --verbose : enable *verbose* mode\n\
