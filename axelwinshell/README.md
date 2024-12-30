@@ -1,1 +1,0 @@
-# The AxelWinShell - MiniShell project
