@@ -1,21 +1,11 @@
 #include "main.h"
 
-/**
- * @brief Procedure checks if variable must be free(check: ptr != NULL)
- * @param void* to_free pointer to an allocated mem
- * @see man 3 free
- * @return void
- */
 void free_if_needed(void *to_free)
 {
     if (to_free != NULL)
         free(to_free);
 }
 
-/**
- * @brief Duplicate the option argument string (optarg)
- * @return void
- */
 char *dup_optarg_str()
 {
     char *str = NULL;
@@ -44,35 +34,23 @@ static struct option binary_opts[] = {
  */
 const char *binary_optstr = "hv";
 
-/**
- * @brief Print help and exit
- */
 void show_help(char **argv)
 {
     print_generic(STDOUT_FILENO, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
     exit(EXIT_FAILURE);
 }
 
-/**
- * @brief to show the binary parameters
- */
 void show_parameters(bool verbose_mode)
 {
     print("** PARAMS **\n%-8s: %d\n",
           "verbose", verbose_mode);
 }
 
-/**
- * @brief Checking binary requirements
- */
 void check_requirements()
 {
     return;
 }
 
-/**
- * @brief Parse binary options
- */
 void parse_options(int argc, char **argv)
 {
     int opt = -1;
@@ -93,14 +71,17 @@ void parse_options(int argc, char **argv)
         }
     }
 }
+
 void interactive_mode()
 {
     return;
 }
-/**
- * @brief Binary main loop
- * @return EXIT_SUCCESS if it exits successfully
- */
+
+void batch_mode(int argc, char **argv)
+{
+    return;
+}
+
 int main(int argc, char **argv)
 {
     // Parsing binary options
