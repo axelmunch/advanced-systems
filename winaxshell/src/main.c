@@ -1,12 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <stdbool.h>
-#include <getopt.h>
-#include <unistd.h>
-#include "typedef.h"
-#include "print.h"
+#include "main.h"
 
 /**
  * @brief Procedure checks if variable must be free(check: ptr != NULL)
@@ -29,7 +21,7 @@ char *dup_optarg_str()
     char *str = NULL;
     if (optarg != NULL)
     {
-        str = strndup(optarg, STR_SIZE);
+        str = strndup(optarg, MAX_INPUT_LENGTH);
         if (str == NULL)
         {
             print_error("");
@@ -101,10 +93,12 @@ void parse_options(int argc, char **argv)
         }
     }
 }
-
+void interactive_mode()
+{
+    return;
+}
 /**
  * @brief Binary main loop
- *
  * @return EXIT_SUCCESS if it exits successfully
  */
 int main(int argc, char **argv)

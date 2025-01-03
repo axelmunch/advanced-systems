@@ -1,7 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#define STR_SIZE 1024
+#define MAX_INPUT_LENGTH 1024
 #define BUFFER_SIZE 1024
 #define USAGE_SYNTAX "[COMMAND] [OPTIONS] "
 #define USAGE_PARAMS "OPTIONS:\n\
