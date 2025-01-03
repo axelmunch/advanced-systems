@@ -11,7 +11,7 @@ char *dup_optarg_str()
     char *str = NULL;
     if (optarg != NULL)
     {
-        str = strndup(optarg, MAX_INPUT_LENGTH);
+        str = strndup(optarg, MAX_INPUT);
         if (str == NULL)
         {
             print_error("");
@@ -46,12 +46,12 @@ void show_parameters(bool verbose_mode)
           "verbose", verbose_mode);
 }
 
-void check_requirements()
+void check_requirements() // for batch mode
 {
     return;
 }
 
-void parse_options(int argc, char **argv)
+void parse_options(int argc, char **argv) // for batch mode
 {
     int opt = -1;
     int opt_idx = -1;
@@ -72,9 +72,35 @@ void parse_options(int argc, char **argv)
     }
 }
 
+void print_prompt()
+{
+    char cwd[MAX_INPUT];
+    char *username = getenv("USER");
+
+    if (getcwd(cwd, sizeof(cwd)) != NULL)
+    {
+        print_generic(STDOUT_FILENO, "%s%s@%s%s:%s%s%s$ ", GREEN_COLOR, username, SHELL_NAME, RESET_COLOR, BLUE_COLOR, cwd, RESET_COLOR);
+    }
+    else
+    {
+        print_error("getcwd() error");
+        exit(EXIT_FAILURE);
+    }
+}
+
 void interactive_mode()
 {
-    return;
+    while (1)
+    {
+        print_prompt();
+        char input[MAX_INPUT];
+        if (fgets(input, sizeof(input), stdin) == NULL)
+        {
+            break;
+        }
+
+        parse_command(input);
+    }
 }
 
 void batch_mode(int argc, char **argv)
@@ -94,6 +120,14 @@ int main(int argc, char **argv)
     show_parameters(get_verbose_mode());
 
     // Business logic
+    if (argc == 1)
+    {
+        interactive_mode();
+    }
+    else
+    {
+        batch_mode(argc, argv);
+    }
 
     return EXIT_SUCCESS;
 }

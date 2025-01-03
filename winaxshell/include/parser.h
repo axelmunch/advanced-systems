@@ -6,8 +6,6 @@
 #include <string.h>
 #include "command.h"
 
-#define MAX_ARGS 64
-
 /**
  * @brief Parse the command line
  * @param input Command line inputs

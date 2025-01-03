@@ -24,14 +24,20 @@ void execute_external_command(char **args)
     }
 }
 
-void execute_builtin_command(char **args)
+void execute_command(char **args)
 {
-    if (strcmp(args[0], "exit") == 0)
+    if (args[0] == NULL)
     {
+        return;
+    }
+
+    if (strcmp(args[0], "exit") == 0) // implémenter la commande exit, à améliorer
+    {
+        print("Bye! Thanks for using WinAxShell!\n");
         exit(EXIT_SUCCESS);
     }
     else
     {
-        print_error("Command not found");
+        execute_external_command(args);
     }
 }

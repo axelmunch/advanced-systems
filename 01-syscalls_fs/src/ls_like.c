@@ -84,8 +84,7 @@ void file_info(const char *full_path, const char *file_name)
     // File name with color
     if (get_filetype(file_stat.st_mode) == 'd')
     {
-        // Blue
-        print_generic(STDOUT_FILENO, "\033[0;36m%s\033[0m\n", file_name);
+        print_generic(STDOUT_FILENO, "\033[1;34m%s\033[0m\n", file_name);
     }
     else
     {

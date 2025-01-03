@@ -16,11 +16,10 @@
 void execute_external_command(char **args);
 
 /**
- * @brief Execute a builtin command
+ * @brief Execute command with arguments
  * @param args Command arguments
  * @return void
  */
-void execute_builtin_command(char **args);
-
+void execute_command(char **args);
 
 #endif // COMMAND_H
