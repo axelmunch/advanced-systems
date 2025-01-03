@@ -14,5 +14,6 @@
 #define RED_COLOR "\033[0;31m"
 #define GREEN_COLOR "\033[1;32m"
 #define BLUE_COLOR "\033[1;34m"
+#define CMD_DELIMITER " \t\n"
 
 #endif // CONSTANTS_H
