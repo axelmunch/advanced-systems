@@ -1,5 +1,14 @@
 #include "main.h"
 
+/**
+ * @brief Binary options declaration (must end with {0,0,0,0})
+ */
+static struct option binary_opts[] = {
+    {"help", no_argument, 0, 'h'},
+    {"verbose", no_argument, 0, 'v'},
+    {"command", required_argument, 0, 'c'},
+    {0, 0, 0, 0}};
+
 void free_if_needed(void *to_free)
 {
     if (to_free != NULL)
@@ -20,15 +29,6 @@ char *dup_optarg_str()
     return str;
 }
 
-/**
- * @brief Binary options declaration (must end with {0,0,0,0})
- */
-static struct option binary_opts[] = {
-    {"help", no_argument, 0, 'h'},
-    {"verbose", no_argument, 0, 'v'},
-    {"command", required_argument, 0, 'c'},
-    {0, 0, 0, 0}};
-
 void show_help(char **argv)
 {
     print_generic(STDOUT_FILENO, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
@@ -41,12 +41,12 @@ void show_parameters(bool verbose_mode)
           "verbose", verbose_mode);
 }
 
-void check_requirements() // for batch mode
+void check_requirements(int argc, char **argv)
 {
     return;
 }
 
-void parse_options(int argc, char **argv) // for batch mode
+void parse_options(int argc, char **argv)
 {
     int opt = -1;
     int opt_idx = -1;
@@ -55,6 +55,9 @@ void parse_options(int argc, char **argv) // for batch mode
     {
         switch (opt)
         {
+        case 'c':
+            parse_command(optarg);
+            break;
         case 'v':
             set_verbose_mode(true);
             break;
@@ -109,7 +112,7 @@ int main(int argc, char **argv)
     parse_options(argc, argv);
 
     // Checking binary requirements
-    check_requirements();
+    check_requirements(argc, argv);
 
     // Printing params if verbose mode is enabled
     show_parameters(get_verbose_mode());
