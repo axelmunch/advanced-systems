@@ -26,13 +26,8 @@ char *dup_optarg_str()
 static struct option binary_opts[] = {
     {"help", no_argument, 0, 'h'},
     {"verbose", no_argument, 0, 'v'},
+    {"command", required_argument, 0, 'c'},
     {0, 0, 0, 0}};
-
-/**
- * @brief Binary options string (linked to option declaration)
- * @see man 3 getopt_long or getopt
- */
-const char *binary_optstr = "hv";
 
 void show_help(char **argv)
 {
@@ -56,7 +51,7 @@ void parse_options(int argc, char **argv) // for batch mode
     int opt = -1;
     int opt_idx = -1;
 
-    while ((opt = getopt_long(argc, argv, binary_optstr, binary_opts, &opt_idx)) != -1)
+    while ((opt = getopt_long(argc, argv, BINARY_OPTION_STR, binary_opts, &opt_idx)) != -1)
     {
         switch (opt)
         {

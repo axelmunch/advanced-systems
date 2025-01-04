@@ -1,28 +1,25 @@
 CC=gcc
 CFLAGS=-Wall -c
-LDFLAGS=-I ./include
-
+LDFLAGS=-I ./include -lpthread
 SRC_DIR=./src
 INC_DIR=./include
 BIN_DIR=./bin
 DOC_DIR=./doc
 GCOV_DIR=./gcov
-
 GCOVFLAGS=-O0 --coverage -lgcov -Wall -g
-
 LCOV_REPORT=report.info
-
 SRC=$(wildcard $(SRC_DIR)/*.c)
 OBJ=$(SRC:.c=.o)
 EXEC=03-thread_sort
-
 GEXEC=$(EXEC).cov
-
 AR_NAME=archive_$(EXEC).tar.gz
 
 all: $(SRC) $(EXEC)
 
-%.o:%.c
+$(BIN_DIR):
+	@mkdir -p $(BIN_DIR)
+
+%.o:%.c | $(BIN_DIR)
 	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
 $(EXEC): $(OBJ)
@@ -60,3 +57,4 @@ mrproper: clean
 	rm -rf $(GCOV_DIR)/*
 
 .PHONY: doc
+.PHONY: run

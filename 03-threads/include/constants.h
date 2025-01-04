@@ -12,5 +12,11 @@
   -v, --verbose : enable *verbose* mode\n\
   -h, --help    : display this help\n\
 "
+#define RESET_COLOR "\033[0m"
+/**
+ * @brief Binary options string (linked to optionn declaration)
+ * @see man 3 getopt_long or getopt
+ */
+#define BINARY_OPTION_STR "vht:"
 
 #endif // CONSTANTS_H
