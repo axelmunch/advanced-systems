@@ -9,7 +9,7 @@
 /**
  * @brief Parse the command line
  * @param input Command line inputs
- * @return char** Command arguments
+ * @return char** Command arguments as array
  */
 char** parse_command(char *input);
 

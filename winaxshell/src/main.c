@@ -100,6 +100,7 @@ void interactive_mode()
         if (command_arguments != NULL)
         {
             execute_command(command_arguments);
+            free(command_arguments);
         }
     }
 }
