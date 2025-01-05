@@ -7,7 +7,7 @@
 #include "constants.h"
 
 /**
- * @brief Parse the command line
+ * @brief Parse the command line to get the command arguments
  * @param input Command line inputs
  * @return char** Command arguments as array
  */
