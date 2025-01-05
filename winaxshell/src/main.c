@@ -76,7 +76,7 @@ void print_prompt()
 
     if (getcwd(cwd, sizeof(cwd)) != NULL)
     {
-        print_generic(STDOUT_FILENO, "%s%s@%s%s:%s%s%s$ ", GREEN_COLOR, username, SHELL_NAME, RESET_COLOR, BLUE_COLOR, cwd, RESET_COLOR);
+        print_generic(STDOUT_FILENO, GREEN_COLOR "%s@%s" RESET_COLOR ":" BLUE_COLOR "%s" RESET_COLOR "$ ", username, SHELL_NAME, cwd);
     }
     else
     {
