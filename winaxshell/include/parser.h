@@ -4,13 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "command.h"
+#include "constants.h"
 
 /**
  * @brief Parse the command line
  * @param input Command line inputs
- * @return void
+ * @return char** Command arguments
  */
-void parse_command(char *input);
+char** parse_command(char *input);
 
 #endif // PARSER_H

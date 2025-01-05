@@ -1,8 +1,8 @@
 #include "parser.h"
 
-void parse_command(char *input)
+char** parse_command(char *input)
 {
-    char *args[MAX_ARGS];
+    char **args = malloc(MAX_ARGS * sizeof(char *));
     char *token = strtok(input, CMD_DELIMITER);
     int arg_index = 0;
 
@@ -16,8 +16,9 @@ void parse_command(char *input)
 
     if (args[0] == NULL)
     {
-        return;
+        free(args);
+        return NULL;
     }
 
-    execute_command(args);
+    return args;
 }

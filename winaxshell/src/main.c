@@ -56,7 +56,6 @@ void parse_options(int argc, char **argv)
         switch (opt)
         {
         case 'c':
-            parse_command(optarg);
             break;
         case 'v':
             set_verbose_mode(true);
@@ -97,7 +96,11 @@ void interactive_mode()
             break;
         }
 
-        parse_command(input);
+        char** command_arguments = parse_command(input);
+        if (command_arguments != NULL)
+        {
+            execute_command(command_arguments);
+        }
     }
 }
 
