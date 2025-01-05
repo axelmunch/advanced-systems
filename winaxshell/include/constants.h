@@ -23,6 +23,7 @@
 
 /**
  * @brief Binary options string linked to the binary options declaration (getopt)
+ * @see man 3 getopt_long or getopt
  */
 #define BINARY_OPTION_STR "vhc:"
 

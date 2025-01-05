@@ -1,10 +1,29 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#define STR_SIZE 256
-#define BUFFER_SIZE 4096
+/**
+ * @brief Maximum string size
+ */
+#define STR_SIZE 1024
+
+/**
+ * @brief Maximum buffer size to read/write
+ */
+#define BUFFER_SIZE 1024
+
+/**
+ * @brief Maximum path length for tmp files
+ */
 #define MAX_PATH_LENGTH 4096
-#define USAGE_SYNTAX "[OPTIONS] [-f | -r <program_name> | -p | -v | -h]"
+
+/**
+ * @brief Usage syntax of the binary
+ */
+#define USAGE_SYNTAX "[COMMAND] [OPTIONS] [-f | -r <program_name> | -p | -v | -h]"
+
+/**
+ * @brief Usage options explanation of the binary
+ */
 #define USAGE_PARAMS "OPTIONS:\n\
   -f, --fork : fork yourself \n\
   -r, --redirect <program_name> : redirect a program\n\

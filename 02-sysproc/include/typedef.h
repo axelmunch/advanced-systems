@@ -1,6 +1,9 @@
 #ifndef TYPEDEF_H
 #define TYPEDEF_H
 
+/**
+ * @brief Command mode of the program
+ */
 typedef enum
 {
     FORK_MODE,

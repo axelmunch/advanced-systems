@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <limits.h>
-
 #include "constants.h"
 #include "print.h"
 #include "typedef.h"
