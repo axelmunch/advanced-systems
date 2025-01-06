@@ -2,7 +2,7 @@
 
 int exec_ps(char *arg, ...)
 {
-    return execlp("/bin/ps", "ps", arg, NULL);
+    return execlp("/bin/ps", "ps", arg, NULL); // Utilisation de execlp pour exécuter la commande ps car nous connaissons les arguments à passer à la phase de compilation
 }
 
 int exec_grep(char *arg, ...)
@@ -15,13 +15,6 @@ int exec_echo(char *arg, ...)
     return execlp("/bin/echo", "echo", arg, NULL);
 }
 
-/**
- * @brief Handle the ps command
- * @return void
- * @param pipe_fd[2] Pipe file descriptors
- *
- * This function will close the read end of the pipe, duplicate the write end of the pipe to the STDOUT and close the write end of the pipe.
- */
 void handle_ps(int pipe_fd[2])
 {
     close(pipe_fd[0]);
@@ -35,14 +28,6 @@ void handle_ps(int pipe_fd[2])
     }
 }
 
-
-/**
- * @brief Handle the grep command
- * @return void
- * @param pipe_fd[2] Pipe file descriptors
- *
- * This function will close the write end of the pipe, duplicate the read end of the pipe to the STDIN and close the read end of the pipe.
- */
 void handle_grep(int pipe_fd[2])
 {
     close(pipe_fd[1]);
@@ -66,14 +51,6 @@ void handle_grep(int pipe_fd[2])
     }
 }
 
-
-/**
- * @brief Handle the parent process
- * @return void
- * @param grep_pid PID of the grep process
- *
- * This function will wait for the grep process to finish and check if the exit status is 0. If it is, it will print "root est connecté", otherwise it will print "root n'est pas connecté".
- */
 void handle_parent(pid_t grep_pid)
 {
     int status;
@@ -89,12 +66,6 @@ void handle_parent(pid_t grep_pid)
     }
 }
 
-/**
- * @brief Pipe process
- * @return void
- *
- * This function will create a pipe, fork two processes, one for the ps command and one for the grep command. The parent process will wait for the grep process to finish and print the result.
- */
 void pipe_process()
 {
     int pipe_fd[2];

@@ -80,12 +80,14 @@ int check_requirements(command_mode mode, char *program_name)
 {
     if (mode == UNDEFINED_MODE)
     {
+        errno = EINVAL;
         print_error("[ERROR] No valid mode specified! See HELP [--help|-h].");
         return EXIT_FAILURE;
     }
 
     if (mode == REDIRECT_MODE && program_name == NULL)
     {
+        errno = EINVAL;
         print_error("[ERROR] Redirect mode requires an argument! See HELP [--help|-h]");
         return EXIT_FAILURE;
     }

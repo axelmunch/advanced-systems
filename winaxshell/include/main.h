@@ -8,8 +8,11 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <unistd.h>
+#include <pwd.h>
 #include "typedef.h"
 #include "print.h"
+#include "parser.h"
+#include "command.h"
 
 /**
  * @brief Procedure checks if variable must be free(check: ptr != NULL)
@@ -66,5 +69,11 @@ void interactive_mode();
  * @return void
  */
 void batch_mode(int argc, char **argv);
+
+/**
+ * @brief Print shell prompt
+ * @return void
+ */
+void print_prompt();
 
 #endif // MAIN_H

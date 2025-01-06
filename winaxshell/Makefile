@@ -22,10 +22,14 @@ AR_NAME=archive_$(EXEC).tar.gz
 
 all: $(SRC) $(EXEC)
 
-%.o:%.c
+$(BIN_DIR):
+	@mkdir -p $(BIN_DIR)
+
+%.o:%.c | $(BIN_DIR)
 	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
 $(EXEC): $(OBJ)
+	@mkdir -p bin
 	$(CC) -o $(BIN_DIR)/$@ -Wall $(LDFLAGS) $(OBJ)
 
 $(GEXEC):
@@ -47,6 +51,10 @@ gcov: $(GEXEC)
 package: gcov doc all
 	rm -rf $(AR_NAME)
 	tar cvfz $(AR_NAME) ./*
+
+run:
+	@echo "Running $(EXEC)"
+	@./$(BIN_DIR)/$(EXEC)
 
 clean:
 	rm -rf $(OBJ)

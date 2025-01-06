@@ -9,12 +9,10 @@
 #include "thread_sort.h"
 
 /**
- * Procedure checks if variable must be free
- * (check: ptr != NULL)
- *
- * \param void* to_free pointer to an allocated mem
- * \see man 3 free
- * \return void
+ * @brief Procedure checks if variable must be free (check: ptr != NULL)
+ * @param void* to_free pointer to an allocated mem
+ * @see man 3 free
+ * @return void
  */
 void free_if_needed(void *to_free)
 {
@@ -23,7 +21,8 @@ void free_if_needed(void *to_free)
 }
 
 /**
- * Duplicate the option argument string (optarg)
+ * @brief Duplicate the option argument string (optarg)
+ * @return char* duplicated string
  */
 char *dup_optarg_str()
 {
@@ -40,8 +39,7 @@ char *dup_optarg_str()
 }
 
 /**
- * Binary options declaration
- * (must end with {0,0,0,0})
+ * @brief Binary options declaration (must end with {0,0,0,0})
  */
 static struct option binary_opts[] = {
     {"help", no_argument, 0, 'h'},
@@ -50,15 +48,9 @@ static struct option binary_opts[] = {
     {0, 0, 0, 0}};
 
 /**
- * Binary options string
- * (linked to optionn declaration)
- *
- * see man 3 getopt_long or getopt
- */
-const char *binary_optstr = "hvt:";
-
-/**
- * Print help and exit
+ * @brief Print help and exit
+ * @param char** argv Arguments
+ * @return void
  */
 void show_help(char **argv)
 {
@@ -67,7 +59,9 @@ void show_help(char **argv)
 }
 
 /**
- * Function to show the binary parameters
+ * @brief Show the binary parameters in verbose mode
+ * @param bool verbose_mode Verbose mode
+ * @return void
  */
 void show_parameters(bool verbose_mode)
 {
@@ -76,26 +70,31 @@ void show_parameters(bool verbose_mode)
 }
 
 /**
- * Checking binary requirements
+ * @brief Checking binary requirements
+ * @param int* num_threads Number of threads
+ * @return void
  */
 void check_requirements(int *num_threads)
 {
     if (*num_threads <= 0)
     {
-        print_generic(STDERR_FILENO, "Bad usage! See HELP [--help|-h]\n");
+        print_generic(STDERR_FILENO, "[ERROR] Bad usage! See HELP [--help|-h]\n");
         exit(EXIT_FAILURE);
     }
 }
 
 /**
- * Parse binary options
+ * @brief Parse binary options
+ * @param int argc Number of arguments
+ * @param char** argv Arguments
+ * @return void
  */
 void parse_options(int argc, char **argv)
 {
     int opt = -1;
     int opt_idx = -1;
 
-    while ((opt = getopt_long(argc, argv, binary_optstr, binary_opts, &opt_idx)) != -1)
+    while ((opt = getopt_long(argc, argv, BINARY_OPTION_STR, binary_opts, &opt_idx)) != -1)
     {
         switch (opt)
         {
@@ -116,7 +115,6 @@ void parse_options(int argc, char **argv)
 
 /**
  * @brief Binary main loop
- *
  * @return EXIT_SUCCESS if it exits successfully
  */
 int main(int argc, char **argv)
