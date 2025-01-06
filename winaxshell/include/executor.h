@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 #include "print.h"
 #include "typedef.h"
+#include "parser.h"
 
 int execute_single_command(char **args);
 int execute_pipe_command(command_node_t *left, command_node_t *right);

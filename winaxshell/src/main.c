@@ -87,7 +87,45 @@ void print_prompt()
 
 void interactive_mode()
 {
-    
+    char input[MAX_INPUT];
+
+    while (1)
+    {
+        print_prompt();
+        if (fgets(input, sizeof(input), stdin) == NULL)
+        {
+            print_generic(STDOUT_FILENO, "\n");
+            break;
+        }
+
+        size_t input_len = strlen(input);
+        if (input_len > 0 && input[input_len - 1] == '\n')
+        {
+            input[input_len - 1] = '\0';
+        }
+
+        if (strlen(input) == 0)
+        {
+            continue;
+        }
+
+        command_tree_t *cmd_tree = parse_command(input);
+        if (cmd_tree == NULL)
+        {
+            print_error("[ERROR] Failed to parse command");
+            continue;
+        }
+
+        int status = execute_command_tree(cmd_tree->root);
+
+        free_command_tree(cmd_tree->root);
+        free(cmd_tree);
+
+        if (get_verbose_mode())
+        {
+            print("Command completed with status: %d\n", status);
+        }
+    }
 }
 
 void batch_mode(int argc, char **argv)
