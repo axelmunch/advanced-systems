@@ -7,19 +7,11 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "print.h"
+#include "typedef.h"
 
-/**
- * @brief Execute an external command
- * @param args Command arguments
- * @return void
- */
-void execute_external_command(char **args);
-
-/**
- * @brief Execute command with arguments
- * @param args Command arguments
- * @return void
- */
-void execute_command(char **args);
+int execute_single_command(char **args);
+int execute_pipe_command(command_node_t *left, command_node_t *right);
+int execute_command_tree(command_node_t *node);
+void execute_command(char** args);
 
 #endif // COMMAND_H

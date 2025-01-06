@@ -18,5 +18,9 @@ typedef struct command_node_t
     struct command_node_t *right; // Right child (next command)
 } command_node_t;
 
+typedef struct
+{
+    command_node_t *root; // Root node of the command tree
+} command_tree_t;
 
 #endif // TYPEDEF_H
