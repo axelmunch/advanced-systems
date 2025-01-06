@@ -86,7 +86,7 @@ command_tree_t *parse_command(const char *input)
         }
         else
         {
-            current->args[arg_index] = strdup(token);
+            current->args[arg_index++] = strdup(token);
             if (arg_index >= MAX_ARGS - 1)
             {
                 current->args[arg_index] = NULL;

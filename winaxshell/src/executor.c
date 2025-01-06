@@ -97,26 +97,26 @@ int execute_command_tree(command_node_t *node)
 
     switch (node->op_type)
     {
-        case OP_PIPE:
-            status = execute_pipe_command(node->left, node->right);
-            break;
-        case OP_SEQ:
-            execute_single_command(node->args);
+    case OP_PIPE:
+        status = execute_pipe_command(node->left, node->right);
+        break;
+    case OP_SEQ:
+        execute_single_command(node->args);
+        status = execute_command_tree(node->right);
+        break;
+    case OP_AND:
+        status = execute_single_command(node->args);
+        if (status == EXIT_SUCCESS)
             status = execute_command_tree(node->right);
-            break;
-        case OP_AND:
-            status = execute_single_command(node->args);
-            if (status == EXIT_SUCCESS)
-                status = execute_command_tree(node->right);
-            break;
-        case OP_OR:
-            status = execute_single_command(node->args);
-            if (status != EXIT_SUCCESS)
-                status = execute_command_tree(node->right);
-            break;
-        case OP_NONE:
-            status = execute_single_command(node->args);
-            break;
+        break;
+    case OP_OR:
+        status = execute_single_command(node->args);
+        if (status != EXIT_SUCCESS)
+            status = execute_command_tree(node->right);
+        break;
+    case OP_NONE:
+        status = execute_single_command(node->args);
+        break;
     }
     return status;
 }
@@ -127,7 +127,8 @@ void execute_command(char **args)
         return;
 
     command_tree_t *tree = parse_command(args[0]);
-    if (tree != NULL) {
+    if (tree != NULL)
+    {
         execute_command_tree(tree->root);
         free_command_tree(tree->root);
         free(tree);
