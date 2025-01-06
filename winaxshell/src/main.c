@@ -126,10 +126,6 @@ int main(int argc, char **argv)
     {
         interactive_mode();
     }
-    else
-    {
-        batch_mode(argc, argv);
-    }
 
     return EXIT_SUCCESS;
 }

@@ -33,7 +33,7 @@ void execute_command(char **args)
 
     if (strcmp(args[0], "exit") == 0) // implémenter la commande exit, à améliorer
     {
-        print("Bye! Thanks for using WinAxShell!\n");
+        print_generic(STDOUT_FILENO, GREEN_COLOR "Bye! Thanks for using WinAxShell!\n" RESET_COLOR);
         exit(EXIT_SUCCESS);
     }
     else
