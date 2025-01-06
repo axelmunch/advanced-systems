@@ -4,13 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "typedef.h"
 #include "constants.h"
 
-/**
- * @brief Parse the command line to get the command arguments
- * @param input Command line inputs
- * @return char** Command arguments as array
- */
-char** parse_command(char *input);
+command_node_t *create_command_node();
 
 #endif // PARSER_H

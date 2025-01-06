@@ -87,22 +87,7 @@ void print_prompt()
 
 void interactive_mode()
 {
-    while (1)
-    {
-        print_prompt();
-        char input[MAX_INPUT];
-        if (fgets(input, sizeof(input), stdin) == NULL)
-        {
-            break;
-        }
-
-        char** command_arguments = parse_command(input);
-        if (command_arguments != NULL)
-        {
-            execute_command(command_arguments);
-            free(command_arguments);
-        }
-    }
+    
 }
 
 void batch_mode(int argc, char **argv)

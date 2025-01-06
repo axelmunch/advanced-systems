@@ -1,24 +1,22 @@
 #include "parser.h"
 
-char** parse_command(char *input)
+command_node_t *create_command_node()
 {
-    char **args = malloc(MAX_ARGS * sizeof(char *));
-    char *token = strtok(input, CMD_DELIMITER);
-    int arg_index = 0;
-
-    while (token != NULL && arg_index < MAX_ARGS - 1)
+    command_node_t* node = malloc(sizeof(command_node_t));
+    if (node == NULL)
     {
-        args[arg_index] = token;
-        token = strtok(NULL, CMD_DELIMITER);
-        arg_index++;
+        return NULL;
     }
-    args[arg_index] = NULL;
-
-    if (args[0] == NULL)
+    node->args = malloc(MAX_ARGS * sizeof(char*));
+    if (node->args == NULL)
     {
-        free(args);
+        free(node);
         return NULL;
     }
 
-    return args;
+    node->op_type = OP_NONE;
+    node->left = NULL;
+    node->right = NULL;
+
+    return node;
 }
