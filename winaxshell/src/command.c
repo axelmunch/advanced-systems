@@ -6,14 +6,14 @@ void execute_external_command(char **args)
 
     if (pid < 0)
     {
-        print_error("fork failed");
+        print_error("[ERROR] fork failed");
         exit(EXIT_FAILURE);
     }
     else if (pid == 0)
     {
         if (execvp(args[0], args) == -1)
         {
-            print_error("Command execution failed");
+            print_error("[ERROR] command execution failed");
         }
         exit(EXIT_FAILURE);
     }

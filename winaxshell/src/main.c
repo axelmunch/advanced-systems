@@ -107,6 +107,8 @@ void interactive_mode()
 
 void batch_mode(int argc, char **argv)
 {
+    errno = ENOSYS;
+    print_error("[ERROR] batch mode not implemented yet");
     return;
 }
 
@@ -120,6 +122,10 @@ int main(int argc, char **argv)
     if (argc == 1)
     {
         interactive_mode();
+    }
+    else
+    {
+        batch_mode(argc, argv);
     }
 
     return EXIT_SUCCESS;
