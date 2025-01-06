@@ -76,7 +76,7 @@ void print_prompt()
 
     if (getcwd(cwd, sizeof(cwd)) != NULL)
     {
-        print_generic(STDOUT_FILENO, GREEN_COLOR "%s@%s" RESET_COLOR ":" BLUE_COLOR "%s" RESET_COLOR "$ ", username, SHELL_NAME, cwd);
+        print_generic(STDOUT_FILENO, GREEN_COLOR "%s@%s" RESET_COLOR ":" BLUE_COLOR "%s\n" RESET_COLOR "$ ", username, SHELL_NAME, cwd);
     }
     else
     {
@@ -112,13 +112,8 @@ void batch_mode(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-    // Parsing binary options
     parse_options(argc, argv);
-
-    // Checking binary requirements
     check_requirements(argc, argv);
-
-    // Printing params if verbose mode is enabled
     show_parameters(get_verbose_mode());
 
     // Business logic
