@@ -109,19 +109,17 @@ void interactive_mode()
             continue;
         }
 
-        // Parse command into a tree
-        command_tree_t *cmd_tree = parse_command(input);
-        if (cmd_tree == NULL)
+        command_tree_t *command_tree = parse_command(input);
+        if (command_tree == NULL)
         {
             print_error("[ERROR] Failed to parse command");
             continue;
         }
 
-        // Execute the command
-        execute_command_tree(cmd_tree->root);
+        execute_command_tree(command_tree->root);
 
-        free_command_tree(cmd_tree->root);
-        free(cmd_tree);
+        free_command_tree(command_tree->root);
+        free(command_tree);
     }
 }
 
