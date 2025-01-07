@@ -68,11 +68,11 @@ void free_command_tree(command_node_t *node)
 command_tree_t *parse_command(char *input)
 {
     command_tree_t *tree = malloc(sizeof(command_tree_t));
-    if (!tree)
+    if (tree == NULL)
         return NULL;
 
     char *token = strtok(input, CMD_DELIMITER);
-    if (!token)
+    if (token == NULL)
     {
         free(tree);
         return NULL;

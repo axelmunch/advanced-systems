@@ -33,7 +33,7 @@ int execute_single_command(char **args)
 
 int execute_pipe_command(command_node_t *left, command_node_t *right)
 {
-    if (!left || !right)
+    if (left == NULL || right == NULL)
         return EXIT_FAILURE;
 
     int pipefd[2];
@@ -61,14 +61,17 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
             exit(EXIT_FAILURE);
         }
         close(pipefd[1]);
+
+        int status;
         if (left->op_type == OP_PIPE)
         {
-            exit(execute_pipe_command(left->left, left->right));
+            status = execute_pipe_command(left->left, left->right);
         }
         else
         {
-            exit(execute_single_command(left->args));
+            status = execute_single_command(left->args);
         }
+        exit(status);
     }
 
     pid_t right_pid = fork();
@@ -89,14 +92,17 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
             exit(EXIT_FAILURE);
         }
         close(pipefd[0]);
+
+        int status;
         if (right->op_type == OP_PIPE)
         {
-            exit(execute_pipe_command(right->left, right->right));
+            status = execute_pipe_command(right->left, right->right);
         }
         else
         {
-            exit(execute_single_command(right->args));
+            status = execute_single_command(right->args);
         }
+        exit(status);
     }
 
     close(pipefd[0]);
