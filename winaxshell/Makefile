@@ -29,7 +29,6 @@ $(BIN_DIR):
 	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
 $(EXEC): $(OBJ)
-	@mkdir -p bin
 	$(CC) -o $(BIN_DIR)/$@ -Wall $(LDFLAGS) $(OBJ)
 
 $(GEXEC):
@@ -39,13 +38,13 @@ doc:
 	doxygen $(DOC_DIR)/doxygen.conf
 
 gcov: $(GEXEC)
-	$(GCOV_DIR)/$(GEXEC) -h
+	$(GCOV_DIR)/$(GEXEC)
 
-	find ./ -maxdepth 1 -name *.gcno -exec mv {} $(GCOV_DIR) \;
-	find ./ -maxdepth 1 -name *.gcda -exec mv {} $(GCOV_DIR) \;
+	find $(SRC_DIR) -name '*.gcno' -exec mv {} $(GCOV_DIR) \;
+	find $(SRC_DIR) -name '*.gcda' -exec mv {} $(GCOV_DIR) \;
 
-	gcov -o $(GCOV_DIR) $(GEXEC)
-	lcov -o $(GCOV_DIR)/$(LCOV_REPORT) -c -f -d $(GCOV_DIR)
+	gcov -o $(GCOV_DIR) $(SRC_DIR)/*.c
+	lcov -o $(GCOV_DIR)/$(LCOV_REPORT) -c -d $(GCOV_DIR)
 	genhtml -o $(GCOV_DIR)/report $(GCOV_DIR)/$(LCOV_REPORT)
 
 package: gcov doc all
