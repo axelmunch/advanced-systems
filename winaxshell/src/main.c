@@ -109,6 +109,7 @@ void interactive_mode()
             continue;
         }
 
+        // Parse command into a tree
         command_tree_t *cmd_tree = parse_command(input);
         if (cmd_tree == NULL)
         {
@@ -116,15 +117,11 @@ void interactive_mode()
             continue;
         }
 
-        int status = execute_command_tree(cmd_tree->root);
+        // Execute the command
+        execute_command_tree(cmd_tree->root);
 
         free_command_tree(cmd_tree->root);
         free(cmd_tree);
-
-        if (get_verbose_mode())
-        {
-            print("Command completed with status: %d\n", status);
-        }
     }
 }
 

@@ -7,11 +7,17 @@ command_node_t *create_command_node()
     {
         return NULL;
     }
+
     node->args = malloc(MAX_ARGS * sizeof(char *));
     if (node->args == NULL)
     {
         free(node);
         return NULL;
+    }
+
+    for (int i = 0; i < MAX_ARGS; i++)
+    {
+        node->args[i] = NULL;
     }
 
     node->op_type = OP_NONE;
@@ -46,17 +52,24 @@ void free_command_tree(command_node_t *node)
     free_command_tree(node->left);
     free_command_tree(node->right);
 
-    free(node->args);
+    if (node->args)
+    {
+        for (int i = 0; node->args[i] != NULL; i++)
+        {
+            free(node->args[i]);
+        }
+        free(node->args);
+    }
     free(node);
 }
 
-command_tree_t *parse_command(const char *input)
+command_tree_t *parse_command(char *input)
 {
     command_tree_t *tree = malloc(sizeof(command_tree_t));
     if (!tree)
         return NULL;
 
-    char *token = strtok(strdup(input), CMD_DELIMITER);
+    char *token = strtok(input, CMD_DELIMITER);
     if (!token)
     {
         free(tree);
@@ -72,21 +85,18 @@ command_tree_t *parse_command(const char *input)
         operator_t op = get_operator_type(token);
         if (op != OP_NONE)
         {
-            // Create new node that will become the root
             command_node_t *new_node = create_command_node();
-            if (!new_node)
+            if (new_node == NULL)
             {
                 free_command_tree(tree->root);
                 free(tree);
                 return NULL;
             }
 
-            // Set up pipe structure
             new_node->left = tree->root;
             new_node->op_type = op;
             new_node->right = create_command_node();
 
-            // Update tree and current pointers
             tree->root = new_node;
             current = new_node->right;
             arg_index = 0;
