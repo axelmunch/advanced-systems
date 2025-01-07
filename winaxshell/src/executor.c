@@ -33,49 +33,70 @@ int execute_single_command(char **args)
 
 int execute_pipe_command(command_node_t *left, command_node_t *right)
 {
-    if (left == NULL || right == NULL)
+    if (!left || !right)
         return EXIT_FAILURE;
 
     int pipefd[2];
-    pid_t left_pid, right_pid;
     if (pipe(pipefd) == -1)
     {
         print_error("[ERROR] pipe() failed");
         return EXIT_FAILURE;
     }
 
-    left_pid = fork();
+    pid_t left_pid = fork();
     if (left_pid < 0)
     {
+        close(pipefd[0]);
+        close(pipefd[1]);
         print_error("[ERROR] fork() failed");
         return EXIT_FAILURE;
     }
 
-    if (left_pid == 0) // first child to execute left command redirect to output pipe
+    if (left_pid == 0)
     {
         close(pipefd[0]);
-        dup2(pipefd[1], STDOUT_FILENO);
+        if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+        {
+            print_error("[ERROR] dup2() failed");
+            exit(EXIT_FAILURE);
+        }
         close(pipefd[1]);
-
-        execute_single_command(left->args);
-        exit(EXIT_FAILURE);
+        if (left->op_type == OP_PIPE)
+        {
+            exit(execute_pipe_command(left->left, left->right));
+        }
+        else
+        {
+            exit(execute_single_command(left->args));
+        }
     }
 
-    right_pid = fork();
+    pid_t right_pid = fork();
     if (right_pid < 0)
     {
+        close(pipefd[0]);
+        close(pipefd[1]);
         print_error("[ERROR] fork() failed");
         return EXIT_FAILURE;
     }
 
-    if (right_pid == 0) // second child to execute right command redirect to input pipe
+    if (right_pid == 0)
     {
         close(pipefd[1]);
-        dup2(pipefd[0], STDIN_FILENO);
+        if (dup2(pipefd[0], STDIN_FILENO) == -1)
+        {
+            print_error("[ERROR] dup2() failed");
+            exit(EXIT_FAILURE);
+        }
         close(pipefd[0]);
-
-        execute_single_command(right->args);
-        exit(EXIT_FAILURE);
+        if (right->op_type == OP_PIPE)
+        {
+            exit(execute_pipe_command(right->left, right->right));
+        }
+        else
+        {
+            exit(execute_single_command(right->args));
+        }
     }
 
     close(pipefd[0]);
@@ -85,7 +106,7 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
     waitpid(left_pid, &left_status, 0);
     waitpid(right_pid, &right_status, 0);
 
-    return WIFEXITED(right_status) ? WIFEXITED(right_status) : EXIT_FAILURE; // return the status of the right command
+    return WIFEXITED(right_status) ? WEXITSTATUS(right_status) : EXIT_FAILURE;
 }
 
 int execute_command_tree(command_node_t *node)

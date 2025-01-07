@@ -53,11 +53,11 @@ void free_command_tree(command_node_t *node)
 command_tree_t *parse_command(const char *input)
 {
     command_tree_t *tree = malloc(sizeof(command_tree_t));
-    if (tree == NULL)
+    if (!tree)
         return NULL;
 
     char *token = strtok(strdup(input), CMD_DELIMITER);
-    if (token == NULL)
+    if (!token)
     {
         free(tree);
         return NULL;
@@ -65,38 +65,43 @@ command_tree_t *parse_command(const char *input)
 
     command_node_t *current = create_command_node();
     tree->root = current;
-
     int arg_index = 0;
 
     while (token != NULL)
     {
         operator_t op = get_operator_type(token);
-        if (op != OP_NONE) // operator found
+        if (op != OP_NONE)
         {
-            current->op_type = op;
-            current->right = create_command_node();
-            if (current->right == NULL)
+            // Create new node that will become the root
+            command_node_t *new_node = create_command_node();
+            if (!new_node)
             {
                 free_command_tree(tree->root);
                 free(tree);
                 return NULL;
             }
-            current = current->right;
+
+            // Set up pipe structure
+            new_node->left = tree->root;
+            new_node->op_type = op;
+            new_node->right = create_command_node();
+
+            // Update tree and current pointers
+            tree->root = new_node;
+            current = new_node->right;
             arg_index = 0;
         }
         else
         {
-            current->args[arg_index] = strdup(token);
+            current->args[arg_index++] = strdup(token);
             if (arg_index >= MAX_ARGS - 1)
             {
-                current->args[arg_index] = NULL;
+                current->args[MAX_ARGS - 1] = NULL;
                 break;
             }
-            arg_index++;
         }
         token = strtok(NULL, CMD_DELIMITER);
     }
-
     current->args[arg_index] = NULL;
     return tree;
 }
