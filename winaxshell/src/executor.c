@@ -136,6 +136,9 @@ int execute_command_tree(command_node_t *node)
         if (status != EXIT_SUCCESS)
             status = execute_command_tree(node->right);
         break;
+    case OP_BG:
+        status = execute_command_tree(node->left);
+        break;
     case OP_NONE:
         status = execute_single_command(node->args);
         break;

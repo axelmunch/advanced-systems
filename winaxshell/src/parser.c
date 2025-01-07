@@ -40,6 +40,8 @@ operator_t get_operator_type(const char *operator_str)
         return OP_AND;
     else if (strcmp(operator_str, "||") == 0)
         return OP_OR;
+    else if (strcmp(operator_str, "&") == 0)
+        return OP_BG;
     else
         return OP_NONE;
 }

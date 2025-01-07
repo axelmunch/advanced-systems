@@ -7,7 +7,8 @@ typedef enum
     OP_PIPE, // |
     OP_SEQ,  // ;
     OP_AND,  // &&
-    OP_OR    // ||
+    OP_OR,   // ||
+    OP_BG    // &
 } operator_t;
 
 typedef struct command_node_t
