@@ -31,14 +31,10 @@ void interactive_mode()
 
         size_t input_len = strlen(input);
         if (input_len > 0 && input[input_len - 1] == '\n')
-        {
             input[input_len - 1] = '\0';
-        }
 
         if (strlen(input) == 0)
-        {
             continue;
-        }
 
         command_tree_t *command_tree = parse_command(input);
         if (command_tree == NULL)
