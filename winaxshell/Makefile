@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -c
+CFLAGS=-Wall -c -g
 LDFLAGS=-I ./include
 
 SRC_DIR=./src

@@ -87,21 +87,39 @@ void print_prompt()
 
 void interactive_mode()
 {
+    char input[MAX_INPUT];
+
     while (1)
     {
         print_prompt();
-        char input[MAX_INPUT];
         if (fgets(input, sizeof(input), stdin) == NULL)
         {
+            print_generic(STDOUT_FILENO, "\n");
             break;
         }
 
-        char** command_arguments = parse_command(input);
-        if (command_arguments != NULL)
+        size_t input_len = strlen(input);
+        if (input_len > 0 && input[input_len - 1] == '\n')
         {
-            execute_command(command_arguments);
-            free(command_arguments);
+            input[input_len - 1] = '\0';
         }
+
+        if (strlen(input) == 0)
+        {
+            continue;
+        }
+
+        command_tree_t *command_tree = parse_command(input);
+        if (command_tree == NULL)
+        {
+            print_error("[ERROR] Failed to parse command");
+            continue;
+        }
+
+        execute_command_tree(command_tree->root);
+
+        free_command_tree(command_tree->root);
+        free(command_tree);
     }
 }
 

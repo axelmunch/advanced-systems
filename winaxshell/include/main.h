@@ -12,7 +12,7 @@
 #include "typedef.h"
 #include "print.h"
 #include "parser.h"
-#include "command.h"
+#include "executor.h"
 
 /**
  * @brief Procedure checks if variable must be free(check: ptr != NULL)
