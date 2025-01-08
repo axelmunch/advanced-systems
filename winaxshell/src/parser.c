@@ -29,17 +29,23 @@ command_node_t *create_command_node()
     return node;
 }
 
-command_tree_t *parse_command(char *input)
+static command_tree_t *allocate_command_tree()
 {
-    if (input == NULL)
-        return NULL;
-
     command_tree_t *tree = malloc(sizeof(command_tree_t));
     if (tree == NULL)
     {
         print_error("[ERROR] Failed to allocate memory for command tree");
         return NULL;
     }
+    return tree;
+}
+
+command_tree_t *parse_command(char *input)
+{
+    if (input == NULL)
+        return NULL;
+
+    command_tree_t *tree = allocate_command_tree();
 
     char *input_copy = strdup(input);
     if (input_copy == NULL)
@@ -164,3 +170,4 @@ void free_command_tree(command_node_t *node)
     free_command_tree(node->right);
     free_if_needed(node);
 }
+
