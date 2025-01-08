@@ -16,7 +16,7 @@ void print_prompt()
     }
 }
 
-void interactive_mode() // TODO: refactor
+int interactive_mode(void) // TODO: refactor
 {
     char input[MAX_INPUT];
     command_tree_t *command_tree = NULL;
@@ -42,6 +42,7 @@ void interactive_mode() // TODO: refactor
             print_generic(STDOUT_FILENO, GREEN_COLOR "Bye! Thanks for using WinAxShell!\n" RESET_COLOR);
             break;
         }
+
         execute_command(input, command_tree);
     }
 
@@ -50,13 +51,15 @@ void interactive_mode() // TODO: refactor
         free_command_tree(command_tree->root);
         free(command_tree);
     }
+
+    return EXIT_SUCCESS;
 }
 
-void batch_mode(int argc, char **argv)
+int batch_mode(int argc, char **argv)
 {
     errno = ENOSYS;
     print_error("[ERROR] batch mode not implemented yet");
-    return;
+    return EXIT_FAILURE;
 }
 
 int main(int argc, char **argv)

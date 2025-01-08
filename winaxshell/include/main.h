@@ -10,17 +10,17 @@
 
 /**
  * @brief Interactive shell mode code execution
- * @return void
+ * @return int Exit status
  */
-void interactive_mode();
+int interactive_mode();
 
 /**
  * @brief Batch mode shell execution
  * @param int argc
  * @param char** argv
- * @return void
+ * @return int Exit status
  */
-void batch_mode(int argc, char **argv);
+int batch_mode(int argc, char **argv);
 
 /**
  * @brief Print shell prompt
