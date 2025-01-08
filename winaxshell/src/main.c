@@ -37,21 +37,16 @@ void interactive_mode() // TODO: refactor
         if (strlen(input) == 0)
             continue;
 
+        if (strcmp(input, "exit") == 0) // exit command, to improve
+        {
+            print_generic(STDOUT_FILENO, GREEN_COLOR "Bye! Thanks for using WinAxShell!\n" RESET_COLOR);
+            break;
+        }
         command_tree = parse_command(input);
         if (command_tree == NULL)
         {
             print_error("[ERROR] Failed to parse command");
             continue;
-        }
-
-        if (command_tree->root && command_tree->root->args && 
-            command_tree->root->args[0] && 
-            strcmp(command_tree->root->args[0], "exit") == 0) // exit command, to improve
-        {
-            free_command_tree(command_tree->root);
-            free(command_tree);
-            print_generic(STDOUT_FILENO, GREEN_COLOR "Bye! Thanks for using WinAxShell!\n" RESET_COLOR);
-            exit(EXIT_SUCCESS);
         }
 
         execute_command_tree(command_tree->root);
