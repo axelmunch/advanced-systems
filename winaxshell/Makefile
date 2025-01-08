@@ -55,6 +55,10 @@ run:
 	@echo "Running $(EXEC)"
 	@./$(BIN_DIR)/$(EXEC)
 
+memcheck:
+	@echo "Running $(EXEC) with valgrind"
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(EXEC)
+
 clean:
 	rm -rf $(OBJ)
 	rm -f /tmp/proc-exercise*
