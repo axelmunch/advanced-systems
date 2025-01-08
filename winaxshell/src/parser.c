@@ -3,15 +3,11 @@
 command_node_t *create_command_node()
 {
     command_node_t *node = malloc(sizeof(command_node_t));
-    if (node == NULL)
-    {
-        return NULL;
-    }
-
     node->args = malloc(MAX_ARGS * sizeof(char *));
-    if (node->args == NULL)
+
+    if (node == NULL || node->args == NULL)
     {
-        free(node);
+        free_if_needed(node);
         return NULL;
     }
 
@@ -19,7 +15,6 @@ command_node_t *create_command_node()
     {
         node->args[i] = NULL;
     }
-
     node->op_type = OP_NONE;
     node->left = NULL;
     node->right = NULL;
@@ -54,15 +49,16 @@ void free_command_tree(command_node_t *node)
     free_command_tree(node->left);
     free_command_tree(node->right);
 
-    if (node->args)
+    if (node->args != NULL)
     {
-        for (int i = 0; node->args[i] != NULL; i++)
+        for (int i = 0; i < MAX_ARGS; i++)
         {
-            free(node->args[i]);
+            free_if_needed(node->args[i]);
         }
-        free(node->args);
+        free_if_needed(node->args);
     }
-    free(node);
+
+    free_if_needed(node);
 }
 
 command_tree_t *parse_command(char *input)
@@ -74,7 +70,7 @@ command_tree_t *parse_command(char *input)
     char *token = strtok(input, CMD_DELIMITER);
     if (token == NULL)
     {
-        free(tree);
+        free_if_needed(tree);
         return NULL;
     }
 
@@ -91,7 +87,7 @@ command_tree_t *parse_command(char *input)
             if (new_node == NULL)
             {
                 free_command_tree(tree->root);
-                free(tree);
+                free_if_needed(tree);
                 return NULL;
             }
 
@@ -115,5 +111,6 @@ command_tree_t *parse_command(char *input)
         token = strtok(NULL, CMD_DELIMITER);
     }
     current->args[arg_index] = NULL;
+    free_if_needed(current->args[arg_index]);
     return tree;
 }

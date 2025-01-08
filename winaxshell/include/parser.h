@@ -6,6 +6,7 @@
 #include <string.h>
 #include "typedef.h"
 #include "constants.h"
+#include "utils.h"
 
 /**
  * @brief Create a new command node

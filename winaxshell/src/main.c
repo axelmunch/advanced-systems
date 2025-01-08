@@ -46,7 +46,7 @@ void interactive_mode()
         execute_command_tree(command_tree->root);
 
         free_command_tree(command_tree->root);
-        free(command_tree);
+        free_if_needed(command_tree);
     }
 }
 
