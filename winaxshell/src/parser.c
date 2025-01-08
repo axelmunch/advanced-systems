@@ -5,11 +5,15 @@ command_node_t *create_command_node()
     command_node_t *node = malloc(sizeof(command_node_t));
 
     if (node == NULL)
+    {
+        print_error("[ERROR] Failed to allocate memory for command node");
         return NULL;
+    }
 
     node->args = malloc(MAX_ARGS * sizeof(char *));
     if (node->args == NULL)
     {
+        print_error("[ERROR] Failed to allocate memory for command node arguments");
         free_if_needed(node);
         return NULL;
     }
@@ -31,12 +35,15 @@ command_tree_t *parse_command(char *input)
         return NULL;
 
     command_tree_t *tree = malloc(sizeof(command_tree_t));
-    if (tree == NULL)
+    if (tree == NULL) {
+        print_error("[ERROR] Failed to allocate memory for command tree");
         return NULL;
-
+    }
+    
     char *input_copy = strdup(input);
     if (input_copy == NULL)
     {
+        print_error("[ERROR] Failed to duplicate input string");
         free_if_needed(tree);
         return NULL;
     }
@@ -44,6 +51,7 @@ command_tree_t *parse_command(char *input)
     char *token = strtok(input_copy, CMD_DELIMITER);
     if (token == NULL)
     {
+        print_error("[ERROR] Failed to tokenize input string");
         free_if_needed(tree);
         return NULL;
     }
@@ -51,6 +59,7 @@ command_tree_t *parse_command(char *input)
     command_node_t *current = create_command_node();
     if (current == NULL)
     {
+        print_error("[ERROR] Failed to create main command node");
         free_if_needed(input_copy);
         free_if_needed(tree);
         return NULL;
@@ -67,6 +76,7 @@ command_tree_t *parse_command(char *input)
             command_node_t *new_node = create_command_node();
             if (new_node == NULL)
             {
+                print_error("[ERROR] Failed to create new command node");
                 free_command_tree(tree->root);
                 free_if_needed(tree);
                 free_if_needed(input_copy);
@@ -78,6 +88,7 @@ command_tree_t *parse_command(char *input)
             new_node->right = create_command_node();
             if (new_node->right == NULL)
             {
+                print_error("[ERROR] Failed to create right command node for operator");
                 free_command_tree(new_node);
                 free_command_tree(tree->root);
                 free_if_needed(tree);
@@ -99,6 +110,7 @@ command_tree_t *parse_command(char *input)
             current->args[arg_index] = strdup(token);
             if (current->args[arg_index] == NULL)
             {
+                print_error("[ERROR] Failed to duplicate argument string");
                 free_command_tree(tree->root);
                 free_if_needed(tree);
                 free_if_needed(input_copy);
@@ -147,7 +159,6 @@ void free_command_tree(command_node_t *node)
         free_if_needed(node->args);
         node->args = NULL;
     }
-    
     free_command_tree(node->left);
     free_command_tree(node->right);
     free_if_needed(node);

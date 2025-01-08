@@ -3,12 +3,12 @@
 
 /**
  * @brief Operator types
- * @param OP_NONE (none) No operator
- * @param OP_PIPE (|) Pipe operator
- * @param OP_SEQ (;) Sequential operator
- * @param OP_AND (&&) And operator
- * @param OP_OR (||) Or operator
- * @param OP_BG (&) Background operator
+ * @param OP_NONE No operator : default
+ * @param OP_PIPE Pipe operator : redirect output of the left command to the input of the right command (|)
+ * @param OP_SEQ Sequential operator : execute the right command after the left command (;)
+ * @param OP_AND And operator : execute the right command only if the left command is successful (&&)
+ * @param OP_OR Or operator : execute the right command only if the left command fails (||)
+ * @param OP_BG Background operator : execute the command in the background (&)
  */
 typedef enum
 {

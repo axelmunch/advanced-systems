@@ -10,7 +10,7 @@
 
 /**
  * @brief Create a new command node
- * @return command_node_t*
+ * @return command_node_t* New command node
  */
 command_node_t *create_command_node();
 
