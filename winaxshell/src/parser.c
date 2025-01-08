@@ -29,7 +29,7 @@ command_node_t *create_command_node()
     return node;
 }
 
-static command_tree_t *allocate_command_tree()
+command_tree_t *create_command_tree()
 {
     command_tree_t *tree = malloc(sizeof(command_tree_t));
     if (tree == NULL)
@@ -37,98 +37,117 @@ static command_tree_t *allocate_command_tree()
         print_error("[ERROR] Failed to allocate memory for command tree");
         return NULL;
     }
+
+    tree->root = create_command_node();
+    if (tree->root == NULL)
+    {
+        free(tree);
+        return NULL;
+    }
+
     return tree;
 }
 
-command_tree_t *parse_command(char *input)
+command_node_t *handle_operator(command_tree_t *tree, operator_t op)
+{
+    command_node_t *new_node = create_command_node();
+    if (new_node == NULL)
+    {
+        print_error("[ERROR] Failed to create new command node");
+        return NULL;
+    }
+
+    new_node->left = tree->root;
+    new_node->op_type = op;
+    new_node->right = create_command_node();
+    if (new_node->right == NULL)
+    {
+        print_error("[ERROR] Failed to create right command node");
+        free_command_tree(new_node);
+        return NULL;
+    }
+
+    return new_node;
+}
+
+int handle_argument(command_node_t *current, const char *token, size_t index)
+{
+    if (index >= MAX_ARGS - 1)
+    {
+        print_error("[ERROR] Too many arguments");
+        current->args[MAX_ARGS - 1] = NULL;
+        return 0;
+    }
+
+    current->args[index] = strdup(token);
+    if (current->args[index] == NULL)
+    {
+        print_error("[ERROR] Failed to duplicate argument string");
+        return 0;
+    }
+
+    return 1;
+}
+
+command_tree_t *parse_command(const char *input)
 {
     if (input == NULL)
         return NULL;
-
-    command_tree_t *tree = allocate_command_tree();
 
     char *input_copy = strdup(input);
     if (input_copy == NULL)
     {
         print_error("[ERROR] Failed to duplicate input string");
-        free_if_needed(tree);
         return NULL;
     }
 
+    command_tree_t *tree = create_command_tree();
+    if (tree == NULL)
+    {
+        free(input_copy);
+        print_error("[ERROR] Failed to create command tree");
+        return NULL;
+    }
+
+    command_node_t *current = tree->root;
+    size_t arg_index = 0;
     char *token = strtok(input_copy, CMD_DELIMITER);
-    if (token == NULL)
-    {
-        print_error("[ERROR] Failed to tokenize input string");
-        free_if_needed(tree);
-        return NULL;
-    }
-
-    command_node_t *current = create_command_node();
-    if (current == NULL)
-    {
-        print_error("[ERROR] Failed to create main command node");
-        free_if_needed(input_copy);
-        free_if_needed(tree);
-        return NULL;
-    }
-
-    tree->root = current;
-    int arg_index = 0;
 
     while (token != NULL)
     {
         operator_t op = get_operator_type(token);
         if (op != OP_NONE)
         {
-            command_node_t *new_node = create_command_node();
+            command_node_t *new_node = handle_operator(tree, op);
             if (new_node == NULL)
             {
-                print_error("[ERROR] Failed to create new command node");
+                print_error("[ERROR] Failed to handle operator");
                 free_command_tree(tree->root);
-                free_if_needed(tree);
-                free_if_needed(input_copy);
+                free(tree);
+                free(input_copy);
                 return NULL;
             }
-
-            new_node->left = tree->root;
-            new_node->op_type = op;
-            new_node->right = create_command_node();
-            if (new_node->right == NULL)
-            {
-                print_error("[ERROR] Failed to create right command node for operator");
-                free_command_tree(new_node);
-                free_command_tree(tree->root);
-                free_if_needed(tree);
-                free_if_needed(input_copy);
-                return NULL;
-            }
-
             tree->root = new_node;
             current = new_node->right;
             arg_index = 0;
         }
         else
         {
-            if (arg_index >= MAX_ARGS - 1)
+            if (handle_argument(current, token, arg_index) == 0)
             {
-                current->args[MAX_ARGS - 1] = NULL;
-                break;
-            }
-            current->args[arg_index] = strdup(token);
-            if (current->args[arg_index] == NULL)
-            {
-                print_error("[ERROR] Failed to duplicate argument string");
+                print_error("[ERROR] Failed to handle argument");
                 free_command_tree(tree->root);
-                free_if_needed(tree);
-                free_if_needed(input_copy);
+                free(tree);
+                free(input_copy);
                 return NULL;
             }
             arg_index++;
         }
-        token = strtok(NULL, CMD_DELIMITER);
+        token = strtok(NULL, " \t\n");
     }
+
     current->args[arg_index] = NULL;
-    free_if_needed(input_copy);
+    free(input_copy);
     return tree;
 }
 
@@ -170,4 +189,3 @@ void free_command_tree(command_node_t *node)
     free_command_tree(node->right);
     free_if_needed(node);
 }
-

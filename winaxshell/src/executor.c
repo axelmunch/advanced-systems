@@ -109,7 +109,7 @@ int execute_command_tree(command_node_t *node)
     if (node == NULL)
         return EXIT_SUCCESS;
 
-    int status = EXIT_SUCCESS;
+    int status;
 
     switch (node->op_type)
     {

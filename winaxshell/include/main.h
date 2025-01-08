@@ -12,7 +12,7 @@
  * @brief Interactive shell mode code execution
  * @return int Exit status
  */
-int interactive_mode();
+int interactive_mode(void);
 
 /**
  * @brief Batch mode shell execution
