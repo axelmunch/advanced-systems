@@ -113,27 +113,27 @@ int execute_command_tree(command_node_t *node)
 
     switch (node->op_type)
     {
-    case OP_PIPE:
+    case OP_PIPE: // OK
         status = execute_pipe_command(node->left, node->right);
         break;
-    case OP_SEQ:
+    case OP_SEQ: // TODO: handle operator of the right node
         execute_command_tree(node->left);
         status = execute_command_tree(node->right);
         break;
-    case OP_AND:
+    case OP_AND: // OK
         status = execute_command_tree(node->left);
         if (status == EXIT_SUCCESS)
             status = execute_command_tree(node->right);
         break;
-    case OP_OR:
+    case OP_OR: // OK
         status = execute_command_tree(node->left);
         if (status != EXIT_SUCCESS)
             status = execute_command_tree(node->right);
         break;
-    case OP_BG:
+    case OP_BG: // TODO
         status = execute_command_tree(node->left);
         break;
-    case OP_NONE:
+    case OP_NONE: // OK
         status = execute_single_command(node->args);
         break;
     }

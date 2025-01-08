@@ -35,11 +35,12 @@ command_tree_t *parse_command(char *input)
         return NULL;
 
     command_tree_t *tree = malloc(sizeof(command_tree_t));
-    if (tree == NULL) {
+    if (tree == NULL)
+    {
         print_error("[ERROR] Failed to allocate memory for command tree");
         return NULL;
     }
-    
+
     char *input_copy = strdup(input);
     if (input_copy == NULL)
     {
