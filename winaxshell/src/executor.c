@@ -128,9 +128,8 @@ int execute_command_tree(command_node_t *node)
         status = execute_pipe_command(node->left, node->right);
         break;
     case OP_SEQ:
-        status = execute_command_tree(node->left);
-        if (status == EXIT_SUCCESS)
-            status = execute_command_tree(node->right);
+        execute_command_tree(node->left);
+        status = execute_command_tree(node->right);
         break;
     case OP_AND:
         status = execute_command_tree(node->left);
@@ -149,6 +148,7 @@ int execute_command_tree(command_node_t *node)
         status = execute_single_command(node->args);
         break;
     }
+
     return status;
 }
 
