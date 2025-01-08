@@ -16,9 +16,10 @@ void print_prompt()
     }
 }
 
-void interactive_mode()
+void interactive_mode() // TODO: refactor
 {
     char input[MAX_INPUT];
+    command_tree_t *command_tree = NULL;
 
     while (1)
     {
@@ -36,17 +37,33 @@ void interactive_mode()
         if (strlen(input) == 0)
             continue;
 
-        command_tree_t *command_tree = parse_command(input);
+        command_tree = parse_command(input);
         if (command_tree == NULL)
         {
             print_error("[ERROR] Failed to parse command");
             continue;
         }
 
-        execute_command_tree(command_tree->root);
+        if (command_tree->root && command_tree->root->args && 
+            command_tree->root->args[0] && 
+            strcmp(command_tree->root->args[0], "exit") == 0) // exit command, to improve
+        {
+            free_command_tree(command_tree->root);
+            free(command_tree);
+            print_generic(STDOUT_FILENO, GREEN_COLOR "Bye! Thanks for using WinAxShell!\n" RESET_COLOR);
+            exit(EXIT_SUCCESS);
+        }
 
+        execute_command_tree(command_tree->root);
         free_command_tree(command_tree->root);
-        free_if_needed(command_tree);
+        free(command_tree);
+        command_tree = NULL;
+    }
+
+    if (command_tree != NULL)
+    {
+        free_command_tree(command_tree->root);
+        free(command_tree);
     }
 }
 

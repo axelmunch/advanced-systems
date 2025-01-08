@@ -15,6 +15,13 @@
 command_node_t *create_command_node();
 
 /**
+ * @brief Parse a command string and create a command tree
+ * @param input Command string
+ * @return command_tree_t*
+ */
+command_tree_t* parse_command(char* input);
+
+/**
  * @brief Get the operator type
  * @param operator_str Operator string format
  * @return operator_t enum type
@@ -27,11 +34,5 @@ operator_t get_operator_type(const char *operator_str);
  */
 void free_command_tree(command_node_t* node);
 
-/**
- * @brief Parse a command string and create a command tree
- * @param input Command string
- * @return command_tree_t*
- */
-command_tree_t* parse_command(char* input);
 
 #endif // PARSER_H

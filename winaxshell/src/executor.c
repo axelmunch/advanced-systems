@@ -5,12 +5,6 @@ int execute_single_command(char **args)
     if (args == NULL || args[0] == NULL)
         return EXIT_FAILURE;
 
-    if (strcmp(args[0], "exit") == 0) // exit command, improve builtin commands handling (issue #11)
-    {
-        print_generic(STDOUT_FILENO, GREEN_COLOR "Bye! Thanks for using WinAxShell!\n" RESET_COLOR);
-        exit(EXIT_SUCCESS);
-    }
-
     pid_t pid = fork();
     if (pid < 0)
     {
@@ -35,6 +29,7 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
 {
     int pipefd[2];
     pid_t left_pid, right_pid;
+    int status = EXIT_FAILURE;
 
     if (pipe(pipefd) == -1)
     {
@@ -46,6 +41,8 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
     if (left_pid == -1)
     {
         print_error("[ERROR] fork() failed");
+        close(pipefd[0]);
+        close(pipefd[1]);
         return EXIT_FAILURE;
     }
 
@@ -55,11 +52,12 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         if (dup2(pipefd[1], STDOUT_FILENO) == -1)
         {
             print_error("[ERROR] dup2() failed");
+            close(pipefd[1]);
             exit(EXIT_FAILURE);
         }
         close(pipefd[1]);
 
-        int status = execute_command_tree(left);
+        status = execute_command_tree(left);
         exit(status);
     }
 
@@ -67,6 +65,10 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
     if (right_pid == -1)
     {
         print_error("[ERROR] fork() failed");
+        close(pipefd[0]);
+        close(pipefd[1]);
+        kill(left_pid, SIGTERM);
+        waitpid(left_pid, NULL, 0);
         return EXIT_FAILURE;
     }
 
@@ -76,11 +78,11 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         if (dup2(pipefd[0], STDIN_FILENO) == -1)
         {
             print_error("[ERROR] dup2() failed");
+            close(pipefd[0]);
             exit(EXIT_FAILURE);
         }
         close(pipefd[0]);
 
-        int status;
         if (right->op_type == OP_PIPE)
         {
             status = execute_pipe_command(right->left, right->right);
