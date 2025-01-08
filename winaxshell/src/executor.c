@@ -33,21 +33,18 @@ int execute_single_command(char **args)
 
 int execute_pipe_command(command_node_t *left, command_node_t *right)
 {
-    if (left == NULL || right == NULL)
-        return EXIT_FAILURE;
-
     int pipefd[2];
+    pid_t left_pid, right_pid;
+
     if (pipe(pipefd) == -1)
     {
         print_error("[ERROR] pipe() failed");
         return EXIT_FAILURE;
     }
 
-    pid_t left_pid = fork();
-    if (left_pid < 0)
+    left_pid = fork();
+    if (left_pid == -1)
     {
-        close(pipefd[0]);
-        close(pipefd[1]);
         print_error("[ERROR] fork() failed");
         return EXIT_FAILURE;
     }
@@ -62,23 +59,13 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         }
         close(pipefd[1]);
 
-        int status;
-        if (left->op_type == OP_PIPE)
-        {
-            status = execute_pipe_command(left->left, left->right);
-        }
-        else
-        {
-            status = execute_single_command(left->args);
-        }
+        int status = execute_command_tree(left);
         exit(status);
     }
 
-    pid_t right_pid = fork();
-    if (right_pid < 0)
+    right_pid = fork();
+    if (right_pid == -1)
     {
-        close(pipefd[0]);
-        close(pipefd[1]);
         print_error("[ERROR] fork() failed");
         return EXIT_FAILURE;
     }
