@@ -141,16 +141,17 @@ int execute_command_tree(command_node_t *node)
     return status;
 }
 
-void execute_command(char **args)
+void execute_command(char *input, command_tree_t *command_tree)
 {
-    if (args == NULL || args[0] == NULL)
-        return;
-
-    command_tree_t *tree = parse_command(args[0]);
-    if (tree != NULL)
+    command_tree = parse_command(input);
+    if (command_tree == NULL)
     {
-        execute_command_tree(tree->root);
-        free_command_tree(tree->root);
-        free(tree);
+        print_error("[ERROR] Failed to parse command");
+        return;
     }
+
+    execute_command_tree(command_tree->root);
+    free_command_tree(command_tree->root);
+    free(command_tree);
+    command_tree = NULL;
 }

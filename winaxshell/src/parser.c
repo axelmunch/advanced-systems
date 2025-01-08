@@ -29,7 +29,7 @@ command_tree_t *parse_command(char *input)
 {
     if (input == NULL)
         return NULL;
-        
+
     command_tree_t *tree = malloc(sizeof(command_tree_t));
     if (tree == NULL)
         return NULL;

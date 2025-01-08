@@ -35,10 +35,10 @@ int execute_pipe_command(command_node_t *left, command_node_t *right);
 int execute_command_tree(command_node_t *node);
 
 /**
- * @brief Execute a command. This function executes a command given its arguments.
- * It is a wrapper around execute_single_command and other execution functions.
- * @param args Command arguments
+ * @brief Execute a command. This function parses the input string and creates a command tree, then executes the command tree.
+ * @param input User input string from the shell
+ * @param command_tree Command tree to execute
  */
-void execute_command(char **args);
+void execute_command(char* input, command_tree_t *command_tree);
 
 #endif // COMMAND_H
