@@ -143,7 +143,7 @@ command_tree_t *parse_command(const char *input)
             }
             arg_index++;
         }
-        token = strtok(NULL, " \t\n");
+        token = strtok(NULL, CMD_DELIMITER);
     }
 
     current->args[arg_index] = NULL;

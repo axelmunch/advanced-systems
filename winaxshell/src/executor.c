@@ -149,7 +149,8 @@ void execute_command(char *input, command_tree_t *command_tree)
         print_error("[ERROR] Failed to parse command");
         return;
     }
-
+    // TODO: add the command tree to the history
+    // Handle if command_tree is a built-in command
     execute_command_tree(command_tree->root);
     free_command_tree(command_tree->root);
     free(command_tree);

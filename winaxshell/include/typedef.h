@@ -21,7 +21,7 @@ typedef enum
 } operator_t;
 
 /**
- * @brief Command node structure
+ * @brief Command node structure in a command tree
  * @param args Command arguments
  * @param op_type Operator following this command
  * @param left Left child (current command)
@@ -37,7 +37,7 @@ typedef struct command_node_t
 } command_node_t;
 
 /**
- * @brief Command tree structure
+ * @brief Command tree structure to represent a command line
  * @param root Root node of the command tree
  */
 typedef struct
