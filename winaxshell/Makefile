@@ -1,12 +1,14 @@
 CC=gcc
 CFLAGS=-Wall -c -g
 LDFLAGS=-I ./include
+TEST_LDFLAGS=-lcriterion
 
 SRC_DIR=./src
 INC_DIR=./include
 BIN_DIR=./bin
 DOC_DIR=./doc
 GCOV_DIR=./gcov
+TEST_DIR=./tests
 
 GCOVFLAGS=-O0 --coverage -lgcov -Wall -g
 
@@ -15,6 +17,11 @@ LCOV_REPORT=report.info
 SRC=$(wildcard $(SRC_DIR)/*.c)
 OBJ=$(SRC:.c=.o)
 EXEC=winaxshell
+
+TEST_SRC=$(wildcard $(TEST_DIR)/*.c)
+OBJ_NO_MAIN=$(filter-out $(SRC_DIR)/main.o, $(OBJ))
+TEST_OBJ=$(TEST_SRC:.c=.o)
+TEST_EXEC=$(BIN_DIR)/winaxshell_tests
 
 GEXEC=$(EXEC).cov
 
@@ -31,8 +38,15 @@ $(BIN_DIR):
 $(EXEC): $(OBJ)
 	$(CC) -o $(BIN_DIR)/$@ -Wall $(LDFLAGS) $(OBJ)
 
-$(GEXEC):
-	$(CC) $(GCOVFLAGS) -o $(GCOV_DIR)/$@ -Wall $(LDFLAGS) $(SRC)
+$(TEST_OBJ): %.o: %.c
+	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
+
+$(TEST_EXEC): $(TEST_OBJ) $(OBJ)
+	$(CC) -o $@ $(TEST_OBJ) $(OBJ_NO_MAIN) $(LDFLAGS) $(TEST_LDFLAGS)
+
+tests: $(TEST_EXEC)
+	@echo "Running test suite..."
+	@./$(TEST_EXEC)
 
 doc:
 	doxygen $(DOC_DIR)/doxygen.conf
@@ -60,7 +74,7 @@ memcheck:
 	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(EXEC)
 
 clean:
-	rm -rf $(OBJ)
+	rm -rf $(OBJ) $(TEST_OBJ)
 	rm -f /tmp/proc-exercise*
 
 mrproper: clean
@@ -70,4 +84,4 @@ mrproper: clean
 	rm -rf $(DOC_DIR)/man
 	rm -rf $(GCOV_DIR)/*
 
-.PHONY: doc
+.PHONY: doc tests
