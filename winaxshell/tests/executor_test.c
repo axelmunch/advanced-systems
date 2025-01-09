@@ -77,3 +77,24 @@ Test(executor, op_seq) {
     };
     cr_assert_eq(execute_command_tree(&node), EXIT_SUCCESS);
 }
+
+Test (executor, op_pipe) {
+    command_node_t left = {
+        .op_type = OP_NONE,
+        .args = (char *[]){"echo", "Test", NULL},
+        .left = NULL,
+        .right = NULL
+    };
+    command_node_t right = {
+        .op_type = OP_NONE,
+        .args = (char *[]){"grep", "Test", NULL},
+        .left = NULL,
+        .right = NULL
+    };
+    command_node_t node = {
+        .op_type = OP_PIPE,
+        .left = &left,
+        .right = &right
+    };
+    cr_assert_eq(execute_command_tree(&node), EXIT_SUCCESS);
+}

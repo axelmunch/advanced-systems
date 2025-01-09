@@ -56,11 +56,11 @@ Test(parser, test_parse_command)
 
 Test(parser, test_get_operator_type)
 {
-    cr_assert_eq(get_operator_type("|"), OP_PIPE, "'|' should return OP_PIPE");
-    cr_assert_eq(get_operator_type("&&"), OP_AND, "'&&' should return OP_AND");
-    cr_assert_eq(get_operator_type("||"), OP_OR, "'||' should return OP_OR");
-    cr_assert_eq(get_operator_type(";"), OP_SEQ, "';' should return OP_SEQ");
-    cr_assert_eq(get_operator_type("&"), OP_BG, "'&' should return OP_BG");
+    cr_assert_eq(get_operator_type("|"), OP_PIPE, "should return OP_PIPE");
+    cr_assert_eq(get_operator_type("&&"), OP_AND, "should return OP_AND");
+    cr_assert_eq(get_operator_type("||"), OP_OR, "should return OP_OR");
+    cr_assert_eq(get_operator_type(";"), OP_SEQ, "should return OP_SEQ");
+    cr_assert_eq(get_operator_type("&"), OP_BG, "should return OP_BG");
     cr_assert_eq(get_operator_type(NULL), OP_NONE, "NULL should return OP_NONE");
     cr_assert_eq(get_operator_type("@"), OP_NONE, "Unknown operator should return OP_NONE");
 }
