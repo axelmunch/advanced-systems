@@ -152,7 +152,7 @@ void execute_command(char *input, command_tree_t *command_tree)
     // TODO: add the command tree to the history
     // Handle if command_tree is a built-in command
     execute_command_tree(command_tree->root);
-    free_command_tree(command_tree->root);
-    free(command_tree);
+    free_command_node(command_tree->root);
+    free_if_needed(command_tree);
     command_tree = NULL;
 }

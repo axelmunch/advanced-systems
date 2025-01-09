@@ -63,7 +63,7 @@ command_node_t *handle_operator(command_tree_t *tree, operator_t op)
     if (new_node->right == NULL)
     {
         print_error("[ERROR] Failed to create right command node");
-        free_command_tree(new_node);
+        free_command_node(new_node);
         return NULL;
     }
 
@@ -122,7 +122,7 @@ command_tree_t *parse_command(const char *input)
             if (new_node == NULL)
             {
                 print_error("[ERROR] Failed to handle operator");
-                free_command_tree(tree->root);
+                free_command_node(tree->root);
                 free(tree);
                 free(input_copy);
                 return NULL;
@@ -136,7 +136,7 @@ command_tree_t *parse_command(const char *input)
             if (handle_argument(current, token, arg_index) == 0)
             {
                 print_error("[ERROR] Failed to handle argument");
-                free_command_tree(tree->root);
+                free_command_node(tree->root);
                 free(tree);
                 free(input_copy);
                 return NULL;
@@ -170,7 +170,7 @@ operator_t get_operator_type(const char *operator_str)
         return OP_NONE;
 }
 
-void free_command_tree(command_node_t *node)
+void free_command_node(command_node_t *node)
 {
     if (node == NULL)
         return;
@@ -185,7 +185,7 @@ void free_command_tree(command_node_t *node)
         free_if_needed(node->args);
         node->args = NULL;
     }
-    free_command_tree(node->left);
-    free_command_tree(node->right);
+    free_command_node(node->left);
+    free_command_node(node->right);
     free_if_needed(node);
 }

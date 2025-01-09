@@ -48,8 +48,8 @@ int interactive_mode(void) // TODO: refactor
 
     if (command_tree != NULL)
     {
-        free_command_tree(command_tree->root);
-        free(command_tree);
+        free_command_node(command_tree->root);
+        free_if_needed(command_tree);
     }
 
     return EXIT_SUCCESS;
