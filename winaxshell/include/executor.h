@@ -27,6 +27,13 @@ int execute_single_command(char **args);
 int execute_pipe_command(command_node_t *left, command_node_t *right);
 
 /**
+ * @brief Execute a background command
+ * @param node Command node
+ * @return int
+ */
+int execute_background_command(command_node_t *node);
+
+/**
  * @brief Execute a command tree. This function recursively executes commands represented in a tree structure.
  * It handles different types of commands (e.g., single commands, pipes) by traversing the tree and executing each node appropriately.
  * @param node Command node

@@ -71,8 +71,8 @@ tests:
 
 memcheck:
 	@echo "Running $(EXEC) with valgrind"
-	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(TEST_EXEC)
-	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(EXEC)
+	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(TEST_EXEC)
+	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(EXEC)
 
 
 clean:
@@ -86,4 +86,4 @@ mrproper: clean
 	rm -rf $(DOC_DIR)/man
 	rm -rf $(GCOV_DIR)/*
 
-.PHONY: doc tests
+.PHONY: doc tests run

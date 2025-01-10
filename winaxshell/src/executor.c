@@ -12,9 +12,10 @@ int execute_single_command(char **args)
         return EXIT_FAILURE;
     }
 
-    if (pid == 0) // child
+    if (pid == 0)
     {
-        if (execvp(args[0], args) == -1) // exec the command
+        int child_status = execvp(args[0], args);
+        if (child_status == -1)
         {
             print_error("[ERROR] execvp() failed");
             exit(EXIT_FAILURE);
@@ -104,6 +105,37 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
     return WIFEXITED(right_status) ? WEXITSTATUS(right_status) : EXIT_FAILURE;
 }
 
+int execute_background_command(command_node_t *node)
+{
+    pid_t pid = fork();
+    if (pid < 0)
+    {
+        print_error("[ERROR] fork() failed");
+        return EXIT_FAILURE;
+    }
+
+    if (pid == 0)
+    {
+        int setsid_status = setsid();
+        if (setsid_status == -1)
+        {
+            print_error("[ERROR] setsid() failed");
+            exit(EXIT_FAILURE);
+        }
+
+        int child_status = execvp(node->args[0], node->args);
+        if (child_status == -1)
+        {
+            print_error("[ERROR] execvp() failed");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    print_generic(STDOUT_FILENO, "[%d] %s is running in background.\n", pid, node->args[0]);
+    signal(SIGCHLD, SIG_IGN);
+    return EXIT_SUCCESS;
+} 
+
 int execute_command_tree(command_node_t *node)
 {
     if (node == NULL)
@@ -131,7 +163,7 @@ int execute_command_tree(command_node_t *node)
             status = execute_command_tree(node->right);
         break;
     case OP_BG: // TODO
-        status = execute_command_tree(node->left);
+        status = execute_background_command(node->left);
         break;
     case OP_NONE: // OK
         status = execute_single_command(node->args);
