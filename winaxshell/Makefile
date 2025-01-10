@@ -67,7 +67,7 @@ run:
 
 tests:
 	@echo "Running test suite..."
-	@./$(BIN_DIR)/$(TEST_EXEC)
+	@./$(BIN_DIR)/$(TEST_EXEC) --verbose --jobs=1
 
 memcheck:
 	@echo "Running $(EXEC) with valgrind"

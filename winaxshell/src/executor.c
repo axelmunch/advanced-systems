@@ -130,7 +130,7 @@ int execute_background_command(command_node_t *node)
         }
     }
 
-    print_generic(STDOUT_FILENO, "[%d] %s is running in background.\n", pid, node->args[0]);
+    print_generic(STDOUT_FILENO, "[%d] %s running in background.\n", pid, node->args[0]);
     signal(SIGCHLD, SIG_IGN);
     return EXIT_SUCCESS;
 }
