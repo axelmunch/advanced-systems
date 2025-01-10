@@ -58,7 +58,10 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         }
         close(pipefd[1]);
 
-        status = execute_command_tree(left);
+        if (left->op_type == OP_PIPE)
+            status = execute_pipe_command(left->left, left->right);
+        else
+            status = execute_single_command(left->args);
         exit(status);
     }
 
