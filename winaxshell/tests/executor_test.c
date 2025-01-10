@@ -33,18 +33,18 @@ void setup(void)
 
 TestSuite(executor, .init = setup);
 
-Test(executor, null_node) 
+Test(executor, test_null_node) 
 {
     cr_assert_eq(execute_command_tree(NULL), EXIT_SUCCESS, "Executing a NULL node should succeed");
 }
 
-Test(executor, op_none) 
+Test(executor, test_op_none) 
 {
     node->args = (char *[]){"true", NULL};
     cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "Command `true` should succeed");
 }
 
-Test(executor, op_and_success) 
+Test(executor, test_op_and_success) 
 {
     left->args = (char *[]){"true", NULL};
     right->args = (char *[]){"true", NULL};
@@ -55,7 +55,7 @@ Test(executor, op_and_success)
     cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`true && true` should succeed");
 }
 
-Test(executor, op_or_fail_left) 
+Test(executor, test_op_or_fail_left) 
 {
     left->args = (char *[]){"false", NULL};
     right->args = (char *[]){"true", NULL};
@@ -66,43 +66,42 @@ Test(executor, op_or_fail_left)
     cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`false || true` should succeed");
 }
 
-Test(executor, op_seq) 
+Test(executor, test_op_seq) 
 {
-    left->args = (char *[]){"echo", "hello", NULL};
-    right->args = (char *[]){"echo", "world", NULL};
+    left->args = (char *[]){"echo", "foo", NULL};
+    right->args = (char *[]){"echo", "bar", NULL};
     node->op_type = OP_SEQ;
     node->left = left;
     node->right = right;
 
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`echo Hello ; echo World` should succeed");
+    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`echo foo ; echo bar` should succeed");
 }
 
-Test(executor, op_pipe) 
+Test(executor, test_op_pipe) 
 {
-    left->args = (char *[]){"echo", "hello", NULL};
-    right->args = (char *[]){"grep", "hello", NULL};
+    left->args = (char *[]){"echo", "Hello,", "foo", NULL};
+    right->args = (char *[]){"grep", "foo", NULL};
     node->op_type = OP_PIPE;
     node->left = left;
     node->right = right;
-
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`echo hello | grep hello` should succeed");
+    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`echo Hello, foo | grep foo` should succeed");
 }
 
-Test(executor, op_bg) 
+Test(executor, test_op_bg) 
 {
-    left->args = (char *[]){"sleep", "10", NULL};
+    left->args = (char *[]){"sleep", "5", NULL};
     node->op_type = OP_BG;
     node->left = left;
 
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`sleep 1 &` should succeed");
+    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`sleep 5 &` should succeed");
 }
 
-Test(executor, run_command_chain)
+Test(executor, test_command_chain)
 {
-    char *input = "ls -l | grep Makefile | wc -l ; echo 'Hello, World!' && false || echo 'Goodbye, World!'";
+    char *input = "ls -l | head -n 5 | wc -l ; echo 'foo, bar, bazz' && false || echo 'Thats all folks!'";
     command_tree_t *tree = parse_command(input);
-    cr_assert_not_null(tree, "Failed to parse command tree");
 
+    cr_assert_not_null(tree, "Failed to parse command tree");
     cr_assert_eq(execute_command_tree(tree->root), EXIT_SUCCESS, "Executing command chain should succeed");
 
     free_command_node(tree->root);
