@@ -85,5 +85,6 @@ mrproper: clean
 	rm -rf $(DOC_DIR)/latex
 	rm -rf $(DOC_DIR)/man
 	rm -rf $(GCOV_DIR)/*
+	rm -rf mocks/*
 
 .PHONY: doc tests run

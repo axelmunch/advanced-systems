@@ -85,7 +85,7 @@ Test(executor, test_op_pipe)
     node->left = left;
     node->right = right;
     cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`ls -l | grep Makefile` should succeed");
-    printf("OK\n");
+    printf(GREEN_COLOR "OK\n");
 }
 
 Test(executor, test_op_bg) 
@@ -95,7 +95,40 @@ Test(executor, test_op_bg)
     node->left = left;
 
     cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`sleep 5 &` should succeed");
-    printf("OK\n");
+    printf(GREEN_COLOR "OK\n");
+}
+
+Test(executor, test_op_redir_out)
+{
+    left->args = (char *[]){"echo", "Hello, World!", NULL};
+    right->args = (char *[]){"mocks/output.txt", NULL};
+    node->op_type = OP_REDIR_OUT;
+    node->left = left;
+    node->right = right;
+
+    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`echo Hello, World! > mocks/output.txt` should succeed");
+}
+
+Test(executor, test_op_redir_in)
+{
+    left->args = (char *[]){"cat", NULL};
+    right->args = (char *[]){"mocks/output.txt", NULL};
+    node->op_type = OP_REDIR_IN;
+    node->left = left;
+    node->right = right;
+
+    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`cat < mocks/input.txt` should succeed");
+}
+
+Test(executor, test_op_append)
+{
+    left->args = (char *[]){"echo", "Hello, World!", NULL};
+    right->args = (char *[]){"mocks/output.txt", NULL};
+    node->op_type = OP_APPEND;
+    node->left = left;
+    node->right = right;
+
+    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`echo Hello, World! >> mocks/output.txt` should succeed");
 }
 
 Test(executor, test_command_chain)
