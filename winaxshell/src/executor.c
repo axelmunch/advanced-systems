@@ -85,13 +85,10 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         close(pipefd[0]);
 
         if (right->op_type == OP_PIPE)
-        {
             status = execute_pipe_command(right->left, right->right);
-        }
         else
-        {
             status = execute_single_command(right->args);
-        }
+
         exit(status);
     }
 
@@ -122,7 +119,6 @@ int execute_background_command(command_node_t *node)
             print_error("[ERROR] setsid() failed");
             exit(EXIT_FAILURE);
         }
-
         int child_status = execvp(node->args[0], node->args);
         if (child_status == -1)
         {
@@ -134,7 +130,7 @@ int execute_background_command(command_node_t *node)
     print_generic(STDOUT_FILENO, "[%d] %s is running in background.\n", pid, node->args[0]);
     signal(SIGCHLD, SIG_IGN);
     return EXIT_SUCCESS;
-} 
+}
 
 int execute_command_tree(command_node_t *node)
 {

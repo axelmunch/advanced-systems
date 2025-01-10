@@ -3,9 +3,9 @@
 command_node_t *create_command_node()
 {
     command_node_t *node = malloc(sizeof(command_node_t));
-
     if (node == NULL)
     {
+        errno = ENOMEM;
         print_error("[ERROR] Failed to allocate memory for command node");
         return NULL;
     }
@@ -13,6 +13,7 @@ command_node_t *create_command_node()
     node->args = malloc(MAX_ARGS * sizeof(char *));
     if (node->args == NULL)
     {
+        errno = ENOMEM;
         print_error("[ERROR] Failed to allocate memory for command node arguments");
         free_if_needed(node);
         return NULL;
@@ -34,6 +35,7 @@ command_tree_t *create_command_tree()
     command_tree_t *tree = malloc(sizeof(command_tree_t));
     if (tree == NULL)
     {
+        errno = ENOMEM;
         print_error("[ERROR] Failed to allocate memory for command tree");
         return NULL;
     }
@@ -53,6 +55,7 @@ command_node_t *handle_operator(command_tree_t *tree, operator_t op)
     command_node_t *new_node = create_command_node();
     if (new_node == NULL)
     {
+        errno = ENOMEM;
         print_error("[ERROR] Failed to create new command node");
         return NULL;
     }
@@ -62,6 +65,7 @@ command_node_t *handle_operator(command_tree_t *tree, operator_t op)
     new_node->right = create_command_node();
     if (new_node->right == NULL)
     {
+        errno = ENOMEM;
         print_error("[ERROR] Failed to create right command node");
         free_command_node(new_node);
         return NULL;
@@ -74,6 +78,7 @@ int handle_argument(command_node_t *current, const char *token, size_t index)
 {
     if (index >= MAX_ARGS - 1)
     {
+        errno = E2BIG;
         print_error("[ERROR] Too many arguments");
         current->args[MAX_ARGS - 1] = NULL;
         return 0;

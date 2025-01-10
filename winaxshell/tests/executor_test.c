@@ -74,7 +74,7 @@ Test(executor, op_seq)
     node->left = left;
     node->right = right;
 
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`echo hello ; echo world` should succeed");
+    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`echo Hello ; echo World` should succeed");
 }
 
 Test(executor, op_pipe) 
@@ -86,4 +86,25 @@ Test(executor, op_pipe)
     node->right = right;
 
     cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`echo hello | grep hello` should succeed");
+}
+
+Test(executor, op_bg) 
+{
+    left->args = (char *[]){"sleep", "10", NULL};
+    node->op_type = OP_BG;
+    node->left = left;
+
+    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`sleep 1 &` should succeed");
+}
+
+Test(executor, run_command_chain)
+{
+    char *input = "ls -l | grep Makefile | wc -l ; echo 'Hello, World!' && false || echo 'Goodbye, World!'";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Failed to parse command tree");
+
+    cr_assert_eq(execute_command_tree(tree->root), EXIT_SUCCESS, "Executing command chain should succeed");
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
 }
