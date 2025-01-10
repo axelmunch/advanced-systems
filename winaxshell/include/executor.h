@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <fcntl.h>
 #include "print.h"
 #include "typedef.h"
 #include "parser.h"
@@ -32,6 +33,15 @@ int execute_pipe_command(command_node_t *left, command_node_t *right);
  * @return int Exit status
  */
 int execute_background_command(command_node_t *node);
+
+/**
+ * @brief Execute a redirection command
+ * @param left Left command
+ * @param right Right command
+ * @param redirect_type Redirector operator type
+ * @return int Exit status
+ */
+int execute_redirection_command(command_node_t *left, command_node_t *right, operator_t redirect_type);
 
 /**
  * @brief Execute a command tree. This function recursively executes commands represented in a tree structure.

@@ -135,6 +135,71 @@ int execute_background_command(command_node_t *node)
     return EXIT_SUCCESS;
 }
 
+int execute_redirection_command(command_node_t *left, command_node_t *right, operator_t redirect_type)
+{
+    if (left == NULL || right == NULL || right->args == NULL || right->args[0] == NULL)
+        return EXIT_FAILURE;
+
+    int redirect_fd;
+    switch (redirect_type)
+    {
+    case OP_REDIR_OUT:
+        redirect_fd = open(right->args[0], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        break;
+    case OP_APPEND:
+        redirect_fd = open(right->args[0], O_WRONLY | O_CREAT | O_APPEND, 0644);
+        break;
+    case OP_REDIR_IN:
+        redirect_fd = open(right->args[0], O_RDONLY);
+        break;
+    default:
+        redirect_fd = -1;
+    }
+    if (redirect_fd < 0)
+    {
+        print_error("[ERROR] open() failed");
+        return EXIT_FAILURE;
+    }
+
+    pid_t pid = fork();
+    if (pid < 0)
+    {
+        print_error("[ERROR] fork() failed");
+        close(redirect_fd);
+        return EXIT_FAILURE;
+    }
+
+    if (pid == 0)
+    {
+        if (redirect_type == OP_REDIR_OUT || redirect_type == OP_APPEND)
+        {
+            if (dup2(redirect_fd, STDOUT_FILENO) < 0)
+            {
+                print_error("[ERROR] dup2() failed");
+                close(redirect_fd);
+                exit(EXIT_FAILURE);
+            }
+        }
+        else if (redirect_type == OP_REDIR_IN)
+        {
+            if (dup2(redirect_fd, STDIN_FILENO) < 0)
+            {
+                print_error("[ERROR] dup2() failed");
+                close(redirect_fd);
+                exit(EXIT_FAILURE);
+            }
+        }
+        close(redirect_fd);
+        exit(execute_single_command(left->args));
+    }
+    close(redirect_fd);
+
+    int status;
+    waitpid(pid, &status, 0);
+
+    return WIFEXITED(status) ? WEXITSTATUS(status) : EXIT_FAILURE;
+}
+
 int execute_command_tree(command_node_t *node)
 {
     if (node == NULL)
@@ -147,9 +212,10 @@ int execute_command_tree(command_node_t *node)
     case OP_PIPE: // OK
         status = execute_pipe_command(node->left, node->right);
         break;
-    case OP_SEQ: // TODO: handle operator of the right node
+    case OP_SEQ: // TODO: handle operator of the right node, be able to chained operators
         execute_command_tree(node->left);
-        status = execute_command_tree(node->right);
+        if (node->right != NULL)
+            status = execute_command_tree(node->right);
         break;
     case OP_AND: // OK
         status = execute_command_tree(node->left);
@@ -164,8 +230,18 @@ int execute_command_tree(command_node_t *node)
     case OP_BG: // TODO
         status = execute_background_command(node->left);
         break;
+    case OP_REDIR_OUT:
+    case OP_REDIR_IN:
+    case OP_APPEND:
+        status = execute_redirection_command(node->left, node->right, node->op_type);
+        break;
+    case OP_HEREDOC: // TODO
+        break;
     case OP_NONE: // OK
         status = execute_single_command(node->args);
+        break;
+    default:
+        status = EXIT_FAILURE;
         break;
     }
 

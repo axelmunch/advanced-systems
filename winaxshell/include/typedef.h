@@ -9,6 +9,10 @@
  * @param OP_AND And operator : execute the right command only if the left command is successful (&&)
  * @param OP_OR Or operator : execute the right command only if the left command fails (||)
  * @param OP_BG Background operator : execute the command in the background (&)
+ * @param OP_REDIR_OUT Redirect output operator : redirect output to a file (>)
+ * @param OP_REDIR_IN Redirect input operator : redirect input from a file (<)
+ * @param OP_APPEND Append output operator : append output to a file (>>)
+ * @param OP_HEREDOC Heredoc operator : redirect input from a heredoc (<<)
  */
 typedef enum
 {
@@ -17,7 +21,11 @@ typedef enum
     OP_SEQ,
     OP_AND,
     OP_OR,
-    OP_BG
+    OP_BG,
+    OP_REDIR_OUT,
+    OP_REDIR_IN,
+    OP_APPEND,
+    OP_HEREDOC
 } operator_t;
 
 /**

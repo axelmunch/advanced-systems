@@ -171,6 +171,14 @@ operator_t get_operator_type(const char *operator_str)
         return OP_OR;
     else if (strcmp(operator_str, "&") == 0)
         return OP_BG;
+    else if (strcmp(operator_str, ">") == 0)
+        return OP_REDIR_OUT;
+    else if (strcmp(operator_str, "<") == 0)
+        return OP_REDIR_IN;
+    else if (strcmp(operator_str, ">>") == 0)
+        return OP_APPEND;
+    else if (strcmp(operator_str, "<<") == 0)
+        return OP_HEREDOC;
     else
         return OP_NONE;
 }

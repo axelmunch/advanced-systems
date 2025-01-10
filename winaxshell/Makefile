@@ -69,8 +69,8 @@ tests:
 	@echo "Running test suite..."
 	@./$(BIN_DIR)/$(TEST_EXEC) --verbose --jobs=1
 
-memcheck:
-	@echo "Running $(EXEC) with valgrind"
+memcheck: 
+	@echo "Running Valgrind..."
 	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(TEST_EXEC)
 	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(EXEC)
 
