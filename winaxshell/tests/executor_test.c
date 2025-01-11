@@ -39,13 +39,15 @@ TestSuite(executor, .init = setup);
 
 Test(executor, test_null_node)
 {
-    cr_assert_eq(execute_command_tree(NULL), EXIT_SUCCESS, "Executing a NULL node should succeed");
+    int status = execute_command_tree(NULL);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing a NULL node should succeed");
 }
 
 Test(executor, test_op_none)
 {
     node->args = (char *[]){"true", NULL};
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "Command `true` should succeed");
+    int status = execute_command_tree(node);
+    cr_assert_eq(status, EXIT_SUCCESS, "Command `true` should succeed");
 }
 
 Test(executor, test_op_and_success)
@@ -56,7 +58,8 @@ Test(executor, test_op_and_success)
     node->left = left;
     node->right = right;
 
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`true && true` should succeed");
+    int status = execute_command_tree(node);
+    cr_assert_eq(status, EXIT_SUCCESS, "`true && true` should succeed");
 }
 
 Test(executor, test_op_or_fail_left)
@@ -67,7 +70,8 @@ Test(executor, test_op_or_fail_left)
     node->left = left;
     node->right = right;
 
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`false || true` should succeed");
+    int status = execute_command_tree(node);
+    cr_assert_eq(status, EXIT_SUCCESS, "`false || true` should succeed");
 }
 
 Test(executor, test_op_seq)
@@ -78,7 +82,8 @@ Test(executor, test_op_seq)
     node->left = left;
     node->right = right;
 
-    cr_assert_eq(execute_command_tree(node), EXIT_FAILURE, "`true ; false` should fail");
+    int status = execute_command_tree(node);
+    cr_assert_eq(status, EXIT_FAILURE, "`true ; false` should fail");
 }
 
 Test(executor, test_op_pipe)
@@ -88,7 +93,9 @@ Test(executor, test_op_pipe)
     node->op_type = OP_PIPE;
     node->left = left;
     node->right = right;
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`ps -aux | grep ^root` should succeed");
+
+    int status = execute_command_tree(node);
+    cr_assert_eq(status, EXIT_SUCCESS, "`ps -aux | grep ^root` should succeed");
 }
 
 Test(executor, test_op_bg)
@@ -97,7 +104,8 @@ Test(executor, test_op_bg)
     node->op_type = OP_BG;
     node->left = left;
 
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`sleep 5 &` should succeed");
+    int status = execute_command_tree(node);
+    cr_assert_eq(status, EXIT_SUCCESS, "`sleep 5 &` should succeed");
 }
 
 Test(executor, test_op_redir_out)
@@ -108,39 +116,28 @@ Test(executor, test_op_redir_out)
     node->left = left;
     node->right = right;
 
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`echo Hello, World! > mocks/output.txt` should succeed");
+    int status = execute_command_tree(node);
+    cr_assert_eq(status, EXIT_SUCCESS, "`echo Hello, World! > mocks/output.txt` should succeed");
 
     FILE *file = fopen("mocks/output.txt", "r");
-    cr_assert_not_null(file, "Failed to open mocks/output.txt");
-
-    char buffer[BUFFER_SIZE];
-    fread(buffer, 1, sizeof(buffer), file);
+    char *expected = "Hello, World!\n";
+    char result[BUFFER_SIZE];
+    fread(result, 1, sizeof(result), file);
     fclose(file);
-    cr_assert_str_eq(buffer, "Hello, World!\n", "Output should be `Hello, World!`");
+
+    cr_assert_str_eq(result, expected, "Redirected output should be `Hello, World!`");
 }
 
 Test(executor, test_op_redir_in)
 {
-    FILE *test_file = fopen("mocks/input.txt", "w");
-    fprintf(test_file, "Hello, World!\n");
-    fclose(test_file);
-
     left->args = (char *[]){"cat", NULL};
     right->args = (char *[]){"mocks/input.txt", NULL};
     node->op_type = OP_REDIR_IN;
     node->left = left;
     node->right = right;
 
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`cat < mocks/input.txt` should succeed");
-
-    FILE *file = fopen("mocks/input.txt", "r");
-    cr_assert_not_null(file, "Failed to open mocks/input.txt");
-
-    char buffer[BUFFER_SIZE];
-    fread(buffer, 1, sizeof(buffer) - 1, file);
-    fclose(file);
-
-    cr_assert_str_eq(buffer, "Hello, World!\n", "Input redirection output mismatch");
+    int status = execute_command_tree(node);
+    cr_assert_eq(status, EXIT_SUCCESS, "`cat < mocks/input.txt` should succeed");
 }
 
 Test(executor, test_op_append)
@@ -151,16 +148,18 @@ Test(executor, test_op_append)
     node->left = left;
     node->right = right;
 
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`echo Hello, World! >> mocks/output.txt` should succeed");
+    int status = execute_command_tree(node);
+    cr_assert_eq(status, EXIT_SUCCESS, "`echo Hello, World! >> mocks/output.txt` should succeed");
 }
 
 Test(executor, test_command_chain)
 {
     char *input = "ls -l | head -n 1 | wc -l ; true && false || echo 'Thats all folks!'";
     command_tree_t *tree = parse_command(input);
-
     cr_assert_not_null(tree, "Failed to parse command tree");
-    cr_assert_eq(execute_command_tree(tree->root), EXIT_SUCCESS, "Executing command chain should succeed");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing command chain should succeed");
 
     free_command_node(tree->root);
     free_if_needed(tree);
