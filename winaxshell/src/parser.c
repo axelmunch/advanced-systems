@@ -182,23 +182,3 @@ operator_t get_operator_type(const char *operator_str)
     else
         return OP_NONE;
 }
-
-void free_command_node(command_node_t *node)
-{
-    if (node == NULL)
-        return;
-
-    if (node->args != NULL)
-    {
-        for (int i = 0; i < MAX_ARGS && node->args[i] != NULL; i++)
-        {
-            free_if_needed(node->args[i]);
-            node->args[i] = NULL;
-        }
-        free_if_needed(node->args);
-        node->args = NULL;
-    }
-    free_command_node(node->left);
-    free_command_node(node->right);
-    free_if_needed(node);
-}

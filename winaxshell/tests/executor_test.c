@@ -131,13 +131,13 @@ Test(executor, test_op_redir_out)
 Test(executor, test_op_redir_in)
 {
     left->args = (char *[]){"cat", NULL};
-    right->args = (char *[]){"mocks/input.txt", NULL};
+    right->args = (char *[]){"mocks/output.txt", NULL};
     node->op_type = OP_REDIR_IN;
     node->left = left;
     node->right = right;
 
     int status = execute_command_tree(node);
-    cr_assert_eq(status, EXIT_SUCCESS, "`cat < mocks/input.txt` should succeed");
+    cr_assert_eq(status, EXIT_SUCCESS, "`cat < mocks/output.txt` should succeed");
 }
 
 Test(executor, test_op_append)

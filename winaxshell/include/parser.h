@@ -49,12 +49,7 @@ command_tree_t* parse_command(const char* input);
  */
 operator_t get_operator_type(const char *operator_str);
 
-/**
- * @brief Free a command node
- * @param node Command node
- * @return void
- */
-void free_command_node(command_node_t* node);
+
 
 
 #endif // PARSER_H

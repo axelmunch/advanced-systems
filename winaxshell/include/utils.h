@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <fcntl.h>
+#include "typedef.h"
 #include "print.h"
 
 /**
@@ -27,6 +28,11 @@ int safe_open(const char *path, int flags, mode_t mode);
  */
 void safe_close(int fd);
 
-
+/**
+ * @brief Free a command node
+ * @param node Command node
+ * @return void
+ */
+void free_command_node(command_node_t* node);
 
 #endif // UTILS_H
