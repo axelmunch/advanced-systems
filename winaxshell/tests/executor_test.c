@@ -117,7 +117,7 @@ Test(executor, test_op_redir_in)
     node->left = left;
     node->right = right;
 
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`cat < mocks/input.txt` should succeed");
+    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`cat < mocks/output.txt` should succeed");
 }
 
 Test(executor, test_op_append)

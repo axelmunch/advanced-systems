@@ -9,6 +9,7 @@ BIN_DIR=./bin
 DOC_DIR=./doc
 GCOV_DIR=./gcov
 TEST_DIR=./tests
+MOCKS_DIR=./mocks
 
 GCOVFLAGS=-O0 --coverage -lgcov -Wall -g
 
@@ -32,6 +33,9 @@ all: $(SRC) $(EXEC) $(TEST_EXEC)
 $(BIN_DIR):
 	@mkdir -p $(BIN_DIR)
 
+$(MOCKS_DIR):
+	@mkdir -p $(MOCKS_DIR)
+
 %.o:%.c | $(BIN_DIR)
 	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
@@ -41,7 +45,7 @@ $(EXEC): $(OBJ)
 $(TEST_OBJ): %.o: %.c
 	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
-$(TEST_EXEC): $(TEST_OBJ) $(OBJ)
+$(TEST_EXEC): $(TEST_OBJ) $(OBJ) $(MOCKS_DIR)
 	$(CC) -o $(BIN_DIR)/$@ $(TEST_OBJ) $(OBJ_NO_MAIN) $(LDFLAGS) $(TEST_LDFLAGS)
 
 doc:
