@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <fcntl.h>
 #include "constants.h"
 #include "print.h"
 
@@ -54,5 +55,19 @@ void check_requirements();
  * @return void
  */
 void parse_options(int argc, char **argv);
+
+/**
+ * @brief Safe open file descriptor
+ * @param const char* path
+ * @param int flags
+ * @param mode_t mode
+ */
+int safe_open(const char *path, int flags, mode_t mode);
+
+/**
+ * @brief Safe close file descriptor
+ * @param int fd
+ */
+void safe_close(int fd);
 
 #endif // UTILS_H

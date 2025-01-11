@@ -68,3 +68,21 @@ void parse_options(int argc, char **argv)
         }
     }
 }
+
+int safe_open(const char *path, int flags, mode_t mode)
+{
+    int fd = open(path, flags, mode);
+    if (fd < 0)
+    {
+        print_error("[ERROR] open() failed");
+    }
+    return fd;
+}
+
+void safe_close(int fd)
+{
+    if (close(fd) < 0)
+    {
+        print_error("[ERROR] close() failed");
+    }
+}
