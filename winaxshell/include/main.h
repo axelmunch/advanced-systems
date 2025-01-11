@@ -4,9 +4,9 @@
 #include <pwd.h>
 #include "typedef.h"
 #include "print.h"
-#include "utils.h"
 #include "parser.h"
 #include "executor.h"
+#include "helper.h"
 
 /**
  * @brief Interactive shell mode code execution
