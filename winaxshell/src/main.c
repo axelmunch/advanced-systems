@@ -68,14 +68,15 @@ int main(int argc, char **argv)
     check_requirements(argc, argv);
     show_parameters(get_verbose_mode());
 
-    // Business logic
+    // Business logic, improve status handler
     if (argc == 1)
     {
         interactive_mode();
     }
     else
     {
-        batch_mode(argc, argv);
+        int status = batch_mode(argc, argv);
+        return status;
     }
 
     return EXIT_SUCCESS;

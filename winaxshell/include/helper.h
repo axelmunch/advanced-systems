@@ -42,6 +42,4 @@ void check_requirements(int argc, char **argv);
  */
 void parse_options(int argc, char **argv);
 
-
-
 #endif // HELPER_H

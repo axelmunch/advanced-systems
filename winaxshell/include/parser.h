@@ -49,7 +49,4 @@ command_tree_t* parse_command(const char* input);
  */
 operator_t get_operator_type(const char *operator_str);
 
-
-
-
 #endif // PARSER_H

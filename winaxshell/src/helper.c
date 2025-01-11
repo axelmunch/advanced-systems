@@ -30,7 +30,6 @@ char *dup_optarg_str()
 void show_help(char **argv)
 {
     print_generic(STDOUT_FILENO, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
-    exit(EXIT_FAILURE);
 }
 
 void show_parameters(bool verbose_mode)
