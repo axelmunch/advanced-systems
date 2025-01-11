@@ -42,21 +42,21 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
     if (left_pid == -1)
     {
         print_error("[ERROR] fork() failed");
-        close(pipefd[0]);
-        close(pipefd[1]);
+        safe_close(pipefd[0]);
+        safe_close(pipefd[1]);
         return EXIT_FAILURE;
     }
 
     if (left_pid == 0)
     {
-        close(pipefd[0]);
+        safe_close(pipefd[0]);
         if (dup2(pipefd[1], STDOUT_FILENO) == -1)
         {
             print_error("[ERROR] dup2() failed");
-            close(pipefd[1]);
+            safe_close(pipefd[1]);
             exit(EXIT_FAILURE);
         }
-        close(pipefd[1]);
+        safe_close(pipefd[1]);
 
         if (left->op_type == OP_PIPE)
             status = execute_pipe_command(left->left, left->right);
@@ -69,8 +69,8 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
     if (right_pid == -1)
     {
         print_error("[ERROR] fork() failed");
-        close(pipefd[0]);
-        close(pipefd[1]);
+        safe_close(pipefd[0]);
+        safe_close(pipefd[1]);
         kill(left_pid, SIGTERM);
         waitpid(left_pid, NULL, 0);
         return EXIT_FAILURE;
@@ -78,14 +78,14 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
 
     if (right_pid == 0)
     {
-        close(pipefd[1]);
+        safe_close(pipefd[1]);
         if (dup2(pipefd[0], STDIN_FILENO) == -1)
         {
             print_error("[ERROR] dup2() failed");
-            close(pipefd[0]);
+            safe_close(pipefd[0]);
             exit(EXIT_FAILURE);
         }
-        close(pipefd[0]);
+        safe_close(pipefd[0]);
 
         if (right->op_type == OP_PIPE)
             status = execute_pipe_command(right->left, right->right);
@@ -95,8 +95,8 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         exit(status);
     }
 
-    close(pipefd[0]);
-    close(pipefd[1]);
+    safe_close(pipefd[0]);
+    safe_close(pipefd[1]);
 
     int left_status, right_status;
     waitpid(left_pid, &left_status, 0);
@@ -144,20 +144,20 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
     switch (redirect_type)
     {
     case OP_REDIR_OUT:
-        redirect_fd = open(right->args[0], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        redirect_fd = safe_open(right->args[0], O_WRONLY | O_CREAT | O_TRUNC, 0644);
         break;
     case OP_APPEND:
-        redirect_fd = open(right->args[0], O_WRONLY | O_CREAT | O_APPEND, 0644);
+        redirect_fd = safe_open(right->args[0], O_WRONLY | O_CREAT | O_APPEND, 0644);
         break;
     case OP_REDIR_IN:
-        redirect_fd = open(right->args[0], O_RDONLY);
+        redirect_fd = safe_open(right->args[0], O_RDONLY, 0);
         break;
     default:
         redirect_fd = -1;
     }
     if (redirect_fd < 0)
     {
-        print_error("[ERROR] open() failed");
+        print_error("[ERROR] safe_open() failed");
         return EXIT_FAILURE;
     }
 
@@ -165,7 +165,7 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
     if (pid < 0)
     {
         print_error("[ERROR] fork() failed");
-        close(redirect_fd);
+        safe_close(redirect_fd);
         return EXIT_FAILURE;
     }
 
@@ -176,7 +176,7 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
             if (dup2(redirect_fd, STDOUT_FILENO) < 0)
             {
                 print_error("[ERROR] dup2() failed");
-                close(redirect_fd);
+                safe_close(redirect_fd);
                 exit(EXIT_FAILURE);
             }
         }
@@ -185,14 +185,14 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
             if (dup2(redirect_fd, STDIN_FILENO) < 0)
             {
                 print_error("[ERROR] dup2() failed");
-                close(redirect_fd);
+                safe_close(redirect_fd);
                 exit(EXIT_FAILURE);
             }
         }
-        close(redirect_fd);
+        safe_close(redirect_fd);
         exit(execute_single_command(left->args));
     }
-    close(redirect_fd);
+    safe_close(redirect_fd);
 
     int status;
     waitpid(pid, &status, 0);

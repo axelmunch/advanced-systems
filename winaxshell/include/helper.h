@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 #include <getopt.h>
-#include <fcntl.h>
 #include "constants.h"
 #include "print.h"
 

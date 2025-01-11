@@ -12,14 +12,17 @@ int safe_open(const char *path, int flags, mode_t mode)
     if (fd < 0)
     {
         print_error("[ERROR] open() failed");
+        exit(EXIT_FAILURE);
     }
     return fd;
 }
 
 void safe_close(int fd)
 {
-    if (close(fd) < 0)
+    int ret = close(fd);
+    if (ret < 0)
     {
         print_error("[ERROR] close() failed");
+        exit(EXIT_FAILURE);
     }
 }

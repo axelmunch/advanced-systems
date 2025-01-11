@@ -14,7 +14,7 @@
 void free_if_needed(void *to_free);
 
 /**
- * @brief Safe open file descriptor
+ * @brief Safe open file descriptor with error handling
  * @param const char* path
  * @param int flags
  * @param mode_t mode
@@ -22,7 +22,7 @@ void free_if_needed(void *to_free);
 int safe_open(const char *path, int flags, mode_t mode);
 
 /**
- * @brief Safe close file descriptor
+ * @brief Safe close file descriptor with error handling
  * @param int fd
  */
 void safe_close(int fd);
