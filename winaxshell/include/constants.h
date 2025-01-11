@@ -14,7 +14,7 @@
 /**
  * @brief Maximum buffer size
  */
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 1024 
 
 /**
  * @brief Maximum number arguments
