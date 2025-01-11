@@ -85,7 +85,7 @@ Test(executor, test_op_pipe)
     node->left = left;
     node->right = right;
     cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`ls -l | grep Makefile` should succeed");
-    printf(GREEN_COLOR "OK\n");
+    printf(GREEN_COLOR "OK\n" RESET_COLOR);
 }
 
 Test(executor, test_op_bg) 
@@ -95,7 +95,7 @@ Test(executor, test_op_bg)
     node->left = left;
 
     cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`sleep 5 &` should succeed");
-    printf(GREEN_COLOR "OK\n");
+    printf(GREEN_COLOR "OK\n" RESET_COLOR);
 }
 
 Test(executor, test_op_redir_out)
@@ -138,7 +138,7 @@ Test(executor, test_command_chain)
 
     cr_assert_not_null(tree, "Failed to parse command tree");
     cr_assert_eq(execute_command_tree(tree->root), EXIT_SUCCESS, "Executing command chain should succeed");
-    printf("OK\n");
+    printf(GREEN_COLOR "OK\n" RESET_COLOR);
 
     free_command_node(tree->root);
     free_if_needed(tree);

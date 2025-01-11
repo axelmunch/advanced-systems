@@ -21,7 +21,7 @@ char *dup_optarg_str()
         str = strndup(optarg, MAX_INPUT);
         if (str == NULL)
         {
-            print_error("");
+            print_error("[ERROR] strndup() failed");
         }
     }
     return str;
