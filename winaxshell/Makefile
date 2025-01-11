@@ -10,6 +10,9 @@ DOC_DIR=./doc
 GCOV_DIR=./gcov
 TEST_DIR=./tests
 MOCKS_DIR=./mocks
+BLUE=\033[1;34m
+YELLOW=\033[1;33m
+NC=\033[0m
 
 GCOVFLAGS=-O0 --coverage -lgcov -Wall -g
 
@@ -66,15 +69,15 @@ package: gcov doc all
 	tar cvfz $(AR_NAME) ./*
 
 run:
-	@echo "Running $(EXEC)"
+	@echo "$(BLUE)Running $(EXEC)$(NC)"
 	@./$(BIN_DIR)/$(EXEC)
 
 tests:
-	@echo "Running test suite..."
-	@./$(BIN_DIR)/$(TEST_EXEC) --verbose --jobs=1
+	@echo "$(YELLOW)Running WinAxShell test suite...$(NC)"
+	@./$(BIN_DIR)/$(TEST_EXEC) --verbose=2 --jobs=1
 
 memcheck: 
-	@echo "Running Valgrind..."
+	@echo "$(YELLOW)Running Valgrind...$(NC)"
 	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(TEST_EXEC)
 	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(EXEC)
 

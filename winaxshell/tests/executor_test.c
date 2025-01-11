@@ -1,5 +1,6 @@
 #include <criterion/criterion.h>
 #include <criterion/hooks.h>
+#include <criterion/redirect.h>
 #include "executor.h"
 #include "parser.h"
 
@@ -9,6 +10,9 @@ command_node_t* right;
 
 void setup(void) 
 {
+    cr_redirect_stderr();
+    cr_redirect_stdout();
+
     node = create_command_node();
     cr_assert_not_null(node, "Failed to create root node");
     node->op_type = OP_NONE;
@@ -79,13 +83,12 @@ Test(executor, test_op_seq)
 
 Test(executor, test_op_pipe) 
 {
-    left->args = (char *[]){"ls", "-l", NULL};
-    right->args = (char *[]){"grep", "Makefile", NULL};
+    left->args = (char *[]){"ps", "-aux", NULL};
+    right->args = (char *[]){"grep", "^root", NULL};
     node->op_type = OP_PIPE;
     node->left = left;
     node->right = right;
-    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`ls -l | grep Makefile` should succeed");
-    printf(GREEN_COLOR "OK\n" RESET_COLOR);
+    cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`ps -aux | grep ^root` should succeed");
 }
 
 Test(executor, test_op_bg) 
@@ -95,7 +98,6 @@ Test(executor, test_op_bg)
     node->left = left;
 
     cr_assert_eq(execute_command_tree(node), EXIT_SUCCESS, "`sleep 5 &` should succeed");
-    printf(GREEN_COLOR "OK\n" RESET_COLOR);
 }
 
 Test(executor, test_op_redir_out)
@@ -138,7 +140,6 @@ Test(executor, test_command_chain)
 
     cr_assert_not_null(tree, "Failed to parse command tree");
     cr_assert_eq(execute_command_tree(tree->root), EXIT_SUCCESS, "Executing command chain should succeed");
-    printf(GREEN_COLOR "OK\n" RESET_COLOR);
 
     free_command_node(tree->root);
     free_if_needed(tree);
