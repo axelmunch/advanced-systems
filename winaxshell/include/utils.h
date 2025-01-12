@@ -37,11 +37,11 @@ void safe_close(int fd);
 
 /**
  * @brief Enhanced strtok function that handles quoted strings
- * @param char* str
- * @param const char* delim
- * @param char** saveptr
+ * @param char* String to tokenize 
+ * @param const char* delimiters
+ * @param char** next_token pointer to the next token
  * @return char* token
  */
-char *enhanced_strtok(char *str, const char *delim, char **saveptr);
+char *enhanced_strtok(char *str, const char *delim, char **next_token);
 
 #endif // UTILS_H

@@ -116,8 +116,8 @@ command_tree_t *parse_command(const char *input)
 
     command_node_t *current = tree->root;
     size_t arg_index = 0;
-    char *saveptr = NULL;
-    char *token = enhanced_strtok(input_copy, CMD_DELIMITER, &saveptr);
+    char *next_token = NULL;
+    char *token = enhanced_strtok(input_copy, CMD_DELIMITER, &next_token);
 
     while (token != NULL)
     {
@@ -149,7 +149,7 @@ command_tree_t *parse_command(const char *input)
             }
             arg_index++;
         }
-        token = enhanced_strtok(NULL, CMD_DELIMITER, &saveptr);
+        token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
     }
 
     current->args[arg_index] = NULL;

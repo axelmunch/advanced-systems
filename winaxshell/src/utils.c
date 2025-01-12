@@ -47,29 +47,27 @@ void safe_close(int fd)
     }
 }
 
-char *enhanced_strtok(char *str, const char *delim, char **saveptr)
+char *enhanced_strtok(char *str, const char *delim, char **next_token)
 {
     char *token;
     if (str == NULL)
-    {
-        str = *saveptr;
-    }
+        str = *next_token;
+
     str += strspn(str, delim);
-    if (*str == '\0')
-    {
+    if (*str == NULL_CHAR)
         return NULL;
-    }
+
     if (*str == DOUBLE_QUOTES)
     {
         str++;
         token = str;
+
         while (*str && *str != DOUBLE_QUOTES)
-        {
             str++;
-        }
+
         if (*str == DOUBLE_QUOTES)
         {
-            *str = '\0';
+            *str = NULL_CHAR;
             str++;
         }
     }
@@ -79,10 +77,10 @@ char *enhanced_strtok(char *str, const char *delim, char **saveptr)
         str += strcspn(str, delim);
         if (*str)
         {
-            *str = '\0';
+            *str = NULL_CHAR;
             str++;
         }
     }
-    *saveptr = str;
+    *next_token = str;
     return token;
 }
