@@ -28,6 +28,12 @@ int execute_single_command(char **args)
 
 int execute_pipe_command(command_node_t *left, command_node_t *right)
 {
+    if (left == NULL || right == NULL)
+    {
+        print_error("[ERROR] Null command node passed to execute_pipe_command()");
+        return EXIT_FAILURE;
+    }
+
     int pipefd[2];
     pid_t left_pid, right_pid;
     int status = EXIT_FAILURE;

@@ -1,5 +1,45 @@
 #include "parser.h"
 
+static char *enhanced_strtok(char *str, const char *delim, char **saveptr)
+{
+    char *token;
+    if (str == NULL)
+    {
+        str = *saveptr;
+    }
+    str += strspn(str, delim);
+    if (*str == '\0')
+    {
+        return NULL;
+    }
+    if (*str == '\"')
+    {
+        str++;
+        token = str;
+        while (*str && *str != '\"')
+        {
+            str++;
+        }
+        if (*str == '\"')
+        {
+            *str = '\0';
+            str++;
+        }
+    }
+    else
+    {
+        token = str;
+        str += strcspn(str, delim);
+        if (*str)
+        {
+            *str = '\0';
+            str++;
+        }
+    }
+    *saveptr = str;
+    return token;
+}
+
 command_node_t *create_command_node()
 {
     command_node_t *node = malloc(sizeof(command_node_t));
@@ -116,7 +156,8 @@ command_tree_t *parse_command(const char *input)
 
     command_node_t *current = tree->root;
     size_t arg_index = 0;
-    char *token = strtok(input_copy, CMD_DELIMITER);
+    char *saveptr = NULL;
+    char *token = enhanced_strtok(input_copy, CMD_DELIMITER, &saveptr);
 
     while (token != NULL)
     {
@@ -148,7 +189,7 @@ command_tree_t *parse_command(const char *input)
             }
             arg_index++;
         }
-        token = strtok(NULL, CMD_DELIMITER);
+        token = enhanced_strtok(NULL, CMD_DELIMITER, &saveptr);
     }
 
     current->args[arg_index] = NULL;
