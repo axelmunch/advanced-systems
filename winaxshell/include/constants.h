@@ -48,5 +48,8 @@
 #define GREEN_COLOR "\033[1;32m"
 #define BLUE_COLOR "\033[1;34m"
 #define CMD_DELIMITER " \t\n"
+#define DOUBLE_QUOTES '\"'
+#define SINGLE_QUOTE '\''
+
 
 #endif // CONSTANTS_H

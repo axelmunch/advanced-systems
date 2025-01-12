@@ -1,45 +1,5 @@
 #include "parser.h"
 
-static char *enhanced_strtok(char *str, const char *delim, char **saveptr)
-{
-    char *token;
-    if (str == NULL)
-    {
-        str = *saveptr;
-    }
-    str += strspn(str, delim);
-    if (*str == '\0')
-    {
-        return NULL;
-    }
-    if (*str == '\"')
-    {
-        str++;
-        token = str;
-        while (*str && *str != '\"')
-        {
-            str++;
-        }
-        if (*str == '\"')
-        {
-            *str = '\0';
-            str++;
-        }
-    }
-    else
-    {
-        token = str;
-        str += strcspn(str, delim);
-        if (*str)
-        {
-            *str = '\0';
-            str++;
-        }
-    }
-    *saveptr = str;
-    return token;
-}
-
 command_node_t *create_command_node()
 {
     command_node_t *node = malloc(sizeof(command_node_t));

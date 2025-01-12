@@ -6,6 +6,26 @@ void free_if_needed(void *to_free)
         free(to_free);
 }
 
+void free_command_node(command_node_t *node)
+{
+    if (node == NULL)
+        return;
+
+    if (node->args != NULL)
+    {
+        for (int i = 0; i < MAX_ARGS && node->args[i] != NULL; i++)
+        {
+            free_if_needed(node->args[i]);
+            node->args[i] = NULL;
+        }
+        free_if_needed(node->args);
+        node->args = NULL;
+    }
+    free_command_node(node->left);
+    free_command_node(node->right);
+    free_if_needed(node);
+}
+
 int safe_open(const char *path, int flags, mode_t mode)
 {
     int fd = open(path, flags, mode);
@@ -27,22 +47,42 @@ void safe_close(int fd)
     }
 }
 
-void free_command_node(command_node_t *node)
+char *enhanced_strtok(char *str, const char *delim, char **saveptr)
 {
-    if (node == NULL)
-        return;
-
-    if (node->args != NULL)
+    char *token;
+    if (str == NULL)
     {
-        for (int i = 0; i < MAX_ARGS && node->args[i] != NULL; i++)
-        {
-            free_if_needed(node->args[i]);
-            node->args[i] = NULL;
-        }
-        free_if_needed(node->args);
-        node->args = NULL;
+        str = *saveptr;
     }
-    free_command_node(node->left);
-    free_command_node(node->right);
-    free_if_needed(node);
+    str += strspn(str, delim);
+    if (*str == '\0')
+    {
+        return NULL;
+    }
+    if (*str == DOUBLE_QUOTES)
+    {
+        str++;
+        token = str;
+        while (*str && *str != DOUBLE_QUOTES)
+        {
+            str++;
+        }
+        if (*str == DOUBLE_QUOTES)
+        {
+            *str = '\0';
+            str++;
+        }
+    }
+    else
+    {
+        token = str;
+        str += strcspn(str, delim);
+        if (*str)
+        {
+            *str = '\0';
+            str++;
+        }
+    }
+    *saveptr = str;
+    return token;
 }

@@ -65,7 +65,7 @@ Test(parser, test_get_operator_type)
     cr_assert_eq(get_operator_type("@"), OP_NONE, "Unknown operator should return OP_NONE");
 }
 
-Test(parser, test_parse_quotes)
+Test(parser, test_parse_double_quotes)
 {
     command_tree_t *tree = parse_command("echo \"Hello, World!\"");
     cr_assert_not_null(tree, "Tree should not be NULL");
