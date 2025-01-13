@@ -71,6 +71,20 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
             str++;
         }
     }
+    else if (*str == SINGLE_QUOTE)
+    {
+        str++;
+        token = str;
+
+        while (*str && *str != SINGLE_QUOTE)
+            str++;
+
+        if (*str == SINGLE_QUOTE)
+        {
+            *str = NULL_CHAR;
+            str++;
+        }
+    }
     else
     {
         token = str;

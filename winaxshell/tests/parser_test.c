@@ -74,3 +74,13 @@ Test(parser, test_parse_double_quotes)
     free_command_node(tree->root);
     free_if_needed(tree);
 }
+
+Test(parser, test_parse_single_quote)
+{
+    command_tree_t *tree = parse_command("echo 'Hello, World!'");
+    cr_assert_not_null(tree, "Tree should not be NULL");
+    cr_assert_str_eq(tree->root->args[0], "echo", "First argument should be 'echo', got '%s'", tree->root->args[0]);
+    cr_assert_str_eq(tree->root->args[1], "Hello, World!", "Second argument should be 'Hello, World!', got '%s'", tree->root->args[1]);
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
