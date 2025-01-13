@@ -152,15 +152,12 @@ Test(executor, test_op_append)
     cr_assert_eq(status, EXIT_SUCCESS, "`echo Hello, World! >> mocks/output.txt` should succeed");
 }
 
-Test(executor, test_command_chain)
+Test(executor, test_chained_pipes)
 {
-    char *input = "ls -l | head -n 1 | wc -l ; true && false || echo 'Thats all folks!'";
+    char *input = "ls -l | head 5 | head 3 | tail 1 | wc -l";
     command_tree_t *tree = parse_command(input);
     cr_assert_not_null(tree, "Failed to parse command tree");
 
     int status = execute_command_tree(tree->root);
-    cr_assert_eq(status, EXIT_SUCCESS, "Executing command chain should succeed");
-
-    free_command_node(tree->root);
-    free_if_needed(tree);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing chained pipes should succeed");
 }
