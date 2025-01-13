@@ -6,6 +6,26 @@ void free_if_needed(void *to_free)
         free(to_free);
 }
 
+void free_command_node(command_node_t *node)
+{
+    if (node == NULL)
+        return;
+
+    if (node->args != NULL)
+    {
+        for (int i = 0; i < MAX_ARGS && node->args[i] != NULL; i++)
+        {
+            free_if_needed(node->args[i]);
+            node->args[i] = NULL;
+        }
+        free_if_needed(node->args);
+        node->args = NULL;
+    }
+    free_command_node(node->left);
+    free_command_node(node->right);
+    free_if_needed(node);
+}
+
 int safe_open(const char *path, int flags, mode_t mode)
 {
     int fd = open(path, flags, mode);
@@ -27,22 +47,54 @@ void safe_close(int fd)
     }
 }
 
-void free_command_node(command_node_t *node)
+char *enhanced_strtok(char *str, const char *delim, char **next_token)
 {
-    if (node == NULL)
-        return;
+    char *token;
+    if (str == NULL)
+        str = *next_token;
 
-    if (node->args != NULL)
+    str += strspn(str, delim);
+    if (*str == NULL_CHAR)
+        return NULL;
+
+    if (*str == DOUBLE_QUOTES)
     {
-        for (int i = 0; i < MAX_ARGS && node->args[i] != NULL; i++)
+        str++;
+        token = str;
+
+        while (*str && *str != DOUBLE_QUOTES)
+            str++;
+
+        if (*str == DOUBLE_QUOTES)
         {
-            free_if_needed(node->args[i]);
-            node->args[i] = NULL;
+            *str = NULL_CHAR;
+            str++;
         }
-        free_if_needed(node->args);
-        node->args = NULL;
     }
-    free_command_node(node->left);
-    free_command_node(node->right);
-    free_if_needed(node);
+    else if (*str == SINGLE_QUOTE)
+    {
+        str++;
+        token = str;
+
+        while (*str && *str != SINGLE_QUOTE)
+            str++;
+
+        if (*str == SINGLE_QUOTE)
+        {
+            *str = NULL_CHAR;
+            str++;
+        }
+    }
+    else
+    {
+        token = str;
+        str += strcspn(str, delim);
+        if (*str)
+        {
+            *str = NULL_CHAR;
+            str++;
+        }
+    }
+    *next_token = str;
+    return token;
 }

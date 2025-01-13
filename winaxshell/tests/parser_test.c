@@ -64,3 +64,23 @@ Test(parser, test_get_operator_type)
     cr_assert_eq(get_operator_type(NULL), OP_NONE, "NULL should return OP_NONE");
     cr_assert_eq(get_operator_type("@"), OP_NONE, "Unknown operator should return OP_NONE");
 }
+
+Test(parser, test_parse_double_quotes)
+{
+    command_tree_t *tree = parse_command("echo \"Hello, World!\"");
+    cr_assert_not_null(tree, "Tree should not be NULL");
+    cr_assert_str_eq(tree->root->args[0], "echo", "First argument should be 'echo', got '%s'", tree->root->args[0]);
+    cr_assert_str_eq(tree->root->args[1], "Hello, World!", "Second argument should be 'Hello, World!', got '%s'", tree->root->args[1]);
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(parser, test_parse_single_quote)
+{
+    command_tree_t *tree = parse_command("echo 'Hello, World!'");
+    cr_assert_not_null(tree, "Tree should not be NULL");
+    cr_assert_str_eq(tree->root->args[0], "echo", "First argument should be 'echo', got '%s'", tree->root->args[0]);
+    cr_assert_str_eq(tree->root->args[1], "Hello, World!", "Second argument should be 'Hello, World!', got '%s'", tree->root->args[1]);
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}

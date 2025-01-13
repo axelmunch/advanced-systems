@@ -15,6 +15,13 @@
 void free_if_needed(void *to_free);
 
 /**
+ * @brief Free a command node
+ * @param node Command node
+ * @return void
+ */
+void free_command_node(command_node_t* node);
+
+/**
  * @brief Safe open file descriptor with error handling
  * @param const char* path
  * @param int flags
@@ -29,10 +36,12 @@ int safe_open(const char *path, int flags, mode_t mode);
 void safe_close(int fd);
 
 /**
- * @brief Free a command node
- * @param node Command node
- * @return void
+ * @brief Enhanced strtok function that handles quoted strings
+ * @param char* String to tokenize
+ * @param const char* delimiters
+ * @param char** next_token pointer to the next token
+ * @return char* token
  */
-void free_command_node(command_node_t* node);
+char *enhanced_strtok(char *str, const char *delim, char **next_token);
 
 #endif // UTILS_H
