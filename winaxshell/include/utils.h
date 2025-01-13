@@ -37,7 +37,7 @@ void safe_close(int fd);
 
 /**
  * @brief Enhanced strtok function that handles quoted strings
- * @param char* String to tokenize 
+ * @param char* String to tokenize
  * @param const char* delimiters
  * @param char** next_token pointer to the next token
  * @return char* token

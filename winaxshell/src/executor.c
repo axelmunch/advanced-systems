@@ -1,5 +1,24 @@
 #include "executor.h"
 
+/**
+ * @brief Internal signal handler for SIGCHLD
+ * @param signo Signal number
+ * @return void
+ */
+static void sigchld_handler(int signo)
+{
+    int status;
+    pid_t pid;
+
+    while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
+    {
+        if (WIFEXITED(status))
+            print_generic(STDOUT_FILENO, "[%d] Process exited with status %d.\n", pid, WEXITSTATUS(status));
+        else if (WIFSIGNALED(status))
+            print_generic(STDOUT_FILENO, "[%d] Process killed by signal %d.\n", pid, WTERMSIG(status));
+    }
+}
+
 int execute_single_command(char **args)
 {
     if (args == NULL || args[0] == NULL)
@@ -122,12 +141,6 @@ int execute_background_command(command_node_t *node)
 
     if (pid == 0)
     {
-        int setsid_status = setsid();
-        if (setsid_status == -1)
-        {
-            print_error("[ERROR] setsid() failed");
-            exit(EXIT_FAILURE);
-        }
         int child_status = execvp(node->args[0], node->args);
         if (child_status == -1)
         {
@@ -137,7 +150,7 @@ int execute_background_command(command_node_t *node)
     }
 
     print_generic(STDOUT_FILENO, "[%d] %s running in background.\n", pid, node->args[0]);
-    signal(SIGCHLD, SIG_IGN);
+    signal(SIGCHLD, sigchld_handler);
     return EXIT_SUCCESS;
 }
 
@@ -215,7 +228,7 @@ int execute_command_tree(command_node_t *node)
 
     switch (node->op_type)
     {
-    case OP_PIPE: // OK
+    case OP_PIPE:
         status = execute_pipe_command(node->left, node->right);
         break;
     case OP_SEQ: // TODO: handle operator of the right node, be able to chained operators
@@ -223,17 +236,17 @@ int execute_command_tree(command_node_t *node)
         if (node->right != NULL)
             status = execute_command_tree(node->right);
         break;
-    case OP_AND: // OK
+    case OP_AND:
         status = execute_command_tree(node->left);
         if (status == EXIT_SUCCESS)
             status = execute_command_tree(node->right);
         break;
-    case OP_OR: // OK
+    case OP_OR:
         status = execute_command_tree(node->left);
         if (status != EXIT_SUCCESS)
             status = execute_command_tree(node->right);
         break;
-    case OP_BG: // TODO
+    case OP_BG: // TODO: handle properly background commands
         status = execute_background_command(node->left);
         break;
     case OP_REDIR_OUT:
@@ -241,9 +254,9 @@ int execute_command_tree(command_node_t *node)
     case OP_APPEND:
         status = execute_redirection_command(node->left, node->right, node->op_type);
         break;
-    case OP_HEREDOC: // TODO
+    case OP_HEREDOC:
         break;
-    case OP_NONE: // OK
+    case OP_NONE:
         status = execute_single_command(node->args);
         break;
     default:
@@ -263,7 +276,7 @@ void execute_command(char *input, command_tree_t *command_tree)
         return;
     }
     // TODO: add the command tree to the history
-    // Handle if command_tree is a built-in command
+    // Check if command_tree is a built-in command
     execute_command_tree(command_tree->root);
     free_command_node(command_tree->root);
     free_if_needed(command_tree);
