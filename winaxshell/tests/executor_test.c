@@ -154,7 +154,7 @@ Test(executor, test_op_append)
 
 Test(executor, test_chained_pipes)
 {
-    char *input = "ls -l | head 5 | head 3 | tail 1 | wc -l";
+    char *input = "ls -l | head -n 5 | head -n 4 | head -n 3 | tail 1 | wc -l";
     command_tree_t *tree = parse_command(input);
     cr_assert_not_null(tree, "Failed to parse command tree");
 

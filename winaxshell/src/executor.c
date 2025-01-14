@@ -36,7 +36,7 @@ int execute_single_command(char **args)
         int child_status = execvp(args[0], args);
         if (child_status == -1)
         {
-            print_error("[ERROR] execvp() failed");
+            print_error("[ERROR] %s", args[0]);
             exit(EXIT_FAILURE);
         }
     }
@@ -74,6 +74,7 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
 
     if (left_pid == 0)
     {
+        print_generic(STDOUT_FILENO, "Executing left command\n");
         safe_close(pipefd[0]);
         if (dup2(pipefd[1], STDOUT_FILENO) == -1)
         {
@@ -86,7 +87,9 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         if (left->op_type == OP_PIPE)
             status = execute_pipe_command(left->left, left->right);
         else
-            status = execute_single_command(left->args);
+        {
+            status = execvp(left->args[0], left->args);
+        }
         exit(status);
     }
 
@@ -103,6 +106,7 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
 
     if (right_pid == 0)
     {
+        print_generic(STDOUT_FILENO, "Executing right command\n");
         safe_close(pipefd[1]);
         if (dup2(pipefd[0], STDIN_FILENO) == -1)
         {
@@ -112,11 +116,7 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         }
         safe_close(pipefd[0]);
 
-        if (right->op_type == OP_PIPE)
-            status = execute_pipe_command(right->left, right->right);
-        else
-            status = execute_single_command(right->args);
-
+        status = execvp(right->args[0], right->args);
         exit(status);
     }
 
@@ -144,7 +144,7 @@ int execute_background_command(command_node_t *node)
         int child_status = execvp(node->args[0], node->args);
         if (child_status == -1)
         {
-            print_error("[ERROR] execvp() failed");
+            print_error("[ERROR] %s", node->args[0]);
             exit(EXIT_FAILURE);
         }
     }

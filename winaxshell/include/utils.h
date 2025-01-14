@@ -16,22 +16,22 @@ void free_if_needed(void *to_free);
 
 /**
  * @brief Free a command node
- * @param node Command node
+ * @param node Command node to free
  * @return void
  */
 void free_command_node(command_node_t* node);
 
 /**
  * @brief Safe open file descriptor with error handling
- * @param const char* path
- * @param int flags
- * @param mode_t mode
+ * @param const char* path pathname of the file to open
+ * @param int flags flags to open the file with
+ * @param mode_t mode file mode to open the file with
  */
 int safe_open(const char *path, int flags, mode_t mode);
 
 /**
  * @brief Safe close file descriptor with error handling
- * @param int fd
+ * @param int fd: file descriptor to close
  */
 void safe_close(int fd);
 
