@@ -74,7 +74,6 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
 
     if (left_pid == 0)
     {
-        print_generic(STDOUT_FILENO, "Executing left command\n");
         safe_close(pipefd[0]);
         if (dup2(pipefd[1], STDOUT_FILENO) == -1)
         {
@@ -105,7 +104,6 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
 
     if (right_pid == 0)
     {
-        print_generic(STDOUT_FILENO, "Executing right command\n");
         safe_close(pipefd[1]);
         if (dup2(pipefd[0], STDIN_FILENO) == -1)
         {
