@@ -20,24 +20,24 @@ command_tree_t *create_command_tree();
 
 /**
  * @brief Handle an operator
- * @param tree Command tree
- * @param op Operator type
+ * @param tree Command tree to add operator to
+ * @param op Operator type to add
  * @return command_node_t* New command node
  */
 command_node_t *handle_operator(command_tree_t *tree, operator_t op);
 
 /**
  * @brief Handle an argument
- * @param node Command node
- * @param arg Argument string
- * @param index Argument index
+ * @param node Command node to add argument to
+ * @param arg Argument string to add
+ * @param index Argument index in the command
  * @return int 0 if failed, 1 if success
  */
 int handle_argument(command_node_t *node, const char *arg, size_t index);
 
 /**
  * @brief Parse a command string and create a command tree
- * @param input Command string
+ * @param input Command string to parse
  * @return command_tree_t*
  */
 command_tree_t* parse_command(const char* input);

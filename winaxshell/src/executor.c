@@ -36,7 +36,7 @@ int execute_single_command(char **args)
         int child_status = execvp(args[0], args);
         if (child_status == -1)
         {
-            print_error("[ERROR] execvp() failed");
+            print_error("[ERROR] %s", args[0]);
             exit(EXIT_FAILURE);
         }
     }
@@ -86,7 +86,8 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         if (left->op_type == OP_PIPE)
             status = execute_pipe_command(left->left, left->right);
         else
-            status = execute_single_command(left->args);
+            status = execvp(left->args[0], left->args);
+
         exit(status);
     }
 
@@ -112,11 +113,7 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         }
         safe_close(pipefd[0]);
 
-        if (right->op_type == OP_PIPE)
-            status = execute_pipe_command(right->left, right->right);
-        else
-            status = execute_single_command(right->args);
-
+        status = execvp(right->args[0], right->args);
         exit(status);
     }
 
@@ -144,7 +141,7 @@ int execute_background_command(command_node_t *node)
         int child_status = execvp(node->args[0], node->args);
         if (child_status == -1)
         {
-            print_error("[ERROR] execvp() failed");
+            print_error("[ERROR] %s", node->args[0]);
             exit(EXIT_FAILURE);
         }
     }
@@ -156,7 +153,7 @@ int execute_background_command(command_node_t *node)
 
 int execute_redirection_command(command_node_t *left, command_node_t *right, operator_t redirect_type)
 {
-    if (left == NULL || right == NULL || right->args == NULL || right->args[0] == NULL)
+    if (left == NULL || right == NULL)
         return EXIT_FAILURE;
 
     int redirect_fd;
@@ -246,7 +243,7 @@ int execute_command_tree(command_node_t *node)
         if (status != EXIT_SUCCESS)
             status = execute_command_tree(node->right);
         break;
-    case OP_BG: // TODO: handle properly background commands
+    case OP_BG:
         status = execute_background_command(node->left);
         break;
     case OP_REDIR_OUT:
