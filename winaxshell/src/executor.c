@@ -87,7 +87,7 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
             status = execute_pipe_command(left->left, left->right);
         else
             status = execvp(left->args[0], left->args);
-        
+
         exit(status);
     }
 
