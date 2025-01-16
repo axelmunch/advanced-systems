@@ -241,7 +241,7 @@ int execute_command_tree(command_node_t *node)
     case OP_PIPE:
         status = execute_pipe_command(node->left, node->right);
         break;
-    case OP_SEQ: // TODO: handle operator of the right node, be able to chained operators
+    case OP_SEQ:
         execute_command_tree(node->left);
         if (node->right != NULL)
             status = execute_command_tree(node->right);
