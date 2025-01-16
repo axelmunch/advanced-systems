@@ -178,6 +178,7 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
         redirect_fd = safe_open(right->args[0], O_WRONLY | O_CREAT | O_APPEND, 0644);
         break;
     case OP_REDIR_IN:
+    case OP_HEREDOC:
         redirect_fd = safe_open(right->args[0], O_RDONLY, 0);
         break;
     default:
@@ -208,7 +209,7 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
                 exit(EXIT_FAILURE);
             }
         }
-        else if (redirect_type == OP_REDIR_IN)
+        else if (redirect_type == OP_REDIR_IN || redirect_type == OP_HEREDOC)
         {
             if (dup2(redirect_fd, STDIN_FILENO) < 0)
             {
@@ -261,9 +262,8 @@ int execute_command_tree(command_node_t *node)
     case OP_REDIR_OUT:
     case OP_REDIR_IN:
     case OP_APPEND:
-        status = execute_redirection_command(node->left, node->right, node->op_type);
-        break;
     case OP_HEREDOC:
+        status = execute_redirection_command(node->left, node->right, node->op_type);
         break;
     case OP_NONE:
         status = execute_single_command(node->args);

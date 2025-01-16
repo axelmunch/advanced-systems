@@ -151,3 +151,15 @@ Test(executor, test_op_append)
     int status = execute_command_tree(node);
     cr_assert_eq(status, EXIT_SUCCESS, "`echo Hello, World! >> mocks/output.txt` should succeed");
 }
+
+Test(executor, test_op_heredoc)
+{
+    left->args = (char *[]){"cat", NULL};
+    right->args = (char *[]){"EOF", NULL};
+    node->op_type = OP_HEREDOC;
+    node->left = left;
+    node->right = right;
+
+    int status = execute_command_tree(node);
+    cr_assert_eq(status, EXIT_SUCCESS, "`cat << EOF` should succeed");
+}
