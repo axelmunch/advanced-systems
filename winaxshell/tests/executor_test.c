@@ -155,11 +155,11 @@ Test(executor, test_op_append)
 Test(executor, test_op_heredoc)
 {
     left->args = (char *[]){"cat", NULL};
-    right->args = (char *[]){"EOF", NULL};
+    right->args = (char *[]){"Makefile", NULL};
     node->op_type = OP_HEREDOC;
     node->left = left;
     node->right = right;
 
     int status = execute_command_tree(node);
-    cr_assert_eq(status, EXIT_SUCCESS, "`cat << EOF` should succeed");
+    cr_assert_eq(status, EXIT_SUCCESS, "`cat << Makefile` should succeed");
 }
