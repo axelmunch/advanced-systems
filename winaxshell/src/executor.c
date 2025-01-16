@@ -84,11 +84,19 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         safe_close(pipefd[1]);
 
         if (left->op_type == OP_PIPE)
+        {
             status = execute_pipe_command(left->left, left->right);
+            exit(status);
+        }
         else
+        {
             status = execvp(left->args[0], left->args);
-
-        exit(status);
+            if (status == -1)
+            {
+                print_error("[ERROR] %s", left->args[0]);
+                exit(EXIT_FAILURE);
+            }
+        }
     }
 
     right_pid = fork();
@@ -114,7 +122,11 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         safe_close(pipefd[0]);
 
         status = execvp(right->args[0], right->args);
-        exit(status);
+        if (status == -1)
+        {
+            print_error("[ERROR] %s", right->args[0]);
+            exit(EXIT_FAILURE);
+        }
     }
 
     safe_close(pipefd[0]);
