@@ -55,7 +55,6 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
 
     int pipefd[2];
     pid_t left_pid, right_pid;
-    int status = EXIT_FAILURE;
 
     if (pipe(pipefd) == -1)
     {
@@ -85,13 +84,13 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
 
         if (left->op_type == OP_PIPE)
         {
-            status = execute_pipe_command(left->left, left->right);
-            exit(status);
+            int child_status = execute_pipe_command(left->left, left->right);
+            exit(child_status);
         }
         else
         {
-            status = execvp(left->args[0], left->args);
-            if (status == -1)
+            int child_status = execvp(left->args[0], left->args);
+            if (child_status == -1)
             {
                 print_error("[ERROR] %s", left->args[0]);
                 exit(EXIT_FAILURE);
@@ -121,8 +120,8 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         }
         safe_close(pipefd[0]);
 
-        status = execvp(right->args[0], right->args);
-        if (status == -1)
+        int child_status = execvp(right->args[0], right->args);
+        if (child_status == -1)
         {
             print_error("[ERROR] %s", right->args[0]);
             exit(EXIT_FAILURE);
@@ -132,11 +131,10 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
     safe_close(pipefd[0]);
     safe_close(pipefd[1]);
 
-    int left_status, right_status;
-    waitpid(left_pid, &left_status, 0);
-    waitpid(right_pid, &right_status, 0);
+    int status;
+    waitpid(right_pid, &status, 0);
 
-    return WIFEXITED(right_status) ? WEXITSTATUS(right_status) : EXIT_FAILURE;
+    return WIFEXITED(status) ? WEXITSTATUS(status) : EXIT_FAILURE;
 }
 
 int execute_background_command(command_node_t *node)
@@ -278,6 +276,7 @@ int execute_command_tree(command_node_t *node)
 
 void execute_command(char *input, command_tree_t *command_tree)
 {
+    add_history_entry(input);
     command_tree = parse_command(input);
     if (command_tree == NULL)
     {

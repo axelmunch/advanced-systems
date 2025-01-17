@@ -44,4 +44,11 @@ void safe_close(int fd);
  */
 char *enhanced_strtok(char *str, const char *delim, char **next_token);
 
+/**
+ * @brief Add command to history file
+ * @param const char* entry command to add to history
+ * @return void
+ */
+void add_history_entry(const char *entry);
+
 #endif // UTILS_H

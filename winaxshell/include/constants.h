@@ -80,4 +80,9 @@
  */
 #define NULL_CHAR '\0'
 
+/**
+ * @brief History file path
+ */
+#define HISTORY_FILE ".winaxshell_history"
+
 #endif // CONSTANTS_H

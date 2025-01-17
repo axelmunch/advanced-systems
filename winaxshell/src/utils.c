@@ -98,3 +98,27 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
     *next_token = str;
     return token;
 }
+
+void add_history_entry(const char *entry)
+{
+    char *home = getenv("HOME");
+    if (home == NULL)
+    {
+        print_error("[ERROR] HOME environment variable not set");
+        return;
+    }
+
+    char *history_file = malloc(strlen(home) + strlen(HISTORY_FILE) + 2);
+    if (history_file == NULL)
+    {
+        errno = ENOMEM;
+        print_error("[ERROR] Failed to allocate memory for history file path");
+        return;
+    }
+
+    sprintf(history_file, "%s/%s", home, HISTORY_FILE);
+    int fd = safe_open(history_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+    
+    dprintf(fd, "%s\n", entry);
+    safe_close(fd);
+}
