@@ -99,8 +99,22 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
     return token;
 }
 
+int is_all_space(const char *str)
+{
+    while (*str)
+    {
+        if (!isspace(*str))
+            return 0;
+        str++;
+    }
+    return 1;
+}
+
 void add_history_entry(const char *entry)
 {
+    if (entry == NULL || is_all_space(entry))
+        return;
+
     char *home = getenv("HOME");
     if (home == NULL)
     {
@@ -117,8 +131,9 @@ void add_history_entry(const char *entry)
     }
 
     sprintf(history_file, "%s/%s", home, HISTORY_FILE);
-    int fd = safe_open(history_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-    
-    dprintf(fd, "%s\n", entry);
-    safe_close(fd);
+    int history_fd = safe_open(history_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+
+    print_generic(history_fd, "%s\n", entry);
+    safe_close(history_fd);
+    free_if_needed(history_file);
 }
