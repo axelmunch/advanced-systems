@@ -12,6 +12,8 @@
 #include "buffered_io.h"
 #include "typedef.h"
 
+bool buffered_mode = false;
+
 /**
  * Procedure checks if variable must be free
  * (check: ptr != NULL)
@@ -141,7 +143,7 @@ void parse_options(int argc, char **argv, binary_params_t *params, command_mode 
             *mode = LIST_MODE;
             break;
         case 'b':
-            *mode = BUFFERED_MODE;
+            buffered_mode = true;
             break;
         case 'v':
             set_verbose_mode(true);
@@ -179,7 +181,7 @@ int main(int argc, char **argv)
     switch (mode)
     {
     case COPY_MODE:
-        copy(params.input, params.output);
+        copy(params.input, params.output, buffered_mode);
         break;
     case REVERSE_MODE:
         reverse(params.input, params.output);
@@ -188,7 +190,7 @@ int main(int argc, char **argv)
         ls_like(params.input);
         break;
     case BUFFERED_MODE:
-        buffered_demo();
+        // buffered_demo();
         break;
     default:
         errno = ENOSYS;
