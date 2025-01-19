@@ -31,6 +31,16 @@ int interactive_mode(void) // TODO: refactor
         }
 
         size_t input_len = strlen(input);
+
+        // Check for input overflow
+        if (input_len > 0 && input[input_len - 1] != '\n')
+        {
+            errno = EOVERFLOW;
+            print_error("Input too long. Maximum allowed is %d characters.\n", MAX_INPUT - 1);
+            while (getchar() != '\n' && !feof(stdin)); // Clear input buffer
+            continue;
+        }
+
         if (input_len > 0 && input[input_len - 1] == '\n')
             input[input_len - 1] = '\0';
 
