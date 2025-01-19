@@ -49,21 +49,18 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
 {
     if (left == NULL || right == NULL)
     {
-        print_error("[ERROR] Null command node passed to execute_pipe_command()");
+        print_error("[ERROR] Invalid pipe command");
         return EXIT_FAILURE;
     }
 
     int pipefd[2];
-    pid_t left_pid, right_pid;
-    int status = EXIT_FAILURE;
-
     if (pipe(pipefd) == -1)
     {
         print_error("[ERROR] pipe() failed");
         return EXIT_FAILURE;
     }
 
-    left_pid = fork();
+    pid_t left_pid = fork();
     if (left_pid == -1)
     {
         print_error("[ERROR] fork() failed");
@@ -78,28 +75,23 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         if (dup2(pipefd[1], STDOUT_FILENO) == -1)
         {
             print_error("[ERROR] dup2() failed");
-            safe_close(pipefd[1]);
             exit(EXIT_FAILURE);
         }
         safe_close(pipefd[1]);
 
         if (left->op_type == OP_PIPE)
         {
-            status = execute_pipe_command(left->left, left->right);
-            exit(status);
+            exit(execute_pipe_command(left->left, left->right));
         }
         else
         {
-            status = execvp(left->args[0], left->args);
-            if (status == -1)
-            {
-                print_error("[ERROR] %s", left->args[0]);
-                exit(EXIT_FAILURE);
-            }
+            execvp(left->args[0], left->args);
+            print_error("[ERROR] Failed to execute %s", left->args[0]);
+            exit(EXIT_FAILURE);
         }
     }
 
-    right_pid = fork();
+    pid_t right_pid = fork();
     if (right_pid == -1)
     {
         print_error("[ERROR] fork() failed");
@@ -116,17 +108,13 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         if (dup2(pipefd[0], STDIN_FILENO) == -1)
         {
             print_error("[ERROR] dup2() failed");
-            safe_close(pipefd[0]);
             exit(EXIT_FAILURE);
         }
         safe_close(pipefd[0]);
 
-        status = execvp(right->args[0], right->args);
-        if (status == -1)
-        {
-            print_error("[ERROR] %s", right->args[0]);
-            exit(EXIT_FAILURE);
-        }
+        execvp(right->args[0], right->args);
+        print_error("[ERROR] Failed to execute %s", right->args[0]);
+        exit(EXIT_FAILURE);
     }
 
     safe_close(pipefd[0]);
@@ -136,7 +124,7 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
     waitpid(left_pid, &left_status, 0);
     waitpid(right_pid, &right_status, 0);
 
-    return WIFEXITED(right_status) ? WEXITSTATUS(right_status) : EXIT_FAILURE;
+    return (WIFEXITED(left_status) && WIFEXITED(right_status)) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 int execute_background_command(command_node_t *node)
