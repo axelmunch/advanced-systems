@@ -125,22 +125,11 @@ void buffered_demo()
     FICHIER *file_out = my_open("output.txt", "w");
     if (file_out)
     {
-        my_putc('T', file_out);
-        my_putc('e', file_out);
-        my_putc('s', file_out);
-        my_putc('t', file_out);
-        my_putc('\n', file_out);
-        my_putc('b', file_out);
-        my_putc('u', file_out);
-        my_putc('f', file_out);
-        my_putc('f', file_out);
-        my_putc('e', file_out);
-        my_putc('r', file_out);
-        my_putc('e', file_out);
-        my_putc('d', file_out);
-        my_putc(' ', file_out);
-        my_putc('I', file_out);
-        my_putc('O', file_out);
+        const char *text = "Test\nbuffered IO";
+        for (int i = 0; text[i] != '\0'; i++)
+        {
+            my_putc(text[i], file_out);
+        }
         my_close(file_out);
     }
     print("----------------\n");
