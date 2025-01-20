@@ -109,7 +109,7 @@ command_tree_t *parse_command(const char *input)
     command_tree_t *tree = create_command_tree();
     if (tree == NULL)
     {
-        free(input_copy);
+        free_if_needed(input_copy);
         print_error("[ERROR] Failed to create command tree");
         return NULL;
     }
@@ -129,8 +129,8 @@ command_tree_t *parse_command(const char *input)
             {
                 print_error("[ERROR] Failed to handle operator");
                 free_command_node(tree->root);
-                free(tree);
-                free(input_copy);
+                free_if_needed(tree);
+                free_if_needed(input_copy);
                 return NULL;
             }
             tree->root = new_node;
@@ -139,7 +139,22 @@ command_tree_t *parse_command(const char *input)
         }
         else
         {
-            if (token[0] == DOLLAR_SIGN)
+            // Check for environment variable assignment
+            if (strchr(token, EQUAL_SIGN) != NULL)
+            {
+                if (set_env_var(token) != 0)
+                {
+                    print_error("[ERROR] Failed to set environment variable");
+                    free_command_node(tree->root);
+                    free_if_needed(tree);
+                    free_if_needed(input_copy);
+                    return NULL;
+                }
+                token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
+                continue;
+            }
+            // Check for environment variable expansion
+            else if (token[0] == DOLLAR_SIGN)
             {
                 char *env_value = get_env_var(token);
                 if (env_value != NULL)
@@ -147,25 +162,13 @@ command_tree_t *parse_command(const char *input)
                     token = env_value;
                 }
             }
-            else if (strchr(token, '=') != NULL)
-            {
-                if (set_env_var(token) != 0)
-                {
-                    free_command_node(tree->root);
-                    free(tree);
-                    free(input_copy);
-                    return NULL;
-                }
-                token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
-                continue;
-            }
 
             if (arg_index >= MAX_ARGS)
             {
                 print_error("[ERROR] Too many arguments");
                 free_command_node(tree->root);
-                free(tree);
-                free(input_copy);
+                free_if_needed(tree);
+                free_if_needed(input_copy);
                 return NULL;
             }
 
@@ -174,8 +177,8 @@ command_tree_t *parse_command(const char *input)
             {
                 print_error("[ERROR] Failed to duplicate argument");
                 free_command_node(tree->root);
-                free(tree);
-                free(input_copy);
+                free_if_needed(tree);
+                free_if_needed(input_copy);
                 return NULL;
             }
             arg_index++;
@@ -184,7 +187,7 @@ command_tree_t *parse_command(const char *input)
     }
 
     current->args[arg_index] = NULL;
-    free(input_copy);
+    free_if_needed(input_copy);
     return tree;
 }
 

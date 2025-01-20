@@ -54,47 +54,56 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
         str = *next_token;
 
     str += strspn(str, delim);
-    if (*str == NULL_CHAR)
+    if (*str == '\0')
         return NULL;
 
-    if (*str == DOUBLE_QUOTES)
+    token = str;
+
+    // For environment variable assignment
+    char *equals = strchr(str, EQUAL_SIGN);
+    if (equals != NULL && equals > str && equals < str + strcspn(str, delim))
     {
+        char *value_start = equals + 1;
+        while (*value_start && isspace(*value_start))
+            value_start++;
+
+        if (*value_start == DOUBLE_QUOTES || *value_start == SINGLE_QUOTE)
+        {
+            char quote = *value_start;
+            char *quote_end = value_start + 1;
+
+            while (*quote_end && *quote_end != quote)
+                quote_end++;
+
+            if (*quote_end == quote)
+            {
+                *next_token = quote_end + 1;
+                return token;
+            }
+        }
+    }
+
+    if (*str == DOUBLE_QUOTES || *str == SINGLE_QUOTE)
+    {
+        char quote = *str;
         str++;
         token = str;
 
-        while (*str && *str != DOUBLE_QUOTES)
+        while (*str && *str != quote)
             str++;
 
-        if (*str == DOUBLE_QUOTES)
+        if (*str == quote)
         {
-            *str = NULL_CHAR;
-            str++;
+            *str = '\0';
+            *next_token = str + 1;
+            return token;
         }
     }
-    else if (*str == SINGLE_QUOTE)
-    {
-        str++;
-        token = str;
 
-        while (*str && *str != SINGLE_QUOTE)
-            str++;
+    str += strcspn(str, delim);
+    if (*str)
+        *str++ = '\0';
 
-        if (*str == SINGLE_QUOTE)
-        {
-            *str = NULL_CHAR;
-            str++;
-        }
-    }
-    else
-    {
-        token = str;
-        str += strcspn(str, delim);
-        if (*str)
-        {
-            *str = NULL_CHAR;
-            str++;
-        }
-    }
     *next_token = str;
     return token;
 }
@@ -158,54 +167,52 @@ char *get_env_var(const char *token)
 int set_env_var(const char *token)
 {
     char *equal_sign = strchr(token, '=');
-    if (equal_sign != NULL)
+    if (!equal_sign)
+        return -1;
+
+    size_t name_len = equal_sign - token;
+    char *env_name = strndup(token, name_len);
+
+    if (!env_name)
+        return -1;
+
+    const char *value = equal_sign + 1;
+    char *processed_value = NULL;
+    size_t value_len;
+
+    while (isspace(*value))
+        value++;
+
+    if (*value == DOUBLE_QUOTES || *value == SINGLE_QUOTE)
     {
-        char *env_name = strndup(token, equal_sign - token);
-        if (env_name == NULL)
+        char quote_char = *value;
+        value++;
+        const char *end_quote = strchr(value, quote_char);
+
+        if (end_quote)
         {
-            print_error("[ERROR] Failed to allocate memory for env name");
-            return -1;
-        }
-
-        const char *env_value = equal_sign + 1;
-        char *processed_value = NULL;
-
-        while (isspace(*env_value)) env_value++;
-
-        if (*env_value == DOUBLE_QUOTES || *env_value == SINGLE_QUOTE)
-        {
-            char quote = *env_value;
-            env_value++;
-
-            char *end_quote = strchr(env_value, quote);
-
-            if (end_quote != NULL)
-                processed_value = strndup(env_value, end_quote - env_value);
-            else
-                processed_value = strdup(env_value);
+            value_len = end_quote - value;
+            processed_value = strndup(value, value_len);
         }
         else
         {
-            processed_value = strdup(env_value);
+            processed_value = strdup(value);
         }
-
-        if (processed_value == NULL)
-        {
-            free_if_needed(env_name);
-            print_error("[ERROR] Failed to allocate memory for env value");
-            return -1;
-        }
-
-        int ret = setenv(env_name, processed_value, 1);
-        free_if_needed(env_name);
-        free_if_needed(processed_value);
-
-        if (ret < 0)
-        {
-            print_error("[ERROR] Failed to set environment variable");
-            return -1;
-        }
-        return 0;
     }
-    return -1;
+    else
+    {
+        processed_value = strdup(value);
+    }
+
+    if (!processed_value)
+    {
+        free_if_needed(env_name);
+        return -1;
+    }
+
+    int ret = setenv(env_name, processed_value, 1);
+    free_if_needed(env_name);
+    free_if_needed(processed_value);
+
+    return ret;
 }

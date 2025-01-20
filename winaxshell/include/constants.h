@@ -86,6 +86,11 @@
 #define DOLLAR_SIGN '$'
 
 /**
+ * @brief Equal sign character
+ */
+#define EQUAL_SIGN '='
+
+/**
  * @brief History file path
  */
 #define HISTORY_FILE ".winaxshell_history"

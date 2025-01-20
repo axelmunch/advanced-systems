@@ -37,3 +37,13 @@ Test(integration, test_chained_commands)
     int status = execute_command_tree(tree->root);
     cr_assert_eq(status, EXIT_SUCCESS, "Executing chained commands should succeed");
 }
+
+Test(integration, test_command_with_env)
+{
+    char *input = "a='Hello, World!' b='Goodbye, World!' c='The end,;:!@#$%^&*()' ; echo $a ; echo $b ; echo $c && echo 'All environment variables set' || echo 'Failed to set environment variables'";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Failed to parse command tree");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable should succeed");
+}
