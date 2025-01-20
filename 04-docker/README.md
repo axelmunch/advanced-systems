@@ -36,7 +36,7 @@ Ce service livré avec Docker Compose sera accessible par l'adresse: http://$IP_
 
 Pour livrer le service Jenkins as a Service, nous pouvons build une image Docker en se basant sur l'image `tomcat`, le serveur web de Jenkins, comme base.
 
-Les instructions de build sont présentes dans le fichier `[Dockerfile](./Dockerfile)`.
+Les instructions de build sont présentes dans le fichier [Dockerfile](./Dockerfile).
 
 Pour créer l'image, en vous positionnant dans le répertoire où est présent le fichier `Dockerfile` lancez la commande suivante:
 
