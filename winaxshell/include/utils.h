@@ -59,4 +59,18 @@ int is_all_space(const char *str);
  */
 void add_history_entry(const char *entry);
 
+/**
+ * @brief Get the environment variable value
+ * @param const char* token name of the environment variable
+ * @return char* value of the environment variable
+ */
+char *get_env_var(const char *token);
+
+/**
+ * @brief Set the environment variable value
+ * @param const char* token name of the environment variable
+ * @return int 0 if successful, -1 otherwise
+ */
+int set_env_var(const char *token);
+
 #endif // UTILS_H

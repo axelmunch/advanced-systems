@@ -81,6 +81,11 @@
 #define NULL_CHAR '\0'
 
 /**
+ * @brief Dollar sign character
+ */
+#define DOLLAR_SIGN '$'
+
+/**
  * @brief History file path
  */
 #define HISTORY_FILE ".winaxshell_history"

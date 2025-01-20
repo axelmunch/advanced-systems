@@ -84,3 +84,22 @@ Test(parser, test_parse_single_quote)
     free_command_node(tree->root);
     free_if_needed(tree);
 }
+
+Test(parser, test_get_env_var)
+{
+    command_tree_t *tree = parse_command("echo $HOME");
+    cr_assert_not_null(tree, "Tree should not be NULL");
+    cr_assert_str_eq(tree->root->args[0], "echo", "First argument should be 'echo', got '%s'", tree->root->args[0]);
+    cr_assert_str_eq(tree->root->args[1], getenv("HOME"), "Second argument should be '%s', got '%s'", getenv("HOME"), tree->root->args[1]);
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(parser, test_set_env_var)
+{
+    command_tree_t *tree = parse_command("TEST_VAR=\"Hello, World!\"");
+    cr_assert_not_null(tree, "Tree should not be NULL");
+    cr_assert_str_eq(get_env_var("TEST_VAR"), "Hello, World!", "Environment variable should be set to 'Hello, World!'");
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}

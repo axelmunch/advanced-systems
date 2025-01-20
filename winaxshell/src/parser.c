@@ -139,9 +139,40 @@ command_tree_t *parse_command(const char *input)
         }
         else
         {
-            if (handle_argument(current, token, arg_index) == 0)
+            if (token[0] == DOLLAR_SIGN)
             {
-                print_error("[ERROR] Failed to handle argument");
+                char *env_value = get_env_var(token);
+                if (env_value != NULL)
+                {
+                    token = env_value;
+                }
+            }
+            else if (strchr(token, '=') != NULL)
+            {
+                if (set_env_var(token) != 0)
+                {
+                    free_command_node(tree->root);
+                    free(tree);
+                    free(input_copy);
+                    return NULL;
+                }
+                token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
+                continue;
+            }
+
+            if (arg_index >= MAX_ARGS)
+            {
+                print_error("[ERROR] Too many arguments");
+                free_command_node(tree->root);
+                free(tree);
+                free(input_copy);
+                return NULL;
+            }
+
+            current->args[arg_index] = strdup(token);
+            if (current->args[arg_index] == NULL)
+            {
+                print_error("[ERROR] Failed to duplicate argument");
                 free_command_node(tree->root);
                 free(tree);
                 free(input_copy);
