@@ -15,7 +15,7 @@ Le service sera accessible par l'adresse suivante: http://$IP_HOST:8080
 Cependant, cette configuration n'est pas persistente, donc au redémarrage du conteneur, les données seront perdues. Ainsi, il est nécessaire de persister les données avec la commande suivante:
 
 ```shell
-docker run --name jenkins-statefull -p 8081:8080 jenkins/jenkins:lts-jdk17 -v jenkins_statefull:/var/jenkins_home
+docker run --name jenkins-statefull -p 8081:8080 -v jenkins_statefull:/var/jenkins_home jenkins/jenkins:lts-jdk17 
 ```
 
 Cette seconde version du service sera accessible par l'adresse suivante: http://$IP_HOST:8081
@@ -26,7 +26,7 @@ Pour installer Jenkins as a Service, nous pouvons opter par l'utilisation de `do
 
 Pour cela, il suffit de lancer la commande suivante:
 
-```shell
+```bash
 docker-compose up -d
 ```
 
@@ -40,14 +40,14 @@ Les instructions de build sont présentes dans le fichier [Dockerfile](./Dockerf
 
 Pour créer l'image, en vous positionnant dans le répertoire où est présent le fichier `Dockerfile` lancez la commande suivante:
 
-```shell
+```bash
 docker build -t jenkins-scratch:1.0.0 .
 ```
 
 Puis créez un conteneur avec l'image nouvellement créer en publiant un port disponible en persistant le volume:
 
-```shell
-docker run --name jenkins-scratch -p 8083:8080 jenkins-scratch:1.0.0 -v jenkins_scratch:/var/jenkins_home
+```bash
+docker run --name jenkins-scratch -p 8083:8080 -v jenkins_scratch:/var/jenkins_home jenkins-scratch:1.0.0 
 ```
 
 Ce service from scratch de Jenkins sera accessible par l'adresse: http://$IP_HOST:8083
