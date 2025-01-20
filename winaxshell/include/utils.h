@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <fcntl.h>
+#include <ctype.h>
 #include "typedef.h"
 #include "print.h"
 
@@ -43,5 +44,33 @@ void safe_close(int fd);
  * @return char* token
  */
 char *enhanced_strtok(char *str, const char *delim, char **next_token);
+
+/**
+ * @brief Check if a string is all whitespace
+ * @param const char* str string to check
+ * @return int 1 if all whitespace, 0 otherwise
+ */
+int is_all_space(const char *str);
+
+/**
+ * @brief Add command to history file
+ * @param const char* entry command to add to history
+ * @return void
+ */
+void add_history_entry(const char *entry);
+
+/**
+ * @brief Get the environment variable value
+ * @param const char* token name of the environment variable
+ * @return char* value of the environment variable
+ */
+char *get_env_var(const char *token);
+
+/**
+ * @brief Set the environment variable value
+ * @param const char* token name of the environment variable
+ * @return int 0 if successful, -1 otherwise
+ */
+int set_env_var(const char *token);
 
 #endif // UTILS_H
