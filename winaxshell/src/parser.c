@@ -251,7 +251,7 @@ char *expand_env_vars(const char *str)
         read_pos++;
     }
 
-    *write_pos = '\0';
+    *write_pos = NULL_CHAR;
     return result;
 }
 
@@ -266,7 +266,7 @@ char *handle_quoted_string(char *str, char quote, char **next_token)
 
     if (*end == quote)
     {
-        *end = '\0';
+        *end = NULL_CHAR;
         *next_token = end + 1;
 
         if (quote == DOUBLE_QUOTES || quote == SINGLE_QUOTE)
@@ -312,7 +312,7 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
         str = *next_token;
 
     str += strspn(str, delim);
-    if (*str == '\0')
+    if (*str == NULL_CHAR)
         return NULL;
 
     char *token = str;
@@ -328,7 +328,7 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
 
     str += strcspn(str, delim);
     if (*str)
-        *str++ = '\0';
+        *str++ = NULL_CHAR; // Null-terminate the token
 
     *next_token = str;
     return token;
