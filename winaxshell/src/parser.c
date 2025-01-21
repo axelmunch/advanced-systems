@@ -209,3 +209,127 @@ operator_t get_operator_type(const char *operator_str)
     else
         return OP_NONE;
 }
+
+char *expand_env_vars(const char *str)
+{
+    if (!str || !strchr(str, DOLLAR_SIGN))
+        return strdup(str);
+
+    char *result = malloc(strlen(str) * 2);
+    if (!result)
+        return NULL;
+
+    const char *read_pos = str;
+    char *write_pos = result;
+
+    while (*read_pos)
+    {
+        if (*read_pos == DOLLAR_SIGN && *(read_pos + 1))
+        {
+            char var_name[MAX_INPUT] = {0};
+            var_name[0] = DOLLAR_SIGN;
+            int i = 1;
+            while (isalnum(read_pos[i]) || read_pos[i] == '_')
+            {
+                var_name[i] = read_pos[i];
+                i++;
+            }
+
+            char *value = get_env_var(var_name);
+            if (value)
+            {
+                strcpy(write_pos, value);
+                write_pos += strlen(value);
+                free_if_needed(value);
+            }
+            read_pos += (i - 1);
+        }
+        else
+        {
+            *write_pos++ = *read_pos;
+        }
+        read_pos++;
+    }
+
+    *write_pos = '\0';
+    return result;
+}
+
+char *handle_quoted_string(char *str, char quote, char **next_token)
+{
+    str++;
+    char *end = str;
+    char *result = NULL;
+
+    while (*end && *end != quote)
+        end++;
+
+    if (*end == quote)
+    {
+        *end = '\0';
+        *next_token = end + 1;
+
+        if (quote == DOUBLE_QUOTES || quote == SINGLE_QUOTE)
+        {
+            result = expand_env_vars(str);
+            if (!result)
+            {
+                free_if_needed(result);
+                print_error("[ERROR] Failed to expand environment variables");
+                return NULL;
+            }
+        }
+        else
+        {
+            result = strdup(str);
+        }
+        return result;
+    }
+    return NULL;
+}
+
+char *handle_env_assignment(char *str, const char *delim, char **next_token)
+{
+    char *equals = strchr(str, EQUAL_SIGN);
+    if (!equals || equals <= str || equals >= str + strcspn(str, delim))
+        return NULL;
+
+    char *value_start = equals + 1;
+    while (*value_start && isspace(*value_start))
+        value_start++;
+
+    if (*value_start != DOUBLE_QUOTES && *value_start != SINGLE_QUOTE)
+        return NULL;
+
+    char *quote_end = handle_quoted_string(value_start, *value_start, next_token);
+
+    return quote_end ? str : NULL;
+}
+
+char *enhanced_strtok(char *str, const char *delim, char **next_token)
+{
+    if (str == NULL)
+        str = *next_token;
+
+    str += strspn(str, delim);
+    if (*str == '\0')
+        return NULL;
+
+    char *token = str;
+
+    char *env_result = handle_env_assignment(str, delim, next_token);
+    if (env_result)
+        return env_result;
+
+    if (*str == DOUBLE_QUOTES || *str == SINGLE_QUOTE)
+    {
+        return handle_quoted_string(str, *str, next_token);
+    }
+
+    str += strcspn(str, delim);
+    if (*str)
+        *str++ = '\0';
+
+    *next_token = str;
+    return token;
+}

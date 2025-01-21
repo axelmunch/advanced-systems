@@ -49,4 +49,27 @@ command_tree_t* parse_command(const char* input);
  */
 operator_t get_operator_type(const char *operator_str);
 
+/**
+ * @brief Expand environment variables in a string
+ * @param str String to expand
+ * @return char* Expanded string
+ */
+char *expand_env_vars(const char *str);
+
+/**
+ * @brief Handle quoted string
+ * @param str String to handle
+ * @param quote Quote character
+ * @param next_token Next token
+ */
+char *handle_quoted_string(char *str, char quote, char **next_token);
+
+/**
+ * @brief Enhanced strtok function that handles quoted strings
+ * @param str String to tokenize
+ * @param delim Delimiters
+ * @param next_token Next token
+ */
+char *enhanced_strtok(char *str, const char *delim, char **next_token);
+
 #endif // PARSER_H

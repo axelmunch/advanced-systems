@@ -37,15 +37,6 @@ int safe_open(const char *path, int flags, mode_t mode);
 void safe_close(int fd);
 
 /**
- * @brief Enhanced strtok function that handles quoted strings
- * @param char* String to tokenize
- * @param const char* delimiters
- * @param char** next_token pointer to the next token
- * @return char* token
- */
-char *enhanced_strtok(char *str, const char *delim, char **next_token);
-
-/**
  * @brief Check if a string is all whitespace
  * @param const char* str string to check
  * @return int 1 if all whitespace, 0 otherwise
