@@ -47,3 +47,43 @@ Test(integration, test_command_with_env)
     int status = execute_command_tree(tree->root);
     cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable should succeed");
 }
+
+Test(integration, test_env_in_single_quote)
+{
+    char *input = "a=\"Hello\" b=\"World\" ; echo '$a $b'";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable in quotes should succeed");
+
+    FILE *output = cr_get_redirected_stdout();
+    char* expected_output = "Hello World\n";
+
+    char buffer[256];
+    fgets(buffer, sizeof(buffer), output);
+    cr_assert_str_eq(buffer, expected_output, "Output should be 'Hello World'");
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_env_in_double_quotes)
+{
+    char *input = "a=\"Hello\" b=\"World\" ; echo \"$a $b\"";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable in quotes should succeed");
+
+    FILE *output = cr_get_redirected_stdout();
+    char* expected_output = "Hello World\n";
+
+    char buffer[256];
+    fgets(buffer, sizeof(buffer), output);
+    cr_assert_str_eq(buffer, expected_output, "Output should be 'Hello World'");
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}

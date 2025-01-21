@@ -124,4 +124,7 @@ Test(parser, test_quoted_env_var)
     env_value = get_env_var("$c");
     expected_value = "The end,;:!@#$%^&*()";
     cr_assert_str_eq(env_value, expected_value, "Environment variable should be set '%s', got '%s'", expected_value, env_value);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
 }
