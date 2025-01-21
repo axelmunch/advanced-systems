@@ -47,9 +47,43 @@ void safe_close(int fd)
     }
 }
 
+static char *handle_quoted_string(char *str, char quote, char **next_token)
+{
+    str++;
+    char *end = str;
+
+    while (*end && *end != quote)
+        end++;
+
+    if (*end == quote)
+    {
+        *end = '\0';
+        *next_token = end + 1;
+        return str;
+    }
+    return NULL;
+}
+
+static char *handle_env_assignment(char *str, const char *delim, char **next_token)
+{
+    char *equals = strchr(str, EQUAL_SIGN);
+    if (!equals || equals <= str || equals >= str + strcspn(str, delim))
+        return NULL;
+
+    char *value_start = equals + 1;
+    while (*value_start && isspace(*value_start))
+        value_start++;
+
+    if (*value_start != DOUBLE_QUOTES && *value_start != SINGLE_QUOTE)
+        return NULL;
+
+    char *quote_end = handle_quoted_string(value_start, *value_start, next_token);
+
+    return quote_end ? str : NULL;
+}
+
 char *enhanced_strtok(char *str, const char *delim, char **next_token)
 {
-    char *token;
     if (str == NULL)
         str = *next_token;
 
@@ -57,47 +91,17 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
     if (*str == '\0')
         return NULL;
 
-    token = str;
+    char *token = str;
 
-    // For environment variable assignment
-    char *equals = strchr(str, EQUAL_SIGN);
-    if (equals != NULL && equals > str && equals < str + strcspn(str, delim))
-    {
-        char *value_start = equals + 1;
-        while (*value_start && isspace(*value_start))
-            value_start++;
-
-        if (*value_start == DOUBLE_QUOTES || *value_start == SINGLE_QUOTE)
-        {
-            char quote = *value_start;
-            char *quote_end = value_start + 1;
-
-            while (*quote_end && *quote_end != quote)
-                quote_end++;
-
-            if (*quote_end == quote)
-            {
-                *next_token = quote_end + 1;
-                return token;
-            }
-        }
-    }
+    char *env_result = handle_env_assignment(str, delim, next_token);
+    if (env_result)
+        return env_result;
 
     if (*str == DOUBLE_QUOTES || *str == SINGLE_QUOTE)
     {
-        char quote = *str;
-        str++;
-        token = str;
-
-        while (*str && *str != quote)
-            str++;
-
-        if (*str == quote)
-        {
-            *str = '\0';
-            *next_token = str + 1;
-            return token;
-        }
+        char *quoted_result = handle_quoted_string(str, *str, next_token);
+        if (quoted_result)
+            return quoted_result;
     }
 
     str += strcspn(str, delim);
