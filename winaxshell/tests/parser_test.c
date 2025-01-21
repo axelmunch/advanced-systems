@@ -35,7 +35,7 @@ Test(parser, test_handle_argument)
     command_node_t *node = create_command_node();
     cr_assert_not_null(node, "Node should not be NULL");
     int result = handle_argument(node, "arg1", 0);
-    cr_assert_eq(result, 1, "handle_argument should succeed");
+    cr_assert_eq(result, EXIT_SUCCESS, "handle_argument should succeed");
     cr_assert_str_eq(node->args[0], "arg1", "Argument should match input");
     free_command_node(node);
 }

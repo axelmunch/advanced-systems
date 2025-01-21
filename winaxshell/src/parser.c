@@ -81,17 +81,34 @@ int handle_argument(command_node_t *current, const char *token, size_t index)
         errno = E2BIG;
         print_error("[ERROR] Too many arguments");
         current->args[MAX_ARGS - 1] = NULL;
-        return 0;
+        return EXIT_FAILURE;
     }
 
-    current->args[index] = strdup(token);
-    if (current->args[index] == NULL)
+    char *stored_value = NULL;
+
+    if (token[0] == DOLLAR_SIGN)
     {
-        print_error("[ERROR] Failed to duplicate argument string");
-        return 0;
+        char *env_value = get_env_var(token);
+        if (env_value != NULL)
+            stored_value = env_value;
+        else
+            stored_value = strdup("");
+    }
+    else
+    {
+        stored_value = strdup(token);
     }
 
-    return 1;
+    if (stored_value == NULL)
+    {
+        errno = ENOMEM;
+        print_error("[ERROR] Failed to duplicate argument string");
+        return EXIT_FAILURE;
+    }
+
+    current->args[index] = stored_value;
+
+    return EXIT_SUCCESS;
 }
 
 command_tree_t *parse_command(const char *input)
@@ -121,6 +138,20 @@ command_tree_t *parse_command(const char *input)
 
     while (token != NULL)
     {
+        if (strchr(token, EQUAL_SIGN) != NULL)
+        {
+            if (set_env_var(token) != 0)
+            {
+                print_error("[ERROR] Failed to set environment variable");
+                free_command_node(tree->root);
+                free_if_needed(tree);
+                free_if_needed(input_copy);
+                return NULL;
+            }
+            token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
+            continue;
+        }
+
         operator_t op = get_operator_type(token);
         if (op != OP_NONE)
         {
@@ -137,51 +168,12 @@ command_tree_t *parse_command(const char *input)
             current = new_node->right;
             arg_index = 0;
         }
-        else
+        else if (handle_argument(current, token, arg_index++) == EXIT_FAILURE)
         {
-            // Check for environment variable assignment
-            if (strchr(token, EQUAL_SIGN) != NULL)
-            {
-                if (set_env_var(token) != 0)
-                {
-                    print_error("[ERROR] Failed to set environment variable");
-                    free_command_node(tree->root);
-                    free_if_needed(tree);
-                    free_if_needed(input_copy);
-                    return NULL;
-                }
-                token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
-                continue;
-            }
-            // Check for environment variable expansion
-            else if (token[0] == DOLLAR_SIGN)
-            {
-                char *env_value = get_env_var(token);
-                if (env_value != NULL)
-                {
-                    token = env_value;
-                }
-            }
-
-            if (arg_index >= MAX_ARGS)
-            {
-                print_error("[ERROR] Too many arguments");
-                free_command_node(tree->root);
-                free_if_needed(tree);
-                free_if_needed(input_copy);
-                return NULL;
-            }
-
-            current->args[arg_index] = strdup(token);
-            if (current->args[arg_index] == NULL)
-            {
-                print_error("[ERROR] Failed to duplicate argument");
-                free_command_node(tree->root);
-                free_if_needed(tree);
-                free_if_needed(input_copy);
-                return NULL;
-            }
-            arg_index++;
+            free_command_node(tree->root);
+            free_if_needed(tree);
+            free_if_needed(input_copy);
+            return NULL;
         }
         token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
     }

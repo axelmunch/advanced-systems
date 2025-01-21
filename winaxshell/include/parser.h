@@ -31,7 +31,7 @@ command_node_t *handle_operator(command_tree_t *tree, operator_t op);
  * @param node Command node to add argument to
  * @param arg Argument string to add
  * @param index Argument index in the command
- * @return int 0 if failed, 1 if success
+ * @return int EXIT_SUCCESS if successful, EXIT_FAILURE otherwise
  */
 int handle_argument(command_node_t *node, const char *arg, size_t index);
 
