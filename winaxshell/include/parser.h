@@ -50,6 +50,15 @@ command_tree_t* parse_command(const char* input);
 operator_t get_operator_type(const char *operator_str);
 
 /**
+ * @brief Handle environment variable assignment
+ * @param str String to handle
+ * @param delim Delimiters
+ * @param next_token Next token
+ * @return char* Next token
+ */
+char *handle_env_assignment(char *str, const char *delim, char **next_token);
+
+/**
  * @brief Expand environment variables in a string
  * @param str String to expand
  * @return char* Expanded string

@@ -106,6 +106,10 @@ int handle_argument(command_node_t *current, const char *token, size_t index)
         return EXIT_FAILURE;
     }
 
+    if (current->args[index] != NULL)
+    {
+        free_if_needed(current->args[index]); // Free any existing argument
+    }
     current->args[index] = stored_value;
 
     return EXIT_SUCCESS;
@@ -210,6 +214,24 @@ operator_t get_operator_type(const char *operator_str)
         return OP_NONE;
 }
 
+char *handle_env_assignment(char *str, const char *delim, char **next_token)
+{
+    char *equals = strchr(str, EQUAL_SIGN);
+    if (!equals || equals <= str || equals >= str + strcspn(str, delim))
+        return NULL;
+
+    char *value_start = equals + 1;
+    while (*value_start && isspace(*value_start))
+        value_start++;
+
+    if (*value_start != DOUBLE_QUOTES && *value_start != SINGLE_QUOTE)
+        return NULL;
+
+    char *quote_end = handle_quoted_string(value_start, *value_start, next_token);
+
+    return quote_end ? str : NULL;
+}
+
 char *expand_env_vars(const char *str)
 {
     if (!str || !strchr(str, DOLLAR_SIGN))
@@ -217,7 +239,10 @@ char *expand_env_vars(const char *str)
 
     char *result = malloc(strlen(str) * 2);
     if (!result)
+    {
+        print_error("[ERROR] Failed to allocate memory for environment variable expansion");
         return NULL;
+    }
 
     const char *read_pos = str;
     char *write_pos = result;
@@ -226,7 +251,7 @@ char *expand_env_vars(const char *str)
     {
         if (*read_pos == DOLLAR_SIGN && *(read_pos + 1))
         {
-            char var_name[MAX_INPUT] = {0};
+            char var_name[256] = {0};
             var_name[0] = DOLLAR_SIGN;
             int i = 1;
             while (isalnum(read_pos[i]) || read_pos[i] == '_')
@@ -236,7 +261,7 @@ char *expand_env_vars(const char *str)
             }
 
             char *value = get_env_var(var_name);
-            if (value)
+            if (value != NULL)
             {
                 strcpy(write_pos, value);
                 write_pos += strlen(value);
@@ -250,7 +275,6 @@ char *expand_env_vars(const char *str)
         }
         read_pos++;
     }
-
     *write_pos = NULL_CHAR;
     return result;
 }
@@ -272,12 +296,6 @@ char *handle_quoted_string(char *str, char quote, char **next_token)
         if (quote == DOUBLE_QUOTES || quote == SINGLE_QUOTE)
         {
             result = expand_env_vars(str);
-            if (!result)
-            {
-                free_if_needed(result);
-                print_error("[ERROR] Failed to expand environment variables");
-                return NULL;
-            }
         }
         else
         {
@@ -286,24 +304,6 @@ char *handle_quoted_string(char *str, char quote, char **next_token)
         return result;
     }
     return NULL;
-}
-
-char *handle_env_assignment(char *str, const char *delim, char **next_token)
-{
-    char *equals = strchr(str, EQUAL_SIGN);
-    if (!equals || equals <= str || equals >= str + strcspn(str, delim))
-        return NULL;
-
-    char *value_start = equals + 1;
-    while (*value_start && isspace(*value_start))
-        value_start++;
-
-    if (*value_start != DOUBLE_QUOTES && *value_start != SINGLE_QUOTE)
-        return NULL;
-
-    char *quote_end = handle_quoted_string(value_start, *value_start, next_token);
-
-    return quote_end ? str : NULL;
 }
 
 char *enhanced_strtok(char *str, const char *delim, char **next_token)
@@ -316,7 +316,6 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
         return NULL;
 
     char *token = str;
-
     char *env_result = handle_env_assignment(str, delim, next_token);
     if (env_result)
         return env_result;
@@ -328,8 +327,9 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
 
     str += strcspn(str, delim);
     if (*str)
-        *str++ = NULL_CHAR; // Null-terminate the token
-
+    {
+        *str++ = NULL_CHAR;
+    }
     *next_token = str;
     return token;
 }
