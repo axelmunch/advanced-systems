@@ -16,23 +16,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: gcc:12-alpine
+      image: gcc:14.2.0
     steps:
       - uses: actions/checkout@v3
       - name: Install build dependencies
         run: |
-          apk add --no-cache build-base criterion-dev
+          apt-get update && apt install -y libcriterion-dev
       - name: Build
         run: make
 
   test:
     runs-on: ubuntu-latest
     container:
-      image: gcc:12-alpine
+      image: gcc:14.2.0
     steps:
       - uses: actions/checkout@v3
       - name: Install test dependencies
         run: |
-          apk add --no-cache build-base criterion-dev
+          apt-get update && apt install -y libcriterion-dev
       - name: Run tests
         run: make tests
