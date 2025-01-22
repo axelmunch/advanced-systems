@@ -1,0 +1,38 @@
+name: CI WinAxShell
+
+on:
+  push:
+    paths:
+      - 'winaxshell/**'
+  pull_request:
+    paths:
+      - 'winaxshell/**'
+
+defaults:
+  run:
+    working-directory: winaxshell
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: gcc:12-alpine
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install build dependencies
+        run: |
+          apk add --no-cache build-base criterion-dev
+      - name: Build
+        run: make
+
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: gcc:12-alpine
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install test dependencies
+        run: |
+          apk add --no-cache build-base criterion-dev
+      - name: Run tests
+        run: make tests
