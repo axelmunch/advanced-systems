@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-artifacts
-          path: bin/
+          path: winashell/bin/
 
   test:
     runs-on: ubuntu-latest
@@ -41,7 +41,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
-          path: bin/
+          path: winaxshell/bin/
       - name: Install test dependencies
         run: |
           apt-get update && apt install -y libcriterion-dev
