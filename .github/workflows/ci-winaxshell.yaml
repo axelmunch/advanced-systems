@@ -24,13 +24,24 @@ jobs:
           apt-get update && apt install -y libcriterion-dev
       - name: Build
         run: make
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: bin/
 
   test:
     runs-on: ubuntu-latest
     container:
       image: gcc:14.2.0
+    needs: build
     steps:
       - uses: actions/checkout@v3
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: bin/
       - name: Install test dependencies
         run: |
           apt-get update && apt install -y libcriterion-dev
