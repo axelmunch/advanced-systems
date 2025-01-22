@@ -76,10 +76,9 @@ tests:
 	@echo "$(YELLOW)Running WinAxShell test suite...$(NC)"
 	@./$(BIN_DIR)/$(TEST_EXEC) --verbose --jobs=1
 
-memcheck: 
+memcheck:
 	@echo "$(YELLOW)Running Valgrind...$(NC)"
-	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(TEST_EXEC)
-	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(EXEC) 
+	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(EXEC)
 
 clean:
 	rm -rf $(OBJ) $(TEST_OBJ)
