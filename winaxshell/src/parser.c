@@ -107,9 +107,8 @@ int handle_argument(command_node_t *current, const char *token, size_t index)
     }
 
     if (current->args[index] != NULL)
-    {
         free_if_needed(current->args[index]); // Free any existing argument
-    }
+
     current->args[index] = stored_value;
 
     return EXIT_SUCCESS;
@@ -216,6 +215,14 @@ operator_t get_operator_type(const char *operator_str)
 
 char *handle_env_assignment(char *str, const char *delim, char **next_token)
 {
+    static char *last_allocated = NULL;
+
+    if (last_allocated != NULL)
+    {
+        free_if_needed(last_allocated);
+        last_allocated = NULL;
+    }
+
     char *equals = strchr(str, EQUAL_SIGN);
     if (!equals || equals <= str || equals >= str + strcspn(str, delim))
         return NULL;
@@ -229,7 +236,13 @@ char *handle_env_assignment(char *str, const char *delim, char **next_token)
 
     char *quote_end = handle_quoted_string(value_start, *value_start, next_token);
 
-    return quote_end ? str : NULL;
+    if (quote_end)
+    {
+        last_allocated = quote_end;
+        return str;
+    }
+
+    return NULL;
 }
 
 char *expand_env_vars(const char *str)
@@ -313,14 +326,6 @@ char *expand_env_vars(const char *str)
 
 char *handle_quoted_string(char *str, char quote, char **next_token)
 {
-
-    static char *last_allocated = NULL;
-    if (last_allocated != NULL)
-    {
-        free_if_needed(last_allocated);
-        last_allocated = NULL;
-    }
-
     str++;
     char *end = str;
     char *result = NULL;
@@ -334,23 +339,17 @@ char *handle_quoted_string(char *str, char quote, char **next_token)
         *next_token = end + 1;
 
         if (quote == DOUBLE_QUOTES || quote == SINGLE_QUOTE)
-        {
             result = expand_env_vars(str);
-            last_allocated = result;
-        }
         else
-        {
             result = strdup(str);
-            last_allocated = result;
-        }
-        return result;
+
+        return result;  // enhanced_strtok will free this
     }
     return NULL;
 }
 
 char *enhanced_strtok(char *str, const char *delim, char **next_token)
 {
-
     static char *last_allocated = NULL;
 
     if (last_allocated != NULL)
@@ -379,10 +378,10 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
     }
 
     str += strcspn(str, delim);
+
     if (*str)
-    {
         *str++ = NULL_CHAR;
-    }
+
     *next_token = str;
     return token;
 }

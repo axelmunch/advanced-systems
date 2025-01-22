@@ -19,13 +19,13 @@ Test(integration, test_chained_pipes)
     cr_assert_not_null(tree, "Failed to parse command tree");
 
     int status = execute_command_tree(tree->root);
-    cr_assert_eq(status, EXIT_SUCCESS, "Executing chained pipes should succeed");
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing chained pipes should succeed, got %d", status);
 
     FILE *output = cr_get_redirected_stdout();
     char* expected_output = "1\n";
     char buffer[256];
     fgets(buffer, sizeof(buffer), output);
-    cr_assert_str_eq(buffer, expected_output, "Output should be '1'");
+    cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
 }
 
 Test(integration, test_chained_commands)
@@ -35,7 +35,7 @@ Test(integration, test_chained_commands)
     cr_assert_not_null(tree, "Failed to parse command tree");
 
     int status = execute_command_tree(tree->root);
-    cr_assert_eq(status, EXIT_SUCCESS, "Executing chained commands should succeed");
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing chained commands should succeed, got %d", status);
 }
 
 Test(integration, test_command_with_env)
@@ -45,7 +45,7 @@ Test(integration, test_command_with_env)
     cr_assert_not_null(tree, "Failed to parse command tree");
 
     int status = execute_command_tree(tree->root);
-    cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable should succeed");
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable should succeed, got %d", status);
 }
 
 Test(integration, test_env_in_single_quote)
@@ -62,7 +62,7 @@ Test(integration, test_env_in_single_quote)
 
     char buffer[256];
     fgets(buffer, sizeof(buffer), output);
-    cr_assert_str_eq(buffer, expected_output, "Output should be 'Hello World', got '%s'", buffer);
+    cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
 
     free_command_node(tree->root);
     free_if_needed(tree);
@@ -75,14 +75,34 @@ Test(integration, test_env_in_double_quotes)
     cr_assert_not_null(tree, "Tree should not be NULL");
 
     int status = execute_command_tree(tree->root);
-    cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable in quotes should succeed");
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable in quotes should succeed, got %d", status);
 
     FILE *output = cr_get_redirected_stdout();
     char* expected_output = "Hello World\n";
 
     char buffer[256];
     fgets(buffer, sizeof(buffer), output);
-    cr_assert_str_eq(buffer, expected_output, "Output should be 'Hello World', got '%s'", buffer);
+    cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_final_boss_env)
+{
+    char *input = "a=totooooooo ; b=titiiiiii!!!!!!!!!!! ; c=tutututututututuu??????????? ; d=\"OK, stop maintenant c'est bon. That's all Folks!\" ; echo \"$a $b $c       $d\" && echo 'All environment variables set'";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing final boss env command should succeed, got %d", status);
+
+    FILE *output = cr_get_redirected_stdout();
+    char* expected_output = "totooooooo titiiiiii!!!!!!!!!!! tutututututututuu???????????       OK, stop maintenant c'est bon. That's all Folks!\n";
+
+    char buffer[256];
+    fgets(buffer, sizeof(buffer), output);
+    cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
 
     free_command_node(tree->root);
     free_if_needed(tree);
