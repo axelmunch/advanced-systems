@@ -314,12 +314,12 @@ char *expand_env_vars(const char *str)
 char *handle_quoted_string(char *str, char quote, char **next_token)
 {
 
-    // static char *last_allocated = NULL;
-    // if (last_allocated != NULL)
-    // {
-    //     free_if_needed(last_allocated);
-    //     last_allocated = NULL;
-    // }
+    static char *last_allocated = NULL;
+    if (last_allocated != NULL)
+    {
+        free_if_needed(last_allocated);
+        last_allocated = NULL;
+    }
 
     str++;
     char *end = str;
@@ -336,10 +336,12 @@ char *handle_quoted_string(char *str, char quote, char **next_token)
         if (quote == DOUBLE_QUOTES || quote == SINGLE_QUOTE)
         {
             result = expand_env_vars(str);
+            last_allocated = result;
         }
         else
         {
             result = strdup(str);
+            last_allocated = result;
         }
         return result;
     }
