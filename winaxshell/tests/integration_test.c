@@ -90,7 +90,7 @@ Test(integration, test_env_in_double_quotes)
 
 Test(integration, test_final_boss_env)
 {
-    char *input = "a=totooooooo ; b=titiiiiii!!!!!!!!!!! ; c=tutututututututuu??????????? ; d=\"OK, stop maintenant c'est bon. That's all Folks!\" ; echo \"$a $b $c       $d\" && echo 'All environment variables set'";
+    char *input = "a=\'totooooooo\' ; b=titiiiiii!!!!!!!!!!! ; c=tutututututututuu??????????? ; d=\"OK, stop maintenant c'est bon. That's all Folks!\" ; echo \"$a $b $c       $d\" && echo 'All environment variables set'";
     command_tree_t *tree = parse_command(input);
     cr_assert_not_null(tree, "Tree should not be NULL");
 
