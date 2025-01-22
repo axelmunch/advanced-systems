@@ -62,7 +62,7 @@ Test(integration, test_env_in_single_quote)
 
     char buffer[256];
     fgets(buffer, sizeof(buffer), output);
-    cr_assert_str_eq(buffer, expected_output, "Output should be 'Hello World'");
+    cr_assert_str_eq(buffer, expected_output, "Output should be 'Hello World', got '%s'", buffer);
 
     free_command_node(tree->root);
     free_if_needed(tree);
@@ -82,7 +82,7 @@ Test(integration, test_env_in_double_quotes)
 
     char buffer[256];
     fgets(buffer, sizeof(buffer), output);
-    cr_assert_str_eq(buffer, expected_output, "Output should be 'Hello World'");
+    cr_assert_str_eq(buffer, expected_output, "Output should be 'Hello World', got '%s'", buffer);
 
     free_command_node(tree->root);
     free_if_needed(tree);
