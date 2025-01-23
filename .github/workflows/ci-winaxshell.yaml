@@ -50,5 +50,8 @@ jobs:
           name: build-artifacts
           path: winaxshell/bin/
 
+      - name: Set execute permissions for test executable
+        run: chmod +x winaxshell/bin/winaxshell_tests
+
       - name: Run unit & integration tests
         run: make tests
