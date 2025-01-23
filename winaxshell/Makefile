@@ -50,7 +50,6 @@ $(TEST_OBJ): %.o: %.c
 
 $(TEST_EXEC): $(TEST_OBJ) $(OBJ) $(MOCKS_DIR)
 	$(CC) -o $(BIN_DIR)/$@ $(TEST_OBJ) $(OBJ_NO_MAIN) $(LDFLAGS) $(TEST_LDFLAGS)
-	@chmod +x $(BIN_DIR)/$@
 
 doc:
 	doxygen $(DOC_DIR)/doxygen.conf
