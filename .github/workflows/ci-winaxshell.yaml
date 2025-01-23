@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: ./bin/
+          path: ./winaxshell/bin/
 
   test:
     runs-on: ubuntu-22.04
@@ -47,7 +47,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-          path: ./bin/
+          path: ./winaxshell/bin/
 
       - name: Run unit & integration tests
         run: make tests
