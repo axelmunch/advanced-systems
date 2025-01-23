@@ -74,7 +74,7 @@ run:
 
 tests:
 	@echo "$(YELLOW)Running WinAxShell test suite...$(NC)"
-	@./$(BIN_DIR)/$(TEST_EXEC) --verbose --jobs=1
+	@./$(BIN_DIR)/$(TEST_EXEC) --verbose --jobs=1 --color=always
 
 memcheck:
 	@echo "$(YELLOW)Running Valgrind...$(NC)"
