@@ -11,7 +11,6 @@ on:
 defaults:
   run:
     working-directory: winaxshell
-    shell: bash
 
 jobs:
   build:
@@ -31,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-artifacts
-          path: winaxshell/bin/
+          path: ./bin/
 
   test:
     runs-on: ubuntu-22.04
@@ -48,10 +47,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
-          path: winaxshell/bin/
-
-      - name: Set execute permissions for test executable
-        run: chmod +x winaxshell/bin/winaxshell_tests
+          path: ./bin/
 
       - name: Run unit & integration tests
         run: make tests
