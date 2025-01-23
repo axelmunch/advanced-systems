@@ -11,19 +11,29 @@ on:
 defaults:
   run:
     working-directory: winaxshell
+    shell: bash
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    container:
-      image: gcc:14.2.0
+  prepare:
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - name: Install build dependencies
+
+      - name: Install dependencies
         run: |
           apt-get update && apt install -y libcriterion-dev
+
+  build:
+    runs-on: ubuntu-22.04
+    container:
+      image: gcc:14.2.0
+    needs: prepare
+    steps:
+      - uses: actions/checkout@v3
+
       - name: Build
         run: make
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -31,19 +41,21 @@ jobs:
           path: winaxshell/bin/
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
       image: gcc:14.2.0
-    needs: build
+    needs: [prepare, build]
     steps:
       - uses: actions/checkout@v3
+
       - name: Download Build Artifacts
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
           path: winaxshell/bin/
-      - name: Install test dependencies
-        run: |
-          apt-get update && apt install -y libcriterion-dev
-      - name: Run tests
+
+      - name: Set execute permissions for test executable
+        run: chmod +x winaxshell/bin/winaxshell_tests
+
+      - name: Run unit & integration tests
         run: make tests

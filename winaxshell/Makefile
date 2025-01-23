@@ -69,7 +69,7 @@ package: gcov doc all
 	tar cvfz $(AR_NAME) ./*
 
 run:
-	@echo "$(BLUE)Running $(EXEC)$(NC)"
+	@echo "$(BLUE)Running WinAxShell$(NC)"
 	@./$(BIN_DIR)/$(EXEC)
 
 tests:
