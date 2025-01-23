@@ -14,20 +14,15 @@ defaults:
     shell: bash
 
 jobs:
-  prepare:
+  build:
     runs-on: ubuntu-22.04
+    container:
+      image: gcc:14.2.0
     steps:
       - uses: actions/checkout@v3
 
       - name: Install dependencies
-        run: |
-          sudo apt-get update && sudo apt install -y build-essential libcriterion-dev
-
-  build:
-    runs-on: ubuntu-22.04
-    needs: prepare
-    steps:
-      - uses: actions/checkout@v3
+        run: apt-get update && apt-get install -y libcriterion-dev
 
       - name: Build
         run: make
@@ -40,9 +35,14 @@ jobs:
 
   test:
     runs-on: ubuntu-22.04
-    needs: [prepare, build]
+    container:
+      image: gcc:14.2.0
+    needs: [build]
     steps:
       - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: apt-get update && apt-get install -y libcriterion-dev
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v3
