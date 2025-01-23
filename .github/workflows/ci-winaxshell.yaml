@@ -16,6 +16,8 @@ defaults:
 jobs:
   prepare:
     runs-on: ubuntu-22.04
+    container:
+      image: gcc:14.2.0
     steps:
       - uses: actions/checkout@v3
 
