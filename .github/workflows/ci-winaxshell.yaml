@@ -16,19 +16,15 @@ defaults:
 jobs:
   prepare:
     runs-on: ubuntu-22.04
-    container:
-      image: gcc:14.2.0
     steps:
       - uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
-          apt-get update && apt install -y libcriterion-dev
+          sudo apt-get update && sudo apt install -y build-essential libcriterion-dev
 
   build:
     runs-on: ubuntu-22.04
-    container:
-      image: gcc:14.2.0
     needs: prepare
     steps:
       - uses: actions/checkout@v3
@@ -44,8 +40,6 @@ jobs:
 
   test:
     runs-on: ubuntu-22.04
-    container:
-      image: gcc:14.2.0
     needs: [prepare, build]
     steps:
       - uses: actions/checkout@v3
