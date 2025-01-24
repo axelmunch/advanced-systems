@@ -38,6 +38,16 @@ Test(integration, test_chained_commands)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing chained commands should succeed, got %d", status);
 }
 
+Test(integration, test_chained_redir)
+{
+    char *input = "cat < Makefile > mocks/output.txt && echo 'Redirect succeeded' || echo 'Failed to redirect'";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Failed to parse command tree");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing chained redirections should succeed, got %d", status);
+}
+
 Test(integration, test_command_with_env)
 {
     char *input = "a='Hello, World!' b='Goodbye, World!' c='The end,;:!@#$%^&*()' ; echo $a ; echo $b ; echo $c && echo 'All environment variables set' || echo 'Failed to set environment variables'";

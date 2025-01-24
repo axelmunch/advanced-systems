@@ -156,25 +156,29 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
     if (left == NULL || right == NULL)
         return EXIT_FAILURE;
 
-    int redirect_fd;
+    int input_fd = -1;
+    int output_fd = -1;
+
     switch (redirect_type)
     {
     case OP_REDIR_OUT:
-        redirect_fd = safe_open(right->args[0], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        output_fd = safe_open(right->args[0], O_WRONLY | O_CREAT | O_TRUNC, 0644);
         break;
     case OP_APPEND:
-        redirect_fd = safe_open(right->args[0], O_WRONLY | O_CREAT | O_APPEND, 0644);
+        output_fd = safe_open(right->args[0], O_WRONLY | O_CREAT | O_APPEND, 0644);
         break;
     case OP_REDIR_IN:
     case OP_HEREDOC:
-        redirect_fd = safe_open(right->args[0], O_RDONLY, 0);
+        input_fd = safe_open(right->args[0], O_RDONLY, 0);
         break;
     default:
-        redirect_fd = -1;
+        return EXIT_FAILURE;
     }
-    if (redirect_fd < 0)
+
+    if ((input_fd < 0 && (redirect_type == OP_REDIR_IN || redirect_type == OP_HEREDOC)) ||
+        (output_fd < 0 && (redirect_type == OP_REDIR_OUT || redirect_type == OP_APPEND)))
     {
-        print_error("[ERROR] safe_open() failed");
+        print_error("[ERROR] Failed to open redirection file");
         return EXIT_FAILURE;
     }
 
@@ -182,34 +186,38 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
     if (pid < 0)
     {
         print_error("[ERROR] fork() failed");
-        safe_close(redirect_fd);
+        if (input_fd >= 0) safe_close(input_fd);
+        if (output_fd >= 0) safe_close(output_fd);
         return EXIT_FAILURE;
     }
 
     if (pid == 0)
     {
-        if (redirect_type == OP_REDIR_OUT || redirect_type == OP_APPEND)
+        if (input_fd >= 0)
         {
-            if (dup2(redirect_fd, STDOUT_FILENO) < 0)
+            if (dup2(input_fd, STDIN_FILENO) < 0)
             {
-                print_error("[ERROR] dup2() failed");
-                safe_close(redirect_fd);
+                print_error("[ERROR] Input redirection failed");
                 exit(EXIT_FAILURE);
             }
+            safe_close(input_fd);
         }
-        else if (redirect_type == OP_REDIR_IN || redirect_type == OP_HEREDOC)
+
+        if (output_fd >= 0)
         {
-            if (dup2(redirect_fd, STDIN_FILENO) < 0)
+            if (dup2(output_fd, STDOUT_FILENO) < 0)
             {
-                print_error("[ERROR] dup2() failed");
-                safe_close(redirect_fd);
+                print_error("[ERROR] Output redirection failed");
                 exit(EXIT_FAILURE);
             }
+            safe_close(output_fd);
         }
-        safe_close(redirect_fd);
-        exit(execute_single_command(left->args));
+
+        exit(execute_command_tree(left));
     }
-    safe_close(redirect_fd);
+
+    if (input_fd >= 0) safe_close(input_fd);
+    if (output_fd >= 0) safe_close(output_fd);
 
     int status;
     waitpid(pid, &status, 0);
@@ -230,7 +238,8 @@ int execute_command_tree(command_node_t *node)
         status = execute_pipe_command(node->left, node->right);
         break;
     case OP_SEQ:
-        execute_command_tree(node->left);
+        if (node->left != NULL)
+            status = execute_command_tree(node->left);
         if (node->right != NULL)
             status = execute_command_tree(node->right);
         break;
