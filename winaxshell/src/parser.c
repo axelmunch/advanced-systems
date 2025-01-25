@@ -354,7 +354,7 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
 
     if (last_allocated != NULL)
     {
-        free_if_needed(last_allocated);
+        free_if_needed(last_allocated); // Free any previously result
         last_allocated = NULL;
     }
 

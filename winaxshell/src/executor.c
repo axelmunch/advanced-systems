@@ -19,6 +19,53 @@ static void sigchld_handler(int signo)
     }
 }
 
+/**
+ * @brief Intenal function to print the command tree structure for debugging purposes
+ * @param node Command node
+ * @param depth Depth of the tree
+ * @return void
+ */
+static void print_command_tree(command_node_t *node, int depth)
+{
+    int show_debug = 1;
+
+    if (!show_debug)
+        return;
+
+    if (!node)
+        return;
+
+    for (int i = 0; i < depth; i++)
+        print_generic(STDERR_FILENO, "  ");
+
+    print_generic(STDERR_FILENO, "Node: op_type=%d, args=[", node->op_type);
+
+    if (node->args)
+    {
+        for (int i = 0; node->args[i] != NULL; i++)
+            print_generic(STDERR_FILENO, "%s%s", i > 0 ? ", " : "", node->args[i] ? node->args[i] : "NULL");
+    }
+    print_generic(STDERR_FILENO, "]\n");
+
+    if (node->left)
+    {
+        for (int i = 0; i < depth; i++)
+            print_generic(STDERR_FILENO, "  ");
+
+        print_generic(STDERR_FILENO, "Left child:\n");
+        print_command_tree(node->left, depth + 1);
+    }
+
+    if (node->right)
+    {
+        for (int i = 0; i < depth; i++)
+            print_generic(STDERR_FILENO, "  ");
+
+        print_generic(STDERR_FILENO, "Right child:\n");
+        print_command_tree(node->right, depth + 1);
+    }
+}
+
 int execute_single_command(char **args)
 {
     if (args == NULL || args[0] == NULL)
@@ -186,8 +233,10 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
     if (pid < 0)
     {
         print_error("[ERROR] fork() failed");
-        if (input_fd >= 0) safe_close(input_fd);
-        if (output_fd >= 0) safe_close(output_fd);
+        if (input_fd >= 0)
+            safe_close(input_fd);
+        if (output_fd >= 0)
+            safe_close(output_fd);
         return EXIT_FAILURE;
     }
 
@@ -216,8 +265,10 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
         exit(execute_command_tree(left));
     }
 
-    if (input_fd >= 0) safe_close(input_fd);
-    if (output_fd >= 0) safe_close(output_fd);
+    if (input_fd >= 0)
+        safe_close(input_fd);
+    if (output_fd >= 0)
+        safe_close(output_fd);
 
     int status;
     waitpid(pid, &status, 0);
@@ -284,6 +335,7 @@ void execute_command(char *input, command_tree_t *command_tree)
     }
     // TODO: add the command tree to the history
     // Check if command_tree is a built-in command
+    print_command_tree(command_tree->root, 0);
     execute_command_tree(command_tree->root);
     free_command_node(command_tree->root);
     free_if_needed(command_tree);
