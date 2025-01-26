@@ -87,9 +87,20 @@ int execute_single_command(char **args)
             exit(EXIT_FAILURE);
         }
     }
-    int status;
-    waitpid(pid, &status, 0);
-    return WIFEXITED(status) ? WEXITSTATUS(status) : EXIT_FAILURE;
+    else
+    {
+        if (!is_custom_command_main_process(args[0]))
+        {
+            int status;
+            waitpid(pid, &status, 0);
+            return WIFEXITED(status) ? WEXITSTATUS(status) : EXIT_FAILURE;
+        }
+        else
+        {
+            return execute_custom_command_main_process(args[0], args) ? EXIT_SUCCESS : EXIT_FAILURE;
+        }
+    }
+    return EXIT_SUCCESS;
 }
 
 int execute_pipe_command(command_node_t *left, command_node_t *right)
@@ -279,7 +290,7 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
 int custom_exec(char *command, char **args)
 {
     // Custom commands
-    if(is_custom_command(command))
+    if (is_custom_command(command))
     {
         execute_custom_command(command, args);
     }
