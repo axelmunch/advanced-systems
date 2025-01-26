@@ -31,7 +31,7 @@ command_node_t *handle_operator(command_tree_t *tree, operator_t op);
  * @param node Command node to add argument to
  * @param arg Argument string to add
  * @param index Argument index in the command
- * @return int 0 if failed, 1 if success
+ * @return int EXIT_SUCCESS if successful, EXIT_FAILURE otherwise
  */
 int handle_argument(command_node_t *node, const char *arg, size_t index);
 
@@ -48,5 +48,37 @@ command_tree_t* parse_command(const char* input);
  * @return operator_t enum type
  */
 operator_t get_operator_type(const char *operator_str);
+
+/**
+ * @brief Handle environment variable assignment
+ * @param str String to handle
+ * @param delim Delimiters
+ * @param next_token Next token
+ * @return char* Next token
+ */
+char *handle_env_assignment(char *str, const char *delim, char **next_token);
+
+/**
+ * @brief Expand environment variables in a string
+ * @param str String to expand
+ * @return char* Expanded string
+ */
+char *expand_env_vars(const char *str);
+
+/**
+ * @brief Handle quoted string
+ * @param str String to handle
+ * @param quote Quote character
+ * @param next_token Next token
+ */
+char *handle_quoted_string(char *str, char quote, char **next_token);
+
+/**
+ * @brief Enhanced strtok function that handles quoted strings
+ * @param str String to tokenize
+ * @param delim Delimiters
+ * @param next_token Next token
+ */
+char *enhanced_strtok(char *str, const char *delim, char **next_token);
 
 #endif // PARSER_H

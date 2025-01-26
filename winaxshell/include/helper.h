@@ -42,4 +42,10 @@ void check_requirements(int argc, char **argv);
  */
 void parse_options(int argc, char **argv);
 
+/**
+ * @brief Print shell prompt
+ * @return void
+ */
+void print_prompt();
+
 #endif // HELPER_H

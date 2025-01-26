@@ -1,0 +1,11 @@
+services:
+    jenkins-compose:
+        image: jenkins/jenkins:lts-jdk17
+        container_name: jenkins-compose
+        ports:
+            - "8082:8080"
+        volumes:
+            - jenkins_compose:/var/jenkins_home
+
+volumes:
+    jenkins_compose: {}
