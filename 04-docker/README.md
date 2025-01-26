@@ -10,7 +10,7 @@ Pour installer jenkins en tant que Docker as a Service, lancez la commande suiva
 docker run --name jenkins-stateless -p 8080:8080 jenkins/jenkins:lts-jdk17
 ```
 
-Le service sera accessible par l'adresse suivante: http://$IP_HOST:8080
+Le service sera accessible par l'adresse suivante: [http://localhost:8080](http://localhost:8080)
 
 Cependant, cette configuration n'est pas persistente, donc au redémarrage du conteneur, les données seront perdues. Ainsi, il est nécessaire de persister les données avec la commande suivante:
 
@@ -18,7 +18,7 @@ Cependant, cette configuration n'est pas persistente, donc au redémarrage du co
 docker run --name jenkins-statefull -p 8081:8080 -v jenkins_statefull:/var/jenkins_home jenkins/jenkins:lts-jdk17 
 ```
 
-Cette seconde version du service sera accessible par l'adresse suivante: http://$IP_HOST:8081
+Cette seconde version du service sera accessible par l'adresse suivante: [http://localhost:8081](http://localhost:8081)
 
 ### Using `docker compose`
 
@@ -30,7 +30,7 @@ Pour cela, il suffit de lancer la commande suivante:
 docker-compose up -d
 ```
 
-Ce service livré avec Docker Compose sera accessible par l'adresse: http://$IP_HOST:8082
+Ce service livré avec Docker Compose sera accessible par l'adresse: [http://localhost:8082](http://localhost:8082)
 
 ## 2. Build jenkins service "from scratch"
 
@@ -50,4 +50,4 @@ Puis créez un conteneur avec l'image nouvellement créer en publiant un port di
 docker run --name jenkins-scratch -p 8083:8080 -v jenkins_scratch:/var/jenkins_home jenkins-scratch:1.0.0 
 ```
 
-Ce service from scratch de Jenkins sera accessible par l'adresse: http://$IP_HOST:8083
+Ce service from scratch de Jenkins sera accessible par l'adresse: [http://localhost:8083](http://localhost:8083)
