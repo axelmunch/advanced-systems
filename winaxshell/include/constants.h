@@ -6,6 +6,7 @@
  */
 #define SHELL_NAME "winaxshell"
 
+#undef MAX_INPUT
 /**
  * @brief Maximum input size of the shell
  */

@@ -1,6 +1,7 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -9,6 +10,7 @@
 #include "print.h"
 #include "typedef.h"
 #include "parser.h"
+#include "custom_commands.h"
 
 /**
  * @brief Execute a single command
@@ -40,6 +42,14 @@ int execute_background_command(command_node_t *node);
  * @return int Exit status
  */
 int execute_redirection_command(command_node_t *left, command_node_t *right, operator_t redirect_type);
+
+/**
+ * @brief Execute a command or a custom command
+ * @param command Command to execute
+ * @param args Command arguments
+ * @return int Exit status
+ */
+int custom_exec(char *command, char **args);
 
 /**
  * @brief Execute a command tree. This function recursively executes commands represented in a tree structure.
