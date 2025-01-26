@@ -19,6 +19,8 @@ jobs:
       image: gcc:14.2.0
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
 
       - name: Install dependencies
         run: apt-get update >/dev/null && apt-get install -y libcriterion-dev >/dev/null
@@ -33,6 +35,8 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
 
       - name: Install dependencies
         run: apt-get update >/dev/null && apt-get install -y libcriterion-dev >/dev/null
