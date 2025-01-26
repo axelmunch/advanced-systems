@@ -26,6 +26,9 @@ Test(integration, test_chained_pipes)
     char buffer[256];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
 }
 
 Test(integration, test_chained_commands)
@@ -46,6 +49,15 @@ Test(integration, test_chained_redir)
 
     int status = execute_command_tree(tree->root);
     cr_assert_eq(status, EXIT_SUCCESS, "Executing chained redirections should succeed, got %d", status);
+
+    FILE *output = cr_get_redirected_stdout();
+    char* expected_output = "Redirect succeeded\n";
+    char buffer[256];
+    fgets(buffer, sizeof(buffer), output);
+    cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
 }
 
 Test(integration, test_command_with_env)
