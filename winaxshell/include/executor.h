@@ -53,8 +53,8 @@ int execute_command_tree(command_node_t *node);
  * @brief Execute a command. This function parses the input string and creates a command tree, then executes the command tree.
  * @param input User input string from the shell
  * @param command_tree Command tree to execute
- * @return void
+ * @return int Exit status
  */
-void execute_command(char* input, command_tree_t *command_tree);
+int execute_command(char* input, command_tree_t *command_tree);
 
 #endif // COMMAND_H
