@@ -81,17 +81,37 @@ int handle_argument(command_node_t *current, const char *token, size_t index)
         errno = E2BIG;
         print_error("[ERROR] Too many arguments");
         current->args[MAX_ARGS - 1] = NULL;
-        return 0;
+        return EXIT_FAILURE;
     }
 
-    current->args[index] = strdup(token);
-    if (current->args[index] == NULL)
+    char *stored_value = NULL;
+
+    if (token[0] == DOLLAR_SIGN)
     {
-        print_error("[ERROR] Failed to duplicate argument string");
-        return 0;
+        char *env_value = get_env_var(token);
+        if (env_value != NULL)
+            stored_value = env_value;
+        else
+            stored_value = strdup("");
+    }
+    else
+    {
+        stored_value = strdup(token);
     }
 
-    return 1;
+    if (stored_value == NULL)
+    {
+        errno = ENOMEM;
+        print_error("[ERROR] Failed to duplicate argument string");
+        return EXIT_FAILURE;
+    }
+
+    if (current->args[index] != NULL)
+        free_if_needed(current->args[index]); // Free any existing argument
+
+    current->args[index] = stored_value;
+
+    return EXIT_SUCCESS;
 }
 
 command_tree_t *parse_command(const char *input)
@@ -109,7 +129,7 @@ command_tree_t *parse_command(const char *input)
     command_tree_t *tree = create_command_tree();
     if (tree == NULL)
     {
-        free(input_copy);
+        free_if_needed(input_copy);
         print_error("[ERROR] Failed to create command tree");
         return NULL;
     }
@@ -121,6 +141,20 @@ command_tree_t *parse_command(const char *input)
 
     while (token != NULL)
     {
+        if (strchr(token, EQUAL_SIGN) != NULL)
+        {
+            if (set_env_var(token) != 0)
+            {
+                print_error("[ERROR] Failed to set environment variable");
+                free_command_node(tree->root);
+                free_if_needed(tree);
+                free_if_needed(input_copy);
+                return NULL;
+            }
+            token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
+            continue;
+        }
+
         operator_t op = get_operator_type(token);
         if (op != OP_NONE)
         {
@@ -129,31 +163,26 @@ command_tree_t *parse_command(const char *input)
             {
                 print_error("[ERROR] Failed to handle operator");
                 free_command_node(tree->root);
-                free(tree);
-                free(input_copy);
+                free_if_needed(tree);
+                free_if_needed(input_copy);
                 return NULL;
             }
             tree->root = new_node;
             current = new_node->right;
             arg_index = 0;
         }
-        else
+        else if (handle_argument(current, token, arg_index++) == EXIT_FAILURE)
         {
-            if (handle_argument(current, token, arg_index) == 0)
-            {
-                print_error("[ERROR] Failed to handle argument");
-                free_command_node(tree->root);
-                free(tree);
-                free(input_copy);
-                return NULL;
-            }
-            arg_index++;
+            free_command_node(tree->root);
+            free_if_needed(tree);
+            free_if_needed(input_copy);
+            return NULL;
         }
         token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
     }
 
     current->args[arg_index] = NULL;
-    free(input_copy);
+    free_if_needed(input_copy);
     return tree;
 }
 
@@ -182,4 +211,177 @@ operator_t get_operator_type(const char *operator_str)
         return OP_HEREDOC;
     else
         return OP_NONE;
+}
+
+char *handle_env_assignment(char *str, const char *delim, char **next_token)
+{
+    static char *last_allocated = NULL;
+
+    if (last_allocated != NULL)
+    {
+        free_if_needed(last_allocated);
+        last_allocated = NULL;
+    }
+
+    char *equals = strchr(str, EQUAL_SIGN);
+    if (!equals || equals <= str || equals >= str + strcspn(str, delim))
+        return NULL;
+
+    char *value_start = equals + 1;
+    while (*value_start && isspace(*value_start))
+        value_start++;
+
+    if (*value_start != DOUBLE_QUOTES && *value_start != SINGLE_QUOTE)
+        return NULL;
+
+    char *quote_end = handle_quoted_string(value_start, *value_start, next_token);
+
+    if (quote_end)
+    {
+        last_allocated = quote_end;
+        return str;
+    }
+
+    return NULL;
+}
+
+char *expand_env_vars(const char *str)
+{
+    if (!str || !strchr(str, DOLLAR_SIGN))
+        return strdup(str);
+
+    size_t total_size = 0;
+    const char *read_pos = str;
+
+    while (*read_pos)
+    {
+        if (*read_pos == DOLLAR_SIGN && *(read_pos + 1))
+        {
+            char var_name[256] = {0};
+            var_name[0] = DOLLAR_SIGN;
+            int i = 1;
+            while (isalnum(read_pos[i]) || read_pos[i] == '_')
+            {
+                var_name[i] = read_pos[i];
+                i++;
+            }
+
+            char *value = get_env_var(var_name);
+            if (value)
+            {
+                total_size += strlen(value);
+                free_if_needed(value);
+            }
+            read_pos += i;
+        }
+        else
+        {
+            total_size++;
+            read_pos++;
+        }
+    }
+
+    char *result = malloc(total_size + 1);
+    if (!result)
+    {
+        errno = ENOMEM;
+        print_error("[ERROR] Failed to allocate memory");
+        return NULL;
+    }
+
+    read_pos = str;
+    char *write_pos = result;
+
+    while (*read_pos)
+    {
+        if (*read_pos == DOLLAR_SIGN && *(read_pos + 1))
+        {
+            char var_name[256] = {0};
+            var_name[0] = DOLLAR_SIGN;
+            int i = 1;
+            while (isalnum(read_pos[i]) || read_pos[i] == '_')
+            {
+                var_name[i] = read_pos[i];
+                i++;
+            }
+
+            char *value = get_env_var(var_name);
+            if (value)
+            {
+                size_t len = strlen(value);
+                memcpy(write_pos, value, len);
+                write_pos += len;
+                free_if_needed(value);
+            }
+            read_pos += i;
+        }
+        else
+        {
+            *write_pos++ = *read_pos++;
+        }
+    }
+    *write_pos = NULL_CHAR;
+    return result;
+}
+
+char *handle_quoted_string(char *str, char quote, char **next_token)
+{
+    str++;
+    char *end = str;
+    char *result = NULL;
+
+    while (*end && *end != quote)
+        end++;
+
+    if (*end == quote)
+    {
+        *end = NULL_CHAR;
+        *next_token = end + 1;
+
+        if (quote == DOUBLE_QUOTES || quote == SINGLE_QUOTE)
+            result = expand_env_vars(str);
+        else
+            result = strdup(str);
+
+        return result;  // enhanced_strtok will free this
+    }
+    return NULL;
+}
+
+char *enhanced_strtok(char *str, const char *delim, char **next_token)
+{
+    static char *last_allocated = NULL;
+
+    if (last_allocated != NULL)
+    {
+        free_if_needed(last_allocated); // Free any previously result
+        last_allocated = NULL;
+    }
+
+    if (str == NULL)
+        str = *next_token;
+
+    str += strspn(str, delim);
+    if (*str == NULL_CHAR)
+        return NULL;
+
+    char *token = str;
+    char *env_result = handle_env_assignment(str, delim, next_token);
+    if (env_result)
+        return env_result;
+
+    if (*str == DOUBLE_QUOTES || *str == SINGLE_QUOTE)
+    {
+        char *result = handle_quoted_string(str, *str, next_token);
+        last_allocated = result;
+        return result;
+    }
+
+    str += strcspn(str, delim);
+
+    if (*str)
+        *str++ = NULL_CHAR;
+
+    *next_token = str;
+    return token;
 }

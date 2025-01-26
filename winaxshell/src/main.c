@@ -1,21 +1,5 @@
 #include "main.h"
 
-void print_prompt()
-{
-    char cwd[MAX_INPUT];
-    char *username = getenv("USER");
-
-    if (getcwd(cwd, sizeof(cwd)) != NULL)
-    {
-        print_generic(STDOUT_FILENO, GREEN_COLOR "%s@%s" RESET_COLOR ":" BLUE_COLOR "%s\n" RESET_COLOR "$ ", username, SHELL_NAME, cwd);
-    }
-    else
-    {
-        print_error("getcwd() error");
-        exit(EXIT_FAILURE);
-    }
-}
-
 int interactive_mode(void) // TODO: refactor
 {
     char input[MAX_INPUT];

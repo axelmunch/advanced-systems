@@ -35,7 +35,7 @@ Test(parser, test_handle_argument)
     command_node_t *node = create_command_node();
     cr_assert_not_null(node, "Node should not be NULL");
     int result = handle_argument(node, "arg1", 0);
-    cr_assert_eq(result, 1, "handle_argument should succeed");
+    cr_assert_eq(result, EXIT_SUCCESS, "handle_argument should succeed");
     cr_assert_str_eq(node->args[0], "arg1", "Argument should match input");
     free_command_node(node);
 }
@@ -81,6 +81,50 @@ Test(parser, test_parse_single_quote)
     cr_assert_not_null(tree, "Tree should not be NULL");
     cr_assert_str_eq(tree->root->args[0], "echo", "First argument should be 'echo', got '%s'", tree->root->args[0]);
     cr_assert_str_eq(tree->root->args[1], "Hello, World!", "Second argument should be 'Hello, World!', got '%s'", tree->root->args[1]);
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(parser, test_get_env_var)
+{
+    command_tree_t *tree = parse_command("echo $HOME");
+    cr_assert_not_null(tree, "Tree should not be NULL");
+    cr_assert_str_eq(tree->root->args[0], "echo", "First argument should be 'echo', got '%s'", tree->root->args[0]);
+    cr_assert_str_eq(tree->root->args[1], get_env_var("$HOME"), "Second argument should be '%s', got '%s'", get_env_var("HOME"), tree->root->args[1]);
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(parser, test_set_env_var)
+{
+    command_tree_t *tree = parse_command("TEST_VAR=Test_Value");
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    const char *env_value = get_env_var("$TEST_VAR");
+    const char *expected_value = "Test_Value";
+    cr_assert_str_eq(env_value, expected_value, "Environment variable should be set '%s', got '%s'", expected_value, env_value);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(parser, test_quoted_env_var)
+{
+    command_tree_t *tree = parse_command("a='Hello, World!' b='Goodbye, World!' c='The end,;:!@#$%^&*()'");
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    char *env_value = get_env_var("$a");
+    char *expected_value = "Hello, World!";
+    cr_assert_str_eq(env_value, expected_value, "Environment variable should be set '%s', got '%s'", expected_value, env_value);
+
+    env_value = get_env_var("$b");
+    expected_value = "Goodbye, World!";
+    cr_assert_str_eq(env_value, expected_value, "Environment variable should be set '%s', got '%s'", expected_value, env_value);
+
+    env_value = get_env_var("$c");
+    expected_value = "The end,;:!@#$%^&*()";
+    cr_assert_str_eq(env_value, expected_value, "Environment variable should be set '%s', got '%s'", expected_value, env_value);
+
     free_command_node(tree->root);
     free_if_needed(tree);
 }

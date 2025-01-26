@@ -1,0 +1,44 @@
+name: CI WinAxShell
+
+on:
+  push:
+    paths:
+      - 'winaxshell/**'
+  pull_request:
+    paths:
+      - 'winaxshell/**'
+
+defaults:
+  run:
+    working-directory: winaxshell
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container:
+      image: gcc:14.2.0
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: apt-get update >/dev/null && apt-get install -y libcriterion-dev >/dev/null
+
+      - name: Build
+        run: make
+
+  test:
+    runs-on: ubuntu-22.04
+    container:
+      image: gcc:14.2.0
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: apt-get update >/dev/null && apt-get install -y libcriterion-dev >/dev/null
+
+      - name: Build binary for tests
+        run: make
+
+      - name: Run unit & integration tests
+        run: make tests
