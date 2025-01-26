@@ -278,9 +278,6 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
 
 int custom_exec(char *command, char **args)
 {
-    print_generic(STDERR_FILENO, "command: %s\n", command);
-    // TODO Check if alias (replace with original command)
-
     // Custom commands
     if(is_custom_command(command))
     {
