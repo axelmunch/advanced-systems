@@ -57,9 +57,7 @@ int batch_mode(int argc, char **argv)
 
     char *input = get_requested_command();
     if (input != NULL)
-    {
         status = execute_command(input, command_tree);
-    }
 
     return status;
 }
@@ -73,13 +71,9 @@ int main(int argc, char **argv)
     int status = EXIT_SUCCESS;
 
     if (argc == 1)
-    {
         status = interactive_mode();
-    }
     else
-    {
         status = batch_mode(argc, argv);
-    }
 
     return status;
 }
