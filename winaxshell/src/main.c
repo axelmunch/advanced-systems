@@ -53,14 +53,15 @@ int interactive_mode(void) // TODO: refactor
 int batch_mode(int argc, char **argv)
 {
     command_tree_t *command_tree = NULL;
+    int status = EXIT_SUCCESS;
 
     char *input = get_requested_command();
     if (input != NULL)
     {
-        return execute_command(input, command_tree);
+        status = execute_command(input, command_tree);
     }
 
-    return EXIT_FAILURE;
+    return status;
 }
 
 int main(int argc, char **argv)
@@ -69,15 +70,16 @@ int main(int argc, char **argv)
     check_requirements(argc, argv);
     show_parameters(get_verbose_mode());
 
-    // Business logic, improve status handler
+    int status = EXIT_SUCCESS;
+
     if (argc == 1)
     {
-        return interactive_mode();
+        status = interactive_mode();
     }
     else
     {
-        return batch_mode(argc, argv);
+        status = batch_mode(argc, argv);
     }
 
-    return EXIT_SUCCESS;
+    return status;
 }
