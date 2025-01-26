@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include "print.h"
 #include "custom_ls.h"
+#include "custom_cd.h"
 
 /**
  * @brief Test if a command is a custom command

@@ -13,6 +13,11 @@
 #define MAX_INPUT 1024
 
 /**
+ * @brief Maximum path length
+ */
+#define MAX_PATH_LENGTH 4096
+
+/**
  * @brief Maximum buffer size for the shell
  */
 #define BUFFER_SIZE 1024
