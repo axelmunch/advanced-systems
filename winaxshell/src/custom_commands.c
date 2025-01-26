@@ -1,8 +1,21 @@
 #include "custom_commands.h"
 
+static const char *custom_commands_list[] = {
+    "ls",
+    "echo",
+    NULL};
+
 bool is_custom_command(char *command)
 {
-    return strcmp(command, "ls") == 0;
+    for (int i = 0; custom_commands_list[i] != NULL; i++)
+    {
+        if (strcmp(command, custom_commands_list[i]) == 0)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void execute_custom_command(char *command, char **args)
@@ -23,7 +36,6 @@ void execute_custom_command(char *command, char **args)
 
     int status = EXIT_SUCCESS;
 
-    // ls
     if (strcmp(command, "ls") == 0)
     {
         char *param = ".";
@@ -40,6 +52,14 @@ void execute_custom_command(char *command, char **args)
             param = args[1];
         }
         status = ls(param);
+    }
+    else if (strcmp(command, "echo") == 0)
+    {
+        for (int i = 1; i < argc; i++)
+        {
+            print_generic(STDOUT_FILENO, "%s ", args[i]);
+        }
+        print_generic(STDOUT_FILENO, "\n");
     }
 
     exit(status);
