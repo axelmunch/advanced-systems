@@ -13,6 +13,13 @@ static struct option binary_opts[] = {
     {"command", required_argument, 0, 'c'},
     {0, 0, 0, 0}};
 
+static char *command_requested = NULL;
+
+char *get_requested_command()
+{
+    return command_requested;
+}
+
 char *dup_optarg_str()
 {
     char *str = NULL;
@@ -53,6 +60,17 @@ void parse_options(int argc, char **argv)
         switch (opt)
         {
         case 'c':
+            // Command param
+            if (optarg)
+            {
+                command_requested = dup_optarg_str();
+
+                if (command_requested == NULL)
+                {
+                    errno = EINVAL;
+                    print_error("[ERROR] Command is NULL");
+                }
+            }
             break;
         case 'v':
             set_verbose_mode(true);

@@ -7,8 +7,14 @@
 #include "print.h"
 
 /**
+ * @brief Get the requested command in command mode
+ * @return char* command
+ */
+char *get_requested_command();
+
+/**
  * @brief Duplicate the option argument string (optarg)
- * @return void
+ * @return char* duplicated string
  */
 char *dup_optarg_str();
 
