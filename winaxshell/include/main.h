@@ -22,10 +22,4 @@ int interactive_mode(void);
  */
 int batch_mode(int argc, char **argv);
 
-/**
- * @brief Print shell prompt
- * @return void
- */
-void print_prompt();
-
 #endif // MAIN_H

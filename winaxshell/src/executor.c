@@ -20,6 +20,40 @@ static void sigchld_handler(int signo)
 }
 
 /**
+ * @brief Internal function to get the operator string representation for debugging purposes
+ * @param op_type Operator type
+ * @return const char* Operator string
+ */
+static const char *get_operator_str(operator_t op_type)
+{
+    switch (op_type)
+    {
+    case OP_NONE:
+        return "NONE";
+    case OP_PIPE:
+        return "PIPE";
+    case OP_SEQ:
+        return "SEQ";
+    case OP_AND:
+        return "AND";
+    case OP_OR:
+        return "OR";
+    case OP_BG:
+        return "BG";
+    case OP_REDIR_OUT:
+        return "REDIR_OUT";
+    case OP_REDIR_IN:
+        return "REDIR_IN";
+    case OP_APPEND:
+        return "APPEND";
+    case OP_HEREDOC:
+        return "HEREDOC";
+    default:
+        return "UNKNOWN";
+    }
+}
+
+/**
  * @brief Intenal function to print the command tree structure for debugging purposes
  * @param node Command node
  * @param depth Depth of the tree
@@ -38,7 +72,7 @@ static void print_command_tree(command_node_t *node, int depth)
     for (int i = 0; i < depth; i++)
         print_generic(STDERR_FILENO, "  ");
 
-    print_generic(STDERR_FILENO, "Node: op_type=%d, args=[", node->op_type);
+    print_generic(STDERR_FILENO, "Node: op_type=%s, args=[", get_operator_str(node->op_type));
 
     if (node->args)
     {
