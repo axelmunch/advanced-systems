@@ -37,7 +37,8 @@ int interactive_mode(void) // TODO: refactor
         {
             errno = EOVERFLOW;
             print_error("Input too long. Maximum allowed is %d characters.\n", MAX_INPUT - 1);
-            while (getchar() != '\n' && !feof(stdin)); // Clear input buffer
+            while (getchar() != '\n' && !feof(stdin))
+                ; // Clear input buffer
             continue;
         }
 
@@ -67,8 +68,14 @@ int interactive_mode(void) // TODO: refactor
 
 int batch_mode(int argc, char **argv)
 {
-    errno = ENOSYS;
-    print_error("[ERROR] batch mode not implemented yet");
+    command_tree_t *command_tree = NULL;
+
+    char *input = get_requested_command();
+    if (input != NULL)
+    {
+        return execute_command(input, command_tree);
+    }
+
     return EXIT_FAILURE;
 }
 
@@ -81,12 +88,11 @@ int main(int argc, char **argv)
     // Business logic, improve status handler
     if (argc == 1)
     {
-        interactive_mode();
+        return interactive_mode();
     }
     else
     {
-        int status = batch_mode(argc, argv);
-        return status;
+        return batch_mode(argc, argv);
     }
 
     return EXIT_SUCCESS;

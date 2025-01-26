@@ -276,18 +276,19 @@ int execute_command_tree(command_node_t *node)
     return status;
 }
 
-void execute_command(char *input, command_tree_t *command_tree)
+int execute_command(char *input, command_tree_t *command_tree)
 {
     command_tree = parse_command(input);
     if (command_tree == NULL)
     {
         print_error("[ERROR] Failed to parse command");
-        return;
+        return EXIT_FAILURE;
     }
     // TODO: add the command tree to the history
     // Check if command_tree is a built-in command
-    execute_command_tree(command_tree->root);
+    int status = execute_command_tree(command_tree->root);
     free_command_node(command_tree->root);
     free_if_needed(command_tree);
     command_tree = NULL;
+    return status;
 }
