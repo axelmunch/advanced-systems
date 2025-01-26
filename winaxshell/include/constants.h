@@ -95,4 +95,14 @@
  */
 #define HISTORY_FILE ".winaxshell_history"
 
+/**
+ * @brief Read end of the pipe
+ */
+#define READ_END 0
+
+/**
+ * @brief Write end of the pipe
+ */
+#define WRITE_END 1
+
 #endif // CONSTANTS_H
