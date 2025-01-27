@@ -131,6 +131,10 @@ int execute_single_command(char **args)
         }
         else
         {
+            // Wait for fork to close; ignoring result
+            int status;
+            waitpid(pid, &status, 0);
+
             return execute_custom_command_main_process(args[0], args) ? EXIT_SUCCESS : EXIT_FAILURE;
         }
     }

@@ -4,7 +4,6 @@ static const char *custom_commands_list[] = {
     "ls_custom",
     "cd",
     "pwd",
-    // "exit",
     "echo",
     NULL};
 
@@ -84,18 +83,6 @@ void execute_custom_command(char *command, char **args)
 
         print_generic(STDOUT_FILENO, "%s\n", cwd);
     }
-    // else if (strcmp(command, "exit") == 0)
-    // {
-    //     if (argc != 1)
-    //     {
-    //         errno = EINVAL;
-    //         print_error("[ERROR] Invalid number of arguments for exit");
-    //         exit(EXIT_FAILURE);
-    //         return;
-    //     }
-
-    //     exit(EXIT_SUCCESS);
-    // }
     else if (strcmp(command, "echo") == 0)
     {
         for (int i = 1; i < argc; i++)
