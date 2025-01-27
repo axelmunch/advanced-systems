@@ -110,26 +110,27 @@ Test(integration, test_env_in_double_quotes)
     free_if_needed(tree);
 }
 
-// TODO: Fix this test
-// Test(integration, test_final_boss_env)
-// {
-//     char *input = "a=\'totooooooo\' ; b=titiiiiii!!!!!!!!!!! ; c=tutututututututuu??????????? ; d=\"OK, stop maintenant c'est bon. That's all Folks!\" ; echo \"$a $b $c       $d\" && echo 'All environment variables set'";
-//     command_tree_t *tree = parse_command(input);
-//     cr_assert_not_null(tree, "Tree should not be NULL");
+Test(integration, test_final_boss_env)
+{
+    char *input = "a=\'totooooooo\' ; b=titiiiiii!!!!!!!!!!! ; c=tutututututututuu??????????? ; d=\"OK, stop maintenant c'est bon. That's all Folks!\" ; echo \"$a $b $c       $d\" && echo 'All environment variables set'";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
 
-//     int status = execute_command_tree(tree->root);
-//     cr_assert_eq(status, EXIT_SUCCESS, "Executing final boss env command should succeed, got %d", status);
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing final boss env command should succeed, got %d", status);
 
-//     FILE *output = cr_get_redirected_stdout();
-//     char* expected_output = "totooooooo titiiiiii!!!!!!!!!!! tutututututututuu???????????       OK, stop maintenant c'est bon. That's all Folks!\n";
+    FILE *output = cr_get_redirected_stdout();
+    char* expected_output = "totooooooo titiiiiii!!!!!!!!!!! tutututututututuu???????????       OK, stop maintenant c'est bon. That's all Folks!\n";
 
-//     char buffer[256];
-//     fgets(buffer, sizeof(buffer), output);
-//     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
+    char buffer[256];
+    fgets(buffer, sizeof(buffer), output);
+    cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
 
-//     free_command_node(tree->root);
-//     free_if_needed(tree);
-// }
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+// LAST TEST
 
 // Test(integration, test_pipe_and_command)
 // {
