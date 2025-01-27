@@ -23,7 +23,7 @@ Test(integration, test_chained_pipes)
 
     FILE *output = cr_get_redirected_stdout();
     char* expected_output = "1\n";
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
 
@@ -52,7 +52,7 @@ Test(integration, test_chained_redir)
 
     FILE *output = cr_get_redirected_stdout();
     char* expected_output = "Redirect succeeded\n";
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
 
@@ -82,7 +82,7 @@ Test(integration, test_env_in_single_quote)
     FILE *output = cr_get_redirected_stdout();
     char* expected_output = "Hello World\n";
 
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
 
@@ -102,7 +102,7 @@ Test(integration, test_env_in_double_quotes)
     FILE *output = cr_get_redirected_stdout();
     char* expected_output = "Hello World\n";
 
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
 
@@ -122,7 +122,7 @@ Test(integration, test_final_boss_env)
     FILE *output = cr_get_redirected_stdout();
     char* expected_output = "totooooooo titiiiiii!!!!!!!!!!! tutututututututuu???????????       OK, stop maintenant c'est bon. That's all Folks!\n";
 
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
 
