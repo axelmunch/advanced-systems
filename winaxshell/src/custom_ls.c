@@ -13,9 +13,7 @@ int ls(const char *path)
     struct stat path_stat;
 
     if (path == NULL)
-    {
         path = ".";
-    }
 
     if (lstat(path, &path_stat) == -1)
     {
@@ -24,28 +22,17 @@ int ls(const char *path)
     }
 
     if (S_ISDIR(path_stat.st_mode))
-    {
         list_directory(path);
-    }
     else
-    {
         file_info(path, path);
-    }
 
     return EXIT_SUCCESS;
 }
 
-/**
- * Returns number of digits in a number
- * @param value
- * @return int
- */
 int count_digits(long long value)
 {
     if (value == 0)
-    {
         return 1;
-    }
 
     value = llabs(value);
     int count = 0;
@@ -72,49 +59,36 @@ void file_info(const char *full_path, const char *file_name)
     }
 
     // User
-    print_generic(STDOUT_FILENO, "%c%s ",
-                  get_filetype(file_stat.st_mode),
-                  get_permissions(file_stat.st_mode));
+    print_generic(STDOUT_FILENO, "%c%s ", get_filetype(file_stat.st_mode), get_permissions(file_stat.st_mode));
 
     space_quantity = max_size_user - strlen(get_owner(file_stat.st_uid));
     for (int i = 0; i < space_quantity && space_quantity > 0; i++)
-    {
-        print_generic(STDOUT_FILENO, " ",
-                      get_owner(file_stat.st_uid));
-    }
-    print_generic(STDOUT_FILENO, "%s ",
-                  get_owner(file_stat.st_uid));
+        print_generic(STDOUT_FILENO, " ", get_owner(file_stat.st_uid));
+
+    print_generic(STDOUT_FILENO, "%s ", get_owner(file_stat.st_uid));
 
     // Group
     space_quantity = max_size_group - strlen(get_group(file_stat.st_gid));
     for (int i = 0; i < space_quantity && space_quantity > 0; i++)
-    {
-        print_generic(STDOUT_FILENO, " ",
-                      get_group(file_stat.st_gid));
-    }
+        print_generic(STDOUT_FILENO, " ", get_group(file_stat.st_gid));
+
     print_generic(STDOUT_FILENO, "%s ",
                   get_group(file_stat.st_gid));
 
     // Size
     space_quantity = max_size_file_size - count_digits(file_stat.st_size);
     for (int i = 0; i < space_quantity && space_quantity > 0; i++)
-    {
         print_generic(STDOUT_FILENO, " ");
-    }
-    print_generic(STDOUT_FILENO, "%ld ",
-                  file_stat.st_size);
+
+    print_generic(STDOUT_FILENO, "%ld ", file_stat.st_size);
 
     print_generic(STDOUT_FILENO, "%s ", parse_time(file_stat.st_mtime));
 
     // File name with color
     if (get_filetype(file_stat.st_mode) == 'd')
-    {
         print_generic(STDOUT_FILENO, "\033[1;34m%s\033[0m\n", file_name);
-    }
     else
-    {
         print_generic(STDOUT_FILENO, "%s\n", file_name);
-    }
 }
 
 void list_directory(const char *path)
