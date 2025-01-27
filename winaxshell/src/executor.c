@@ -19,87 +19,6 @@ static void sigchld_handler(int signo)
     }
 }
 
-/**
- * @brief Internal function to get the operator string representation for debugging purposes
- * @param op_type Operator type
- * @return const char* Operator string
- */
-static const char *get_operator_str(operator_t op_type)
-{
-    switch (op_type)
-    {
-    case OP_NONE:
-        return "NONE";
-    case OP_PIPE:
-        return "PIPE";
-    case OP_SEQ:
-        return "SEQ";
-    case OP_AND:
-        return "AND";
-    case OP_OR:
-        return "OR";
-    case OP_BG:
-        return "BG";
-    case OP_REDIR_OUT:
-        return "REDIR_OUT";
-    case OP_REDIR_IN:
-        return "REDIR_IN";
-    case OP_APPEND:
-        return "APPEND";
-    case OP_HEREDOC:
-        return "HEREDOC";
-    default:
-        return "UNKNOWN";
-    }
-}
-
-/**
- * @brief Intenal function to print the command tree structure for debugging purposes
- * @param node Command node
- * @param depth Depth of the tree
- * @return void
- */
-static void print_command_tree(command_node_t *node, int depth)
-{
-    int show_debug = 1;
-
-    if (!show_debug)
-        return;
-
-    if (!node)
-        return;
-
-    for (int i = 0; i < depth; i++)
-        print_generic(STDERR_FILENO, "  ");
-
-    print_generic(STDERR_FILENO, "Node: op_type=%s, args=[", get_operator_str(node->op_type));
-
-    if (node->args)
-    {
-        for (int i = 0; node->args[i] != NULL; i++)
-            print_generic(STDERR_FILENO, "%s%s", i > 0 ? ", " : "", node->args[i] ? node->args[i] : "NULL");
-    }
-    print_generic(STDERR_FILENO, "]\n");
-
-    if (node->left)
-    {
-        for (int i = 0; i < depth; i++)
-            print_generic(STDERR_FILENO, "  ");
-
-        print_generic(STDERR_FILENO, "Left child:\n");
-        print_command_tree(node->left, depth + 1);
-    }
-
-    if (node->right)
-    {
-        for (int i = 0; i < depth; i++)
-            print_generic(STDERR_FILENO, "  ");
-
-        print_generic(STDERR_FILENO, "Right child:\n");
-        print_command_tree(node->right, depth + 1);
-    }
-}
-
 int execute_single_command(char **args)
 {
     if (args == NULL || args[0] == NULL)
@@ -160,6 +79,7 @@ int execute_pipe_command(command_node_t *node)
     command_node_t **commands = malloc(cmd_count * sizeof(command_node_t *));
     if (!commands)
     {
+        errno = ENOMEM;
         print_error("[ERROR] Failed to allocate memory for commands array");
         return EXIT_FAILURE;
     }
@@ -182,6 +102,7 @@ int execute_pipe_command(command_node_t *node)
     if (!pids)
     {
         free_if_needed(commands);
+        errno = ENOMEM;
         print_error("[ERROR] Failed to allocate memory for PIDs array");
         return EXIT_FAILURE;
     }
@@ -232,7 +153,8 @@ int execute_pipe_command(command_node_t *node)
 
             if (custom_exec(commands[i]->args[0], commands[i]->args) == -1)
             {
-                print_error("[ERROR] Failed to execute command: %s", commands[i]->args[0]);
+                errno = ENOENT;
+                print_error("[ERROR] %s", commands[i]->args[0]);
                 exit(EXIT_FAILURE);
             }
             exit(EXIT_SUCCESS); // Should not reach here
@@ -367,11 +289,16 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
 
 int custom_exec(char *command, char **args)
 {
+    if (command == NULL)
+        return -1;
+
     // Custom commands
     if (is_custom_command(command))
     {
         execute_custom_command(command, args);
     }
+
+    // Only reach here for non-custom commands
     return execvp(command, args);
 }
 
