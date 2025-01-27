@@ -165,12 +165,12 @@ int execute_pipe_command(command_node_t *node)
     }
 
     // Fetch commands FROM RIGHT TO LEFT
-    int idx = cmd_count - 1;
+    int index = cmd_count - 1;
     current = node;
-    commands[idx--] = current->right; // Rightmost command
+    commands[index--] = current->right; // Rightmost command
     while (current->left && current->left->op_type == OP_PIPE)
     {
-        commands[idx--] = current->left->right;
+        commands[index--] = current->left->right;
         current = current->left;
     }
     commands[0] = current->left; // Leftmost command
