@@ -6,10 +6,16 @@
  */
 #define SHELL_NAME "winaxshell"
 
+#undef MAX_INPUT
 /**
  * @brief Maximum input size of the shell
  */
 #define MAX_INPUT 1024
+
+/**
+ * @brief Maximum path length
+ */
+#define MAX_PATH_LENGTH 4096
 
 /**
  * @brief Maximum buffer size for the shell

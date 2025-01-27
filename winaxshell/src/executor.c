@@ -114,16 +114,27 @@ int execute_single_command(char **args)
 
     if (pid == 0)
     {
-        int child_status = execvp(args[0], args);
+        int child_status = custom_exec(args[0], args);
         if (child_status == -1)
         {
             print_error("[ERROR] %s", args[0]);
             exit(EXIT_FAILURE);
         }
     }
-    int status;
-    waitpid(pid, &status, 0);
-    return WIFEXITED(status) ? WEXITSTATUS(status) : EXIT_FAILURE;
+    else
+    {
+        if (!is_custom_command_main_process(args[0]))
+        {
+            int status;
+            waitpid(pid, &status, 0);
+            return WIFEXITED(status) ? WEXITSTATUS(status) : EXIT_FAILURE;
+        }
+        else
+        {
+            return execute_custom_command_main_process(args[0], args) ? EXIT_SUCCESS : EXIT_FAILURE;
+        }
+    }
+    return EXIT_SUCCESS;
 }
 
 int execute_pipe_command(command_node_t *left, command_node_t *right)
@@ -166,7 +177,7 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         }
         else
         {
-            execvp(left->args[0], left->args);
+            custom_exec(left->args[0], left->args);
             print_error("[ERROR] Failed to execute %s", left->args[0]);
             exit(EXIT_FAILURE);
         }
@@ -193,7 +204,7 @@ int execute_pipe_command(command_node_t *left, command_node_t *right)
         }
         safe_close(pipefd[0]);
 
-        execvp(right->args[0], right->args);
+        custom_exec(right->args[0], right->args);
         print_error("[ERROR] Failed to execute %s", right->args[0]);
         exit(EXIT_FAILURE);
     }
@@ -219,7 +230,7 @@ int execute_background_command(command_node_t *node)
 
     if (pid == 0)
     {
-        int child_status = execvp(node->args[0], node->args);
+        int child_status = custom_exec(node->args[0], node->args);
         if (child_status == -1)
         {
             print_error("[ERROR] %s", node->args[0]);
@@ -308,6 +319,16 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
     waitpid(pid, &status, 0);
 
     return WIFEXITED(status) ? WEXITSTATUS(status) : EXIT_FAILURE;
+}
+
+int custom_exec(char *command, char **args)
+{
+    // Custom commands
+    if (is_custom_command(command))
+    {
+        execute_custom_command(command, args);
+    }
+    return execvp(command, args);
 }
 
 int execute_command_tree(command_node_t *node)
