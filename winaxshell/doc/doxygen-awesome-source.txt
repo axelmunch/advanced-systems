@@ -1,0 +1,7 @@
+https://github.com/jothepro/doxygen-awesome-css
+
+jothepro
+
+MIT License
+
+v2.3.4
