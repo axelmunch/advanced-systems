@@ -1,7 +1,7 @@
 #include "custom_commands.h"
 
 static const char *custom_commands_list[] = {
-    "ls",
+    "ls_custom",
     "cd",
     "pwd",
     // "exit",
@@ -56,13 +56,13 @@ void execute_custom_command(char *command, char **args)
 
     int status = EXIT_SUCCESS;
 
-    if (strcmp(command, "ls") == 0)
+    if (strcmp(command, "ls_custom") == 0)
     {
         char *param = ".";
         if (argc > 2)
         {
             errno = EINVAL;
-            print_error("[ERROR] Too many arguments for ls");
+            print_error("[ERROR] Too many arguments for ls_custom");
             exit(EXIT_FAILURE);
             return;
         }
