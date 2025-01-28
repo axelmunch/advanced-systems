@@ -130,40 +130,38 @@ Test(integration, test_final_boss_env)
     free_if_needed(tree);
 }
 
-// LAST TEST
+Test(integration, test_pipe_and_command)
+{
+    char *input = "ls -l | grep Makefile && ps aux | grep '^root'";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
 
-// Test(integration, test_pipe_and_command)
-// {
-//     char *input = "ls -l | grep Makefile && ps aux | grep '^root'";
-//     command_tree_t *tree = parse_command(input);
-//     cr_assert_not_null(tree, "Tree should not be NULL");
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing pipe and command should succeed, got %d", status);
 
-//     int status = execute_command_tree(tree->root);
-//     cr_assert_eq(status, EXIT_SUCCESS, "Executing pipe and command should succeed, got %d", status);
+    FILE *output = cr_get_redirected_stdout();
+    char buffer[256];
 
-//     FILE *output = cr_get_redirected_stdout();
-//     char buffer[256];
+    // Read the output of the first command
+    while (fgets(buffer, sizeof(buffer), output) != NULL)
+    {
+        if (strstr(buffer, "Makefile") != NULL)
+        {
+            break;
+        }
+    }
+    cr_assert_not_null(strstr(buffer, "Makefile"), "Output should contain 'Makefile'");
 
-//     // Read the output of the first command
-//     while (fgets(buffer, sizeof(buffer), output) != NULL)
-//     {
-//         if (strstr(buffer, "Makefile") != NULL)
-//         {
-//             break;
-//         }
-//     }
-//     cr_assert_not_null(strstr(buffer, "Makefile"), "Output should contain 'Makefile'");
+    // Read the output of the second command
+    while (fgets(buffer, sizeof(buffer), output) != NULL)
+    {
+        if (strstr(buffer, "root") != NULL)
+        {
+            break;
+        }
+    }
+    cr_assert_not_null(strstr(buffer, "root"), "Output should contain 'root'");
 
-//     // Read the output of the second command
-//     while (fgets(buffer, sizeof(buffer), output) != NULL)
-//     {
-//         if (strstr(buffer, "root") != NULL)
-//         {
-//             break;
-//         }
-//     }
-//     cr_assert_not_null(strstr(buffer, "root"), "Output should contain 'root'");
-
-//     free_command_node(tree->root);
-//     free_if_needed(tree);
-// }
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}

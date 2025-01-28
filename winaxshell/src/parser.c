@@ -114,6 +114,41 @@ int handle_argument(command_node_t *current, const char *token, size_t index)
     return EXIT_SUCCESS;
 }
 
+/**
+ * @brief Check if the tree contains a specific operator
+ * @param node Command node to check
+ * @param op Operator to search for
+ * @return int 1 if the operator is found, 0 otherwise
+ */
+static int tree_contains_operator(command_node_t *node, operator_t op)
+{
+    if (node == NULL)
+        return 0;
+
+    if (node->op_type == op)
+        return 1;
+
+    return tree_contains_operator(node->left, op) || tree_contains_operator(node->right, op);
+}
+
+static void insert_pipe_node(command_tree_t *tree, command_node_t *new_node)
+{
+    command_node_t *current = tree->root;
+    command_node_t *parent = NULL;
+
+    while (current != NULL && (current->op_type == OP_AND || current->op_type == OP_OR))
+    {
+        parent = current;
+        current = current->right;
+    }
+
+    if (parent == NULL)
+        tree->root = new_node;
+    else
+        parent->right = new_node;
+    new_node->left = current;
+}
+
 command_tree_t *parse_command(const char *input)
 {
     if (input == NULL)
@@ -167,7 +202,12 @@ command_tree_t *parse_command(const char *input)
                 free_if_needed(input_copy);
                 return NULL;
             }
-            tree->root = new_node;
+
+            if (op == OP_PIPE && (tree_contains_operator(tree->root, OP_AND) || tree_contains_operator(tree->root, OP_OR)))
+                insert_pipe_node(tree, new_node);
+            else
+                tree->root = new_node;
+
             current = new_node->right;
             arg_index = 0;
         }
@@ -343,7 +383,7 @@ char *handle_quoted_string(char *str, char quote, char **next_token)
         else
             result = strdup(str);
 
-        return result;  // enhanced_strtok will free this
+        return result; // enhanced_strtok will free this
     }
     return NULL;
 }
