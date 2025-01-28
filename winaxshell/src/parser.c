@@ -131,6 +131,12 @@ static int tree_contains_operator(command_node_t *node, operator_t op)
     return tree_contains_operator(node->left, op) || tree_contains_operator(node->right, op);
 }
 
+/**
+ * @brief Insert a pipe node into the tree
+ * @param tree Command tree to insert into
+ * @param new_node New node to insert
+ * @return void
+ */
 static void insert_pipe_node(command_tree_t *tree, command_node_t *new_node)
 {
     command_node_t *current = tree->root;
@@ -146,6 +152,7 @@ static void insert_pipe_node(command_tree_t *tree, command_node_t *new_node)
         tree->root = new_node;
     else
         parent->right = new_node;
+        
     new_node->left = current;
 }
 
