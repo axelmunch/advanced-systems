@@ -9,8 +9,27 @@ Pour installer jenkins en tant que Docker as a Service, lancez la commande suiva
 ```shell
 docker run --name jenkins-stateless -p 8080:8080 jenkins/jenkins:lts-jdk17
 ```
+![Docker run screen](assets/docker-run.png)
 
-Le service sera accessible par l'adresse suivante: [http://localhost:8080](http://localhost:8080)
+Le service sera accessible par l'adresse suivante: [http://localhost:8080](http://localhost:8080).
+
+![Installation page](assets/installation-page.png)
+
+Le mot de passe par défaut du compte admin par défaut pour l'installation est visible sur les logs du conteneur.
+
+![Default adminPassword](assets/mot-de-passe-par-defaut.png)
+
+Par la suite, l'installation se poursuit, et il nous faudra configurer le compte admin par défaut pour exploiter Jenkins.
+
+![Installation running](assets/installation-running.png)
+
+Pour la configuration de l'instance, spécifiez l'url spécifié pour accéder au service:
+
+![Configuration instance](assets/instance-configuration.png)
+
+Le service est installé et accessible !
+
+![Jenkins Homepage](assets/jenkins.png)
 
 Cependant, cette configuration n'est pas persistente, donc au redémarrage du conteneur, les données seront perdues. Ainsi, il est nécessaire de persister les données avec la commande suivante:
 
@@ -19,6 +38,18 @@ docker run --name jenkins-statefull -p 8081:8080 -v jenkins_statefull:/var/jenki
 ```
 
 Cette seconde version du service sera accessible par l'adresse suivante: [http://localhost:8081](http://localhost:8081)
+
+Pour stopper le service, lancez la commande suivante:
+
+```shell
+docker stop jenkins-statefull
+```
+
+Le service sera tout de même listés dans la liste des conteneurs qui seront en arrêt par la commande:
+
+```shell
+docker ps -a
+```
 
 ### Using `docker compose`
 
