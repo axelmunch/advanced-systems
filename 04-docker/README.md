@@ -31,13 +31,9 @@ Le service est installé et accessible !
 
 ![Jenkins Homepage](assets/jenkins.png)
 
-Cependant, cette configuration n'est pas persistente, donc au redémarrage du conteneur, les données seront perdues. Ainsi, il est nécessaire de persister les données avec la commande suivante:
+#### Stop the container service
 
-```shell
-docker run --name jenkins-statefull -p 8081:8080 -v jenkins_statefull:/var/jenkins_home jenkins/jenkins:lts-jdk17 
-```
-
-Cette seconde version du service sera accessible par l'adresse suivante: [http://localhost:8081](http://localhost:8081)
+Pour arrêter le service, lancez la commande `docker stop <nom_container>` ou `<id_container>`:
 
 Pour stopper le service, lancez la commande suivante:
 
@@ -50,6 +46,17 @@ Le service sera tout de même listés dans la liste des conteneurs qui seront en
 ```shell
 docker ps -a
 ```
+
+#### Persister les données au redémarrage du conteneur
+
+Cependant, cette configuration n'est pas persistente, donc au redémarrage du conteneur, les données seront perdues. Ainsi, il est nécessaire de persister les données avec la commande suivante:
+
+```shell
+docker run --name jenkins-statefull -p 8081:8080 -v jenkins_statefull:/var/jenkins_home jenkins/jenkins:lts-jdk17 
+```
+
+Cette seconde version du service sera accessible par l'adresse suivante: [http://localhost:8081](http://localhost:8081)
+
 
 ### Using `docker compose`
 
