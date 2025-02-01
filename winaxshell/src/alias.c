@@ -45,7 +45,7 @@ char *get_alias_command(const char *name)
     {
         if (strcmp(aliases[i].name, name) == 0)
         {
-            return aliases[i].command;
+            return strdup(aliases[i].command);
         }
     }
 

@@ -142,6 +142,16 @@ command_tree_t *parse_command(const char *input)
 
     while (token != NULL)
     {
+        // If token is an alias, replace with the alias command
+        int index = get_alias_index(token);
+        if (index != -1)
+        {
+            char *next_token_temp = strcat(get_alias_command(token), " ");
+            next_token = strcat(next_token_temp, next_token);
+            token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
+            continue;
+        }
+
         if (strchr(token, EQUAL_SIGN) != NULL)
         {
             // Alias exclusion
