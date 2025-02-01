@@ -117,3 +117,69 @@ Test(integration, test_final_boss_env)
     free_command_node(tree->root);
     free_if_needed(tree);
 }
+
+Test(integration, test_alias_create)
+{
+    char *input = "alias a='ls -l' ; a";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_FAILURE, "Alias should not yet be defined, got %d", status);
+
+    input = "a";
+    tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing alias command should succeed, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_alias_unalias)
+{
+    char *input = "alias a='ls -l' ; unalias a ; a";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_FAILURE, "Alias command unaliased should fail, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_alias_list)
+{
+    char *input = "alias a='true' ; alias b='true' ; alias c='true' ; alias";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing alias command should succeed, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_alias_redefine)
+{
+    char *input = "alias a='exit 1' ; alias a='exit 0'";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing alias command should succeed, got %d", status);
+
+    input = "a";
+    tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Alias should be replaced, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
