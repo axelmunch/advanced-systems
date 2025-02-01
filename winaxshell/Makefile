@@ -1,12 +1,18 @@
 CC=gcc
-CFLAGS=-Wall -c
+CFLAGS=-Wall -c -g
 LDFLAGS=-I ./include
+TEST_LDFLAGS=-lcriterion
 
 SRC_DIR=./src
 INC_DIR=./include
 BIN_DIR=./bin
 DOC_DIR=./doc
 GCOV_DIR=./gcov
+TEST_DIR=./tests
+MOCKS_DIR=./mocks
+BLUE=\033[1;34m
+YELLOW=\033[1;33m
+NC=\033[0m
 
 GCOVFLAGS=-O0 --coverage -lgcov -Wall -g
 
@@ -16,36 +22,46 @@ SRC=$(wildcard $(SRC_DIR)/*.c)
 OBJ=$(SRC:.c=.o)
 EXEC=winaxshell
 
+TEST_SRC=$(wildcard $(TEST_DIR)/*.c)
+OBJ_NO_MAIN=$(filter-out $(SRC_DIR)/main.o, $(OBJ))
+TEST_OBJ=$(TEST_SRC:.c=.o)
+TEST_EXEC=winaxshell_tests
+
 GEXEC=$(EXEC).cov
 
 AR_NAME=archive_$(EXEC).tar.gz
 
-all: $(SRC) $(EXEC)
+all: $(SRC) $(EXEC) $(TEST_EXEC)
 
 $(BIN_DIR):
 	@mkdir -p $(BIN_DIR)
+
+$(MOCKS_DIR):
+	@mkdir -p $(MOCKS_DIR)
 
 %.o:%.c | $(BIN_DIR)
 	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
 $(EXEC): $(OBJ)
-	@mkdir -p bin
 	$(CC) -o $(BIN_DIR)/$@ -Wall $(LDFLAGS) $(OBJ)
 
-$(GEXEC):
-	$(CC) $(GCOVFLAGS) -o $(GCOV_DIR)/$@ -Wall $(LDFLAGS) $(SRC)
+$(TEST_OBJ): %.o: %.c
+	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
+
+$(TEST_EXEC): $(TEST_OBJ) $(OBJ) $(MOCKS_DIR)
+	$(CC) -o $(BIN_DIR)/$@ $(TEST_OBJ) $(OBJ_NO_MAIN) $(LDFLAGS) $(TEST_LDFLAGS)
 
 doc:
 	doxygen $(DOC_DIR)/doxygen.conf
 
 gcov: $(GEXEC)
-	$(GCOV_DIR)/$(GEXEC) -h
+	$(GCOV_DIR)/$(GEXEC)
 
-	find ./ -maxdepth 1 -name *.gcno -exec mv {} $(GCOV_DIR) \;
-	find ./ -maxdepth 1 -name *.gcda -exec mv {} $(GCOV_DIR) \;
+	find $(SRC_DIR) -name '*.gcno' -exec mv {} $(GCOV_DIR) \;
+	find $(SRC_DIR) -name '*.gcda' -exec mv {} $(GCOV_DIR) \;
 
-	gcov -o $(GCOV_DIR) $(GEXEC)
-	lcov -o $(GCOV_DIR)/$(LCOV_REPORT) -c -f -d $(GCOV_DIR)
+	gcov -o $(GCOV_DIR) $(SRC_DIR)/*.c
+	lcov -o $(GCOV_DIR)/$(LCOV_REPORT) -c -d $(GCOV_DIR)
 	genhtml -o $(GCOV_DIR)/report $(GCOV_DIR)/$(LCOV_REPORT)
 
 package: gcov doc all
@@ -53,11 +69,19 @@ package: gcov doc all
 	tar cvfz $(AR_NAME) ./*
 
 run:
-	@echo "Running $(EXEC)"
+	@echo "$(BLUE)Running WinAxShell$(NC)"
 	@./$(BIN_DIR)/$(EXEC)
 
+tests:
+	@echo "$(YELLOW)Running WinAxShell test suite...$(NC)"
+	@./$(BIN_DIR)/$(TEST_EXEC) --verbose --jobs=1 --color=always
+
+memcheck:
+	@echo "$(YELLOW)Running Valgrind...$(NC)"
+	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(EXEC)
+
 clean:
-	rm -rf $(OBJ)
+	rm -rf $(OBJ) $(TEST_OBJ)
 	rm -f /tmp/proc-exercise*
 
 mrproper: clean
@@ -66,5 +90,6 @@ mrproper: clean
 	rm -rf $(DOC_DIR)/latex
 	rm -rf $(DOC_DIR)/man
 	rm -rf $(GCOV_DIR)/*
+	rm -rf mocks/*
 
-.PHONY: doc
+.PHONY: doc tests run

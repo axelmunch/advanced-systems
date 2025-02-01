@@ -45,23 +45,42 @@ void close_file(int fd)
     }
 }
 
-void copy(const char *src, const char *dst)
+void copy(const char *src, const char *dst, bool buffered_mode)
 {
     print("[INFO] Copying %s to %s\n", src, dst);
 
-    print("[INFO] Opening %s file for reading...\n", src);
-    int src_fd = open_file(src, O_RDONLY, 0);
-    print("[INFO] Source file opened successfully\n");
+    if(buffered_mode) {
+        print("[INFO] Using buffered mode\n");
 
-    print("[INFO] Opening %s file for writing...\n", dst);
-    int dst_fd = open_file(dst, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    print("[INFO] Destination file opened successfully\n");
+        print("[INFO] Opening files for reading...\n");
+        FICHIER *src_file = my_open(src, "r");
+        FICHIER *dst_file = my_open(dst, "w");
+        print("[INFO] Files opened successfully\n");
 
-    print("[INFO] Copying data from %s to %s...\n", src, dst);
-    copy_file_data(src_fd, dst_fd);
+        print("[INFO] Copying data from %s to %s...\n", src, dst);
+        int c;
+        while ((c = my_getc(src_file)) != EOF) {
+            my_putc(c, dst_file);
+        }
+
+        my_close(src_file);
+        my_close(dst_file);
+    }
+    else {
+        print("[INFO] Opening %s file for reading...\n", src);
+        int src_fd = open_file(src, O_RDONLY, 0);
+        print("[INFO] Source file opened successfully\n");
+
+        print("[INFO] Opening %s file for writing...\n", dst);
+        int dst_fd = open_file(dst, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        print("[INFO] Destination file opened successfully\n");
+
+        print("[INFO] Copying data from %s to %s...\n", src, dst);
+        copy_file_data(src_fd, dst_fd);
+
+        close_file(src_fd);
+        close_file(dst_fd);
+    }
 
     print("[INFO] File copy completed successfully\n");
-
-    close_file(src_fd);
-    close_file(dst_fd);
 }

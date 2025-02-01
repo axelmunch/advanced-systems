@@ -1,115 +1,67 @@
 #include "main.h"
 
-/**
- * @brief Binary options declaration (must end with {0,0,0,0})
- */
-static struct option binary_opts[] = {
-    {"help", no_argument, 0, 'h'},
-    {"verbose", no_argument, 0, 'v'},
-    {"command", required_argument, 0, 'c'},
-    {0, 0, 0, 0}};
-
-void free_if_needed(void *to_free)
+int interactive_mode(void) // TODO: refactor
 {
-    if (to_free != NULL)
-        free(to_free);
-}
+    char input[MAX_INPUT];
+    command_tree_t *command_tree = NULL;
 
-char *dup_optarg_str()
-{
-    char *str = NULL;
-    if (optarg != NULL)
-    {
-        str = strndup(optarg, MAX_INPUT);
-        if (str == NULL)
-        {
-            print_error("");
-        }
-    }
-    return str;
-}
-
-void show_help(char **argv)
-{
-    print_generic(STDOUT_FILENO, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
-    exit(EXIT_FAILURE);
-}
-
-void show_parameters(bool verbose_mode)
-{
-    print("** PARAMS **\n%-8s: %d\n",
-          "verbose", verbose_mode);
-}
-
-void check_requirements(int argc, char **argv)
-{
-    return;
-}
-
-void parse_options(int argc, char **argv)
-{
-    int opt = -1;
-    int opt_idx = -1;
-
-    while ((opt = getopt_long(argc, argv, BINARY_OPTION_STR, binary_opts, &opt_idx)) != -1)
-    {
-        switch (opt)
-        {
-        case 'c':
-            break;
-        case 'v':
-            set_verbose_mode(true);
-            break;
-        case 'h':
-            show_help(argv);
-            break;
-        default:
-            break;
-        }
-    }
-}
-
-void print_prompt()
-{
-    char cwd[MAX_INPUT];
-    char *username = getenv("USER");
-
-    if (getcwd(cwd, sizeof(cwd)) != NULL)
-    {
-        print_generic(STDOUT_FILENO, GREEN_COLOR "%s@%s" RESET_COLOR ":" BLUE_COLOR "%s\n" RESET_COLOR "$ ", username, SHELL_NAME, cwd);
-    }
-    else
-    {
-        print_error("getcwd() error");
-        exit(EXIT_FAILURE);
-    }
-}
-
-void interactive_mode()
-{
     while (1)
     {
         print_prompt();
-        char input[MAX_INPUT];
         if (fgets(input, sizeof(input), stdin) == NULL)
         {
+            print_generic(STDOUT_FILENO, "\n");
             break;
         }
 
-        char** command_arguments = parse_command(input);
-        if (command_arguments != NULL)
+        size_t input_len = strlen(input);
+
+        // Check for input overflow
+        if (input_len > 0 && input[input_len - 1] != '\n')
         {
-            execute_command(command_arguments);
-            free(command_arguments);
+            errno = EOVERFLOW;
+            print_error("Input too long. Maximum allowed is %d characters.\n", MAX_INPUT - 1);
+            while (getchar() != '\n' && !feof(stdin))
+                ; // Clear input buffer
+            continue;
         }
+
+        if (input_len > 0 && input[input_len - 1] == '\n')
+            input[input_len - 1] = '\0';
+
+        if (strlen(input) == 0)
+            continue;
+
+        if (strcmp(input, "exit") == 0) // exit command, to improve
+        {
+            print_generic(STDOUT_FILENO, GREEN_COLOR "Bye! Thanks for using WinAxShell!\n" RESET_COLOR);
+            break;
+        }
+
+        execute_command(input, command_tree);
     }
+
+    if (command_tree != NULL)
+    {
+        free_command_node(command_tree->root);
+        free_if_needed(command_tree);
+    }
+
+    return EXIT_SUCCESS;
 }
 
-void batch_mode(int argc, char **argv)
+int batch_mode(int argc, char **argv)
 {
-    errno = ENOSYS;
-    print_error("[ERROR] batch mode not implemented yet");
-    return;
+    command_tree_t *command_tree = NULL;
+    int status = EXIT_SUCCESS;
+
+    char *input = get_requested_command();
+    if (input != NULL)
+    {
+        status = execute_command(input, command_tree);
+    }
+
+    return status;
 }
 
 int main(int argc, char **argv)
@@ -118,15 +70,16 @@ int main(int argc, char **argv)
     check_requirements(argc, argv);
     show_parameters(get_verbose_mode());
 
-    // Business logic
+    int status = EXIT_SUCCESS;
+
     if (argc == 1)
     {
-        interactive_mode();
+        status = interactive_mode();
     }
     else
     {
-        batch_mode(argc, argv);
+        status = batch_mode(argc, argv);
     }
 
-    return EXIT_SUCCESS;
+    return status;
 }
