@@ -63,7 +63,7 @@ void add_history_entry(const char *entry)
     if (entry == NULL || is_all_space(entry))
         return;
 
-    char *home = getenv("HOME");
+    char *home = getenv(HOME_ENV_VAR);
     if (home == NULL)
     {
         print_error("[ERROR] HOME environment variable not set");
@@ -103,55 +103,73 @@ char *get_env_var(const char *token)
     return NULL;
 }
 
-int set_env_var(const char *token)
+int get_var_values(const char *token, char *name, char *value)
 {
-    char *equal_sign = strchr(token, '=');
+    char *equal_sign = strchr(token, EQUAL_SIGN);
     if (!equal_sign)
         return -1;
 
     size_t name_len = equal_sign - token;
-    char *env_name = strndup(token, name_len);
+    char *processed_name = strndup(token, name_len);
 
-    if (!env_name)
+    if (!processed_name)
         return -1;
 
-    const char *value = equal_sign + 1;
+    const char *current_value = equal_sign + 1;
     char *processed_value = NULL;
     size_t value_len;
 
-    while (isspace(*value))
-        value++;
+    while (isspace(*current_value))
+        current_value++;
 
-    if (*value == DOUBLE_QUOTES || *value == SINGLE_QUOTE)
+    if (*current_value == DOUBLE_QUOTES || *current_value == SINGLE_QUOTE)
     {
-        char quote_char = *value;
-        value++;
-        const char *end_quote = strchr(value, quote_char);
+        char quote_char = *current_value;
+        current_value++;
+        const char *end_quote = strchr(current_value, quote_char);
 
         if (end_quote)
         {
-            value_len = end_quote - value;
-            processed_value = strndup(value, value_len);
+            value_len = end_quote - current_value;
+            processed_value = strndup(current_value, value_len);
         }
         else
         {
-            processed_value = strdup(value);
+            processed_value = strdup(current_value);
         }
     }
     else
     {
-        processed_value = strdup(value);
+        processed_value = strdup(current_value);
     }
 
     if (!processed_value)
     {
-        free_if_needed(env_name);
+        free_if_needed(processed_name);
         return -1;
     }
 
-    int ret = setenv(env_name, processed_value, 1);
-    free_if_needed(env_name);
+    strcpy(name, processed_name);
+    strcpy(value, processed_value);
+
+    free_if_needed(processed_name);
     free_if_needed(processed_value);
+
+    return 0;
+}
+
+int set_env_var(const char *token)
+{
+    // Get values from get_var_values
+    char name[MAX_INPUT];
+    char value[MAX_INPUT];
+    int ret = get_var_values(token, name, value);
+    if (ret < 0)
+        return ret;
+
+    ret = setenv(name, value, 1);
+    free_if_needed(name);
+    free_if_needed(value);
 
     return ret;
 }

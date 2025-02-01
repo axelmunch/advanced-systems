@@ -5,10 +5,14 @@ static const char *custom_commands_list[] = {
     "cd",
     "pwd",
     "echo",
+    "alias",
+    "unalias",
     NULL};
 
 static const char *custom_commands_main_process_list[] = {
     "cd",
+    "alias",
+    "unalias",
     NULL};
 
 bool is_custom_command(char *command)
@@ -117,6 +121,64 @@ bool execute_custom_command_main_process(char *command, char **args)
     if (strcmp(command, "cd") == 0)
     {
         return cd(argc, args);
+    }
+    else if (strcmp(command, "alias") == 0)
+    {
+        if(argc == 1)
+        {
+            for(int i = 0; i < get_alias_count(); i++) {
+                char name[MAX_INPUT];
+                get_alias_name_by_index(i, name);
+                char *command = get_alias_command(name);
+                print_generic(STDOUT_FILENO, "alias %s='%s'\n", name, command);
+            }
+            return true;
+        }
+
+        if(argc > 2)
+        {
+            errno = EINVAL;
+            print_error("[ERROR] Invalid number of arguments for alias");
+            return false;
+        }
+
+        char name[MAX_INPUT];
+        char value[MAX_INPUT];
+        int ret = get_var_values(args[1], name, value);
+        if (ret < 0)
+        {
+            return false;
+        }
+
+        int status = set_alias(name, value);
+        if(status == -1)
+        {
+            errno = EINVAL;
+            print_error("[ERROR] Cannot set alias");
+            return false;
+        }
+
+        return true;
+    }
+    else if (strcmp(command, "unalias") == 0)
+    {
+        print_generic(STDOUT_FILENO, "Unalias command\n");
+        if(argc != 2)
+        {
+            errno = EINVAL;
+            print_error("[ERROR] Invalid number of arguments for unalias");
+            return false;
+        }
+
+        int status = unset_alias(args[1]);
+        if(status == -1)
+        {
+            errno = EINVAL;
+            print_error("[ERROR] Alias not found");
+            return false;
+        }
+
+        return true;
     }
 
     return true;

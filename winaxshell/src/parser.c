@@ -137,22 +137,29 @@ command_tree_t *parse_command(const char *input)
     command_node_t *current = tree->root;
     size_t arg_index = 0;
     char *next_token = NULL;
-    char *token = enhanced_strtok(input_copy, CMD_DELIMITER, &next_token);
+    char *previous_token = enhanced_strtok(input_copy, CMD_DELIMITER, &next_token);
+    char *token = strdup(previous_token);
 
     while (token != NULL)
     {
         if (strchr(token, EQUAL_SIGN) != NULL)
         {
-            if (set_env_var(token) != 0)
+            // Alias exclusion
+            if(!(previous_token != NULL && strcmp(previous_token, "alias") == 0))
             {
-                print_error("[ERROR] Failed to set environment variable");
-                free_command_node(tree->root);
-                free_if_needed(tree);
-                free_if_needed(input_copy);
-                return NULL;
+                // Environment variable
+                if (set_env_var(token) != 0)
+                {
+                    print_error("[ERROR] Failed to set environment variable");
+                    free_command_node(tree->root);
+                    free_if_needed(tree);
+                    free_if_needed(input_copy);
+                    return NULL;
+                }
+                previous_token = strdup(token);
+                token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
+                continue;
             }
-            token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
-            continue;
         }
 
         operator_t op = get_operator_type(token);
@@ -178,6 +185,7 @@ command_tree_t *parse_command(const char *input)
             free_if_needed(input_copy);
             return NULL;
         }
+        previous_token = strdup(token);
         token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
     }
 
