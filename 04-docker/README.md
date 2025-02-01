@@ -9,6 +9,7 @@ Pour installer jenkins en tant que Docker as a Service, lancez la commande suiva
 ```shell
 docker run --name jenkins-stateless -p 8080:8080 jenkins/jenkins:lts-jdk17
 ```
+
 ![Docker run screen](assets/docker-run.png)
 
 Le service sera accessible par l'adresse suivante: [http://localhost:8080](http://localhost:8080).
@@ -23,7 +24,7 @@ Par la suite, l'installation se poursuit, et il nous faudra configurer le compte
 
 ![Installation running](assets/installation-running.png)
 
-Pour la configuration de l'instance, spécifiez l'url spécifié pour accéder au service:
+Pour la configuration de l'instance, spécifiez l'url spécifié pour accéder au service :
 
 ![Configuration instance](assets/instance-configuration.png)
 
@@ -33,15 +34,15 @@ Le service est installé et accessible !
 
 #### Stop the container service
 
-Pour arrêter le service, lancez la commande `docker stop <nom_container>` ou `<id_container>`:
+Pour arrêter le service, lancez la commande `docker stop <nom_container>` ou `<id_container>` :
 
-Pour stopper le service, lancez la commande suivante:
+Pour stopper le service, lancez la commande suivante :
 
 ```shell
 docker stop jenkins-statefull
 ```
 
-Le service sera tout de même listés dans la liste des conteneurs qui seront en arrêt par la commande:
+Le service sera tout de même listés dans la liste des conteneurs qui seront en arrêt par la commande :
 
 ```shell
 docker ps -a
@@ -49,26 +50,25 @@ docker ps -a
 
 #### Persister les données au redémarrage du conteneur
 
-Cependant, cette configuration n'est pas persistente, donc au redémarrage du conteneur, les données seront perdues. Ainsi, il est nécessaire de persister les données avec la commande suivante:
+Cependant, cette configuration n'est pas persistente, donc au redémarrage du conteneur, les données seront perdues. Ainsi, il est nécessaire de persister les données avec la commande suivante :
 
 ```shell
 docker run --name jenkins-statefull -p 8081:8080 -v jenkins_statefull:/var/jenkins_home jenkins/jenkins:lts-jdk17 
 ```
 
-Cette seconde version du service sera accessible par l'adresse suivante: [http://localhost:8081](http://localhost:8081)
-
+Cette seconde version du service sera accessible par l'adresse suivante: [http://localhost:8081](http://localhost:8081).
 
 ### Using `docker compose`
 
 Pour installer Jenkins as a Service, nous pouvons opter par l'utilisation de `docker-compose.yaml`.
 
-Pour cela, il suffit de lancer la commande suivante:
+Pour cela, il suffit de lancer la commande suivante :
 
 ```bash
 docker-compose up -d
 ```
 
-Ce service livré avec Docker Compose sera accessible par l'adresse: [http://localhost:8082](http://localhost:8082)
+Ce service livré avec Docker Compose sera accessible par l'adresse : [http://localhost:8082](http://localhost:8082).
 
 ## 2. Build jenkins service "from scratch"
 
@@ -76,16 +76,16 @@ Pour livrer le service Jenkins as a Service, nous pouvons build une image Docker
 
 Les instructions de build sont présentes dans le fichier [Dockerfile](./Dockerfile).
 
-Pour créer l'image, en vous positionnant dans le répertoire où est présent le fichier `Dockerfile` lancez la commande suivante:
+Pour créer l'image, en vous positionnant dans le répertoire où est présent le fichier `Dockerfile` lancez la commande suivante :
 
 ```bash
 docker build -t jenkins-scratch:1.0.0 .
 ```
 
-Puis créez un conteneur avec l'image nouvellement créer en publiant un port disponible en persistant le volume:
+Puis créez un conteneur avec l'image nouvellement créer en publiant un port disponible en persistant le volume :
 
 ```bash
 docker run --name jenkins-scratch -p 8083:8080 -v jenkins_scratch:/var/jenkins_home jenkins-scratch:1.0.0 
 ```
 
-Ce service from scratch de Jenkins sera accessible par l'adresse: [http://localhost:8083](http://localhost:8083)
+Ce service from scratch de Jenkins sera accessible par l'adresse : [http://localhost:8083](http://localhost:8083).
