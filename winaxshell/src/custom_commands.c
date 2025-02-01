@@ -5,6 +5,7 @@ static const char *custom_commands_list[] = {
     "cd",
     "pwd",
     "echo",
+    "exit",
     "alias",
     "unalias",
     NULL};
@@ -98,6 +99,20 @@ void execute_custom_command(char *command, char **args)
             }
         }
         print_generic(STDOUT_FILENO, "\n");
+    }
+    else if (strcmp(command, "exit") == 0)
+    {
+        int exit_status = EXIT_FAILURE;
+
+        if (argc == 2)
+        {
+            if(strcmp(args[1], "0") == 0)
+            {
+                exit_status = EXIT_SUCCESS;
+            }
+        }
+
+        exit(exit_status);
     }
 
     exit(status);
