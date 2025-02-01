@@ -10,6 +10,11 @@ int set_alias(const char *name, const char *command)
         return -1;
     }
 
+    if(get_alias_index(name) != -1)
+    {
+        unset_alias(name);
+    }
+
     aliases[alias_count].name = strdup(name);
     aliases[alias_count].command = strdup(command);
 
