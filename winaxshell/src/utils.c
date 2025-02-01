@@ -168,8 +168,6 @@ int set_env_var(const char *token)
         return ret;
 
     ret = setenv(name, value, 1);
-    free_if_needed(name);
-    free_if_needed(value);
 
     return ret;
 }
