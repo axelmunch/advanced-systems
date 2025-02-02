@@ -40,7 +40,7 @@ $(MOCKS_DIR):
 	@mkdir -p $(MOCKS_DIR)
 
 %.o:%.c | $(BIN_DIR)
-	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
+	$(CC) $(CFLAGS) $(GCOVFLAGS) $< $(LDFLAGS) -o $@
 
 $(EXEC): $(OBJ)
 	$(CC) -o $(BIN_DIR)/$@ -Wall $(LDFLAGS) $(OBJ)
@@ -48,23 +48,25 @@ $(EXEC): $(OBJ)
 $(TEST_OBJ): %.o: %.c
 	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
-$(TEST_EXEC): $(TEST_OBJ) $(OBJ) $(MOCKS_DIR)
+$(TEST_EXEC): $(TEST_OBJ) $(OBJ_NO_MAIN) $(MOCKS_DIR)
 	$(CC) -o $(BIN_DIR)/$@ $(TEST_OBJ) $(OBJ_NO_MAIN) $(LDFLAGS) $(TEST_LDFLAGS)
 
-$(GEXEC):
-	$(CC) $(GCOVFLAGS) -o $(GCOV_DIR)/$@ -Wall $(LDFLAGS) $(SRC)
+$(GEXEC): $(GEXEC) $(TEST_OBJ) $(OBJ_NO_MAIN) $(MOCKS_DIR)
+	$(CC) $(GCOVFLAGS) -o $(GCOV_DIR)/$@ -Wall $(LDFLAGS) $(TEST_OBJ) $(OBJ_NO_MAIN) $(TEST_LDFLAGS)
 
 doc:
 	doxygen $(DOC_DIR)/doxygen.conf
 
 gcov: $(GEXEC)
-	$(GCOV_DIR)/$(GEXEC)
+	@echo "$(YELLOW)Running Unit Tests with Coverage...$(NC)"
+	$(GCOV_DIR)/$(GEXEC) --verbose --jobs=1 --color=always
 
-	find ./ -maxdepth 1 -name *.gcno -exec mv {} $(GCOV_DIR) \;
-	find ./ -maxdepth 1 -name *.gcda -exec mv {} $(GCOV_DIR) \;
+	find ./ -name '*.gcda' -exec mv {} $(GCOV_DIR)/ \;
+	find ./ -name '*.gcno' -exec mv {} $(GCOV_DIR)/ \;
 
 	lcov -o $(GCOV_DIR)/$(LCOV_REPORT) -c -f -d $(GCOV_DIR)
 	genhtml -o $(GCOV_DIR)/report $(GCOV_DIR)/$(LCOV_REPORT)
+	@echo "$(BLUE)Coverage report generated in $(GCOV_DIR)/report/index.html$(NC)"
 
 package: gcov doc all
 	rm -rf $(AR_NAME)
