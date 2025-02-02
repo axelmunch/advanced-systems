@@ -36,9 +36,7 @@ bool cd(int argc, char **args)
     {
         // -
         if (strcmp(args[1], "-") == 0)
-        {
             param = latest_cd_path;
-        }
 
         // ~
         else if (strcmp(args[1], "~") == 0)
@@ -51,9 +49,7 @@ bool cd(int argc, char **args)
             }
         }
         else
-        {
             param = args[1];
-        }
     }
 
     // Change latest path
@@ -64,9 +60,7 @@ bool cd(int argc, char **args)
         return false;
     }
     if (strcmp(cwd, latest_cd_path) != 0)
-    {
         latest_cd_path = strdup(cwd);
-    }
 
     if (chdir(param) == -1)
     {

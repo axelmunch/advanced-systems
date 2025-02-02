@@ -155,3 +155,73 @@ int set_env_var(const char *token)
 
     return ret;
 }
+
+const char *get_operator_str(operator_t op_type)
+{
+    switch (op_type)
+    {
+    case OP_NONE:
+        return "NONE";
+    case OP_PIPE:
+        return "PIPE";
+    case OP_SEQ:
+        return "SEQ";
+    case OP_AND:
+        return "AND";
+    case OP_OR:
+        return "OR";
+    case OP_BG:
+        return "BG";
+    case OP_REDIR_OUT:
+        return "REDIR_OUT";
+    case OP_REDIR_IN:
+        return "REDIR_IN";
+    case OP_APPEND:
+        return "APPEND";
+    case OP_HEREDOC:
+        return "HEREDOC";
+    default:
+        return "UNKNOWN";
+    }
+}
+
+void print_command_tree(command_node_t *node, int depth)
+{
+    int show_debug = 1;
+
+    if (!show_debug)
+        return;
+
+    if (!node)
+        return;
+
+    for (int i = 0; i < depth; i++)
+        print_generic(STDERR_FILENO, "  ");
+
+    print_generic(STDERR_FILENO, "Node: op_type=%s, args=[", get_operator_str(node->op_type));
+
+    if (node->args)
+    {
+        for (int i = 0; node->args[i] != NULL; i++)
+            print_generic(STDERR_FILENO, "%s%s", i > 0 ? ", " : "", node->args[i] ? node->args[i] : "NULL");
+    }
+    print_generic(STDERR_FILENO, "]\n");
+
+    if (node->left)
+    {
+        for (int i = 0; i < depth; i++)
+            print_generic(STDERR_FILENO, "  ");
+
+        print_generic(STDERR_FILENO, "Left child:\n");
+        print_command_tree(node->left, depth + 1);
+    }
+
+    if (node->right)
+    {
+        for (int i = 0; i < depth; i++)
+            print_generic(STDERR_FILENO, "  ");
+
+        print_generic(STDERR_FILENO, "Right child:\n");
+        print_command_tree(node->right, depth + 1);
+    }
+}

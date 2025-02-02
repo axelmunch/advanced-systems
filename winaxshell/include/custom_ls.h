@@ -15,9 +15,6 @@
 #include "print.h"
 #include "constants.h"
 
-#define STR_SIZE 100
-#define PERM_SIZE sizeof("rwxrwxrwx")
-
 /**
  * List information about a file or directory
  * @param path

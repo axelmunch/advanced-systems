@@ -6,11 +6,10 @@
  */
 #define SHELL_NAME "winaxshell"
 
-#undef MAX_INPUT
 /**
  * @brief Maximum input size of the shell
  */
-#define MAX_INPUT 1024
+#define MAX_INPUT_LENGTH 1024
 
 /**
  * @brief Maximum path length
@@ -25,7 +24,7 @@
 /**
  * @brief Maximum number arguments
  */
-#define MAX_ARGS 64
+#define MAX_ARGS 256
 
 /**
  * @brief Binary options string linked to the binary options declaration (getopt)
@@ -100,5 +99,26 @@
  * @brief History file path
  */
 #define HISTORY_FILE ".winaxshell_history"
+
+/**
+ * @brief Read end of the pipe
+ */
+#define READ_END 0
+
+/**
+ * @brief Write end of the pipe
+ */
+#define WRITE_END 1
+
+/**
+ * @brief String size
+ */
+
+#define STR_SIZE 100
+
+/**
+ * @brief Permission size
+ */
+#define PERM_SIZE sizeof("rwxrwxrwx")
 
 #endif // CONSTANTS_H
