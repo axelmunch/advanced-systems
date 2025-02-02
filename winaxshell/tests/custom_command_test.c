@@ -76,6 +76,70 @@ Test(custom_command, test_cd_nonexistent)
     free_if_needed(tree);
 }
 
+Test(custom_command, test_cd_no_home)
+{
+    char *old_home = getenv("HOME");
+    unsetenv("HOME");
+
+    char *input = "cd";
+    command_tree_t *tree = parse_command(input);
+    int status = execute_command_tree(tree->root);
+
+    cr_assert_eq(status, EXIT_FAILURE);
+
+    if (old_home)
+        setenv("HOME", old_home, 1);
+}
+
+Test(custom_command, test_cd_too_many_args)
+{
+    char *input = "cd /home /tmp";
+    command_tree_t *tree = parse_command(input);
+    int status = execute_command_tree(tree->root);
+
+    cr_assert_eq(status, EXIT_FAILURE);
+}
+
+Test(custom_command, test_cd_tilde_no_home)
+{
+    char *old_home = getenv("HOME");
+    unsetenv("HOME");
+
+    char *input = "cd ~";
+    command_tree_t *tree = parse_command(input);
+    int status = execute_command_tree(tree->root);
+
+    cr_assert_eq(status, EXIT_FAILURE);
+
+    if (old_home)
+        setenv("HOME", old_home, 1);
+}
+
+Test(custom_command, test_cd_invalid_dir)
+{
+    char *input = "cd /nonexistent_directory";
+    command_tree_t *tree = parse_command(input);
+    int status = execute_command_tree(tree->root);
+
+    cr_assert_eq(status, EXIT_FAILURE);
+}
+
+Test(custom_command, test_cd_same_directory)
+{
+    char cwd[MAX_PATH_LENGTH];
+    getcwd(cwd, sizeof(cwd));
+
+    char *input = "cd .";
+    command_tree_t *tree = parse_command(input);
+    int status = execute_command_tree(tree->root);
+
+    cr_assert_eq(status, EXIT_SUCCESS);
+
+    char new_cwd[MAX_PATH_LENGTH];
+    getcwd(new_cwd, sizeof(new_cwd));
+    cr_assert_str_eq(cwd, new_cwd);
+}
+
 Test(custom_command, test_pwd)
 {
     char *input = "pwd";
