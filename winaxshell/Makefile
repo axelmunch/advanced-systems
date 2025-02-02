@@ -51,17 +51,19 @@ $(TEST_OBJ): %.o: %.c
 $(TEST_EXEC): $(TEST_OBJ) $(OBJ) $(MOCKS_DIR)
 	$(CC) -o $(BIN_DIR)/$@ $(TEST_OBJ) $(OBJ_NO_MAIN) $(LDFLAGS) $(TEST_LDFLAGS)
 
+$(GEXEC):
+	$(CC) $(GCOVFLAGS) -o $(GCOV_DIR)/$@ -Wall $(LDFLAGS) $(SRC)
+
 doc:
 	doxygen $(DOC_DIR)/doxygen.conf
 
 gcov: $(GEXEC)
 	$(GCOV_DIR)/$(GEXEC)
 
-	find $(SRC_DIR) -name '*.gcno' -exec mv {} $(GCOV_DIR) \;
-	find $(SRC_DIR) -name '*.gcda' -exec mv {} $(GCOV_DIR) \;
+	find ./ -maxdepth 1 -name *.gcno -exec mv {} $(GCOV_DIR) \;
+	find ./ -maxdepth 1 -name *.gcda -exec mv {} $(GCOV_DIR) \;
 
-	gcov -o $(GCOV_DIR) $(SRC_DIR)/*.c
-	lcov -o $(GCOV_DIR)/$(LCOV_REPORT) -c -d $(GCOV_DIR)
+	lcov -o $(GCOV_DIR)/$(LCOV_REPORT) -c -f -d $(GCOV_DIR)
 	genhtml -o $(GCOV_DIR)/report $(GCOV_DIR)/$(LCOV_REPORT)
 
 package: gcov doc all
