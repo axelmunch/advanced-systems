@@ -135,6 +135,7 @@ bool execute_custom_command_main_process(char *command, char **args)
                 get_alias_name_by_index(i, name);
                 char *command = get_alias_command(name);
                 print_generic(STDOUT_FILENO, "alias %s='%s'\n", name, command);
+                free_if_needed(command);
             }
             return true;
         }
@@ -164,7 +165,6 @@ bool execute_custom_command_main_process(char *command, char **args)
     }
     else if (strcmp(command, "unalias") == 0)
     {
-        print_generic(STDOUT_FILENO, "Unalias command\n");
         if(argc != 2)
         {
             errno = EINVAL;

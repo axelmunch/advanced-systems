@@ -56,4 +56,11 @@ int get_alias_index(const char *name);
  */
 int get_alias_name_by_index(int index, char *name);
 
+/**
+ * @brief Frees all aliases
+ *
+ * @return void
+ */
+void free_aliases();
+
 #endif // ALIAS_H

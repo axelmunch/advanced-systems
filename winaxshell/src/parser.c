@@ -103,6 +103,7 @@ int handle_argument(command_node_t *current, const char *token, size_t index)
     {
         errno = ENOMEM;
         print_error("[ERROR] Failed to duplicate argument string");
+        free_if_needed(stored_value);
         return EXIT_FAILURE;
     }
 
@@ -152,7 +153,7 @@ static void insert_pipe_node(command_tree_t *tree, command_node_t *new_node)
         tree->root = new_node;
     else
         parent->right = new_node;
-        
+
     new_node->left = current;
 }
 
@@ -180,17 +181,19 @@ command_tree_t *parse_command(const char *input)
     size_t arg_index = 0;
     char *next_token = NULL;
     char *previous_token = enhanced_strtok(input_copy, CMD_DELIMITER, &next_token);
-    char *token = strdup(previous_token);
+    char *token = previous_token;
 
     while (token != NULL)
     {
         // If token is an alias, replace with the alias command
         int index = get_alias_index(token);
-        if (index != -1)
+        if (index != -1 && !(previous_token != NULL && strcmp(previous_token, "unalias") == 0))
         {
-            char *next_token_temp = strcat(get_alias_command(token), " ");
+            char *command = get_alias_command(token);
+            char *next_token_temp = strcat(command, " ");
             next_token = strcat(next_token_temp, next_token);
             token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
+            // free_if_needed(command);
             continue;
         }
 
@@ -208,7 +211,10 @@ command_tree_t *parse_command(const char *input)
                     free_if_needed(input_copy);
                     return NULL;
                 }
-                previous_token = strdup(token);
+                // free_if_needed(previous_token);
+                // previous_token = strdup(token);
+                previous_token = strcpy(previous_token, token);
+                // free_if_needed(token);
                 token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
                 continue;
             }
@@ -222,6 +228,7 @@ command_tree_t *parse_command(const char *input)
             {
                 print_error("[ERROR] Failed to handle operator");
                 free_command_node(tree->root);
+                free_if_needed(previous_token);
                 free_if_needed(tree);
                 free_if_needed(input_copy);
                 return NULL;
@@ -240,14 +247,19 @@ command_tree_t *parse_command(const char *input)
             free_command_node(tree->root);
             free_if_needed(tree);
             free_if_needed(input_copy);
+            // free_if_needed(previous_token);
+            free_if_needed(token);
             return NULL;
         }
-        previous_token = strdup(token);
+        // free_if_needed(previous_token);
+        previous_token = strcpy(previous_token, token);
         token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
     }
 
     current->args[arg_index] = NULL;
     free_if_needed(input_copy);
+    // free_if_needed(previous_token);
+    free_if_needed(token);
     return tree;
 }
 
@@ -306,6 +318,8 @@ char *handle_env_assignment(char *str, const char *delim, char **next_token)
         last_allocated = quote_end;
         return str;
     }
+
+    free_if_needed(quote_end);
 
     return NULL;
 }

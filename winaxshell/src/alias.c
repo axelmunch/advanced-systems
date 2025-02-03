@@ -86,3 +86,14 @@ int get_alias_name_by_index(int index, char *name)
 
     return 0;
 }
+
+void free_aliases()
+{
+    for (int i = 0; i < alias_count; i++)
+    {
+        free_if_needed(aliases[i].name);
+        free_if_needed(aliases[i].command);
+    }
+
+    alias_count = 0;
+}

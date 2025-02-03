@@ -7,6 +7,7 @@
 #include "parser.h"
 #include "executor.h"
 #include "helper.h"
+#include "alias.h"
 
 /**
  * @brief Interactive shell mode code execution
