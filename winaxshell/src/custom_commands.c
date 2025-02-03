@@ -21,9 +21,7 @@ bool is_custom_command(char *command)
     for (int i = 0; custom_commands_list[i] != NULL; i++)
     {
         if (strcmp(command, custom_commands_list[i]) == 0)
-        {
             return true;
-        }
     }
 
     return false;
@@ -34,9 +32,7 @@ bool is_custom_command_main_process(char *command)
     for (int i = 0; custom_commands_main_process_list[i] != NULL; i++)
     {
         if (strcmp(command, custom_commands_main_process_list[i]) == 0)
-        {
             return true;
-        }
     }
 
     return false;
@@ -53,10 +49,9 @@ void execute_custom_command(char *command, char **args)
     }
 
     int argc = 0;
+
     while (args[argc] != NULL)
-    {
         argc++;
-    }
 
     int status = EXIT_SUCCESS;
 
@@ -72,9 +67,8 @@ void execute_custom_command(char *command, char **args)
         }
 
         if (argc == 2)
-        {
             param = args[1];
-        }
+
         status = ls(param);
     }
     else if (strcmp(command, "pwd") == 0)
@@ -94,9 +88,7 @@ void execute_custom_command(char *command, char **args)
         {
             print_generic(STDOUT_FILENO, "%s", args[i]);
             if (i < argc - 1)
-            {
                 print_generic(STDOUT_FILENO, " ");
-            }
         }
         print_generic(STDOUT_FILENO, "\n");
     }
@@ -128,15 +120,12 @@ bool execute_custom_command_main_process(char *command, char **args)
     }
 
     int argc = 0;
+
     while (args[argc] != NULL)
-    {
         argc++;
-    }
 
     if (strcmp(command, "cd") == 0)
-    {
         return cd(argc, args);
-    }
     else if (strcmp(command, "alias") == 0)
     {
         if(argc == 1)
@@ -161,9 +150,7 @@ bool execute_custom_command_main_process(char *command, char **args)
         char value[MAX_INPUT];
         int ret = get_var_values(args[1], name, value);
         if (ret < 0)
-        {
             return false;
-        }
 
         int status = set_alias(name, value);
         if(status == -1)

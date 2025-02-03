@@ -19,53 +19,6 @@ static void sigchld_handler(int signo)
     }
 }
 
-/**
- * @brief Intenal function to print the command tree structure for debugging purposes
- * @param node Command node
- * @param depth Depth of the tree
- * @return void
- */
-static void print_command_tree(command_node_t *node, int depth)
-{
-    int show_debug = 1;
-
-    if (!show_debug)
-        return;
-
-    if (!node)
-        return;
-
-    for (int i = 0; i < depth; i++)
-        print_generic(STDERR_FILENO, "  ");
-
-    print_generic(STDERR_FILENO, "Node: op_type=%d, args=[", node->op_type);
-
-    if (node->args)
-    {
-        for (int i = 0; node->args[i] != NULL; i++)
-            print_generic(STDERR_FILENO, "%s%s", i > 0 ? ", " : "", node->args[i] ? node->args[i] : "NULL");
-    }
-    print_generic(STDERR_FILENO, "]\n");
-
-    if (node->left)
-    {
-        for (int i = 0; i < depth; i++)
-            print_generic(STDERR_FILENO, "  ");
-
-        print_generic(STDERR_FILENO, "Left child:\n");
-        print_command_tree(node->left, depth + 1);
-    }
-
-    if (node->right)
-    {
-        for (int i = 0; i < depth; i++)
-            print_generic(STDERR_FILENO, "  ");
-
-        print_generic(STDERR_FILENO, "Right child:\n");
-        print_command_tree(node->right, depth + 1);
-    }
-}
-
 int execute_single_command(char **args)
 {
     if (args == NULL || args[0] == NULL)
@@ -107,86 +60,129 @@ int execute_single_command(char **args)
     return EXIT_SUCCESS;
 }
 
-int execute_pipe_command(command_node_t *left, command_node_t *right)
+int execute_pipe_command(command_node_t *node)
 {
-    if (left == NULL || right == NULL)
+    if (!node || node->op_type != OP_PIPE)
+        return EXIT_FAILURE;
+
+    // Count commands
+    int cmd_count = 1;
+    command_node_t *current = node;
+    while (current->left && current->left->op_type == OP_PIPE)
     {
-        print_error("[ERROR] Invalid pipe command");
+        cmd_count++;
+        current = current->left;
+    }
+    cmd_count++; // Add the last command
+
+    // Collect all commands in order
+    command_node_t **commands = malloc(cmd_count * sizeof(command_node_t *));
+    if (!commands)
+    {
+        errno = ENOMEM;
+        print_error("[ERROR] Failed to allocate memory for commands array");
         return EXIT_FAILURE;
     }
+
+    // Fetch commands FROM RIGHT TO LEFT
+    int index = cmd_count - 1;
+    current = node;
+    commands[index--] = current->right; // Rightmost command
+    while (current->left && current->left->op_type == OP_PIPE)
+    {
+        commands[index--] = current->left->right;
+        current = current->left;
+    }
+    commands[0] = current->left; // Leftmost command
 
     int pipefd[2];
-    if (pipe(pipefd) == -1)
+    int prev_pipe_read = STDIN_FILENO;
+    pid_t *pids = malloc(cmd_count * sizeof(pid_t));
+
+    if (!pids)
     {
-        print_error("[ERROR] pipe() failed");
+        free_if_needed(commands);
+        errno = ENOMEM;
+        print_error("[ERROR] Failed to allocate memory for PIDs array");
         return EXIT_FAILURE;
     }
 
-    pid_t left_pid = fork();
-    if (left_pid == -1)
+    for (int i = 0; i < cmd_count; i++)
     {
-        print_error("[ERROR] fork() failed");
-        safe_close(pipefd[0]);
-        safe_close(pipefd[1]);
-        return EXIT_FAILURE;
+        if (i < cmd_count - 1)
+        {
+            if (pipe(pipefd) == -1)
+            {
+                print_error("[ERROR] Failed to create pipe");
+                free_if_needed(commands);
+                free_if_needed(pids);
+                return EXIT_FAILURE;
+            }
+        }
+
+        pids[i] = fork();
+        if (pids[i] < 0)
+        {
+            print_error("[ERROR] Fork failed");
+            free_if_needed(commands);
+            free_if_needed(pids);
+            return EXIT_FAILURE;
+        }
+
+        if (pids[i] == 0)
+        {
+            if (i > 0)
+            {
+                if (dup2(prev_pipe_read, STDIN_FILENO) == -1)
+                {
+                    print_error("[ERROR] Failed to duplicate input fd");
+                    exit(EXIT_FAILURE);
+                }
+            }
+
+            if (i < cmd_count - 1)
+            {
+                if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+                {
+                    print_error("[ERROR] Failed to duplicate output fd");
+                    exit(EXIT_FAILURE);
+                }
+                safe_close(pipefd[0]);
+                safe_close(pipefd[1]);
+            }
+
+            if (custom_exec(commands[i]->args[0], commands[i]->args) == -1)
+            {
+                errno = ENOENT;
+                print_error("[ERROR] %s", commands[i]->args[0]);
+                exit(EXIT_FAILURE);
+            }
+            exit(EXIT_SUCCESS); // Should not reach here
+        }
+
+        if (i > 0)
+            safe_close(prev_pipe_read);
+
+        if (i < cmd_count - 1)
+        {
+            safe_close(pipefd[1]);
+            prev_pipe_read = pipefd[0];
+        }
     }
 
-    if (left_pid == 0)
+    int status;
+    int last_status = EXIT_SUCCESS;
+    for (int i = 0; i < cmd_count; i++)
     {
-        safe_close(pipefd[0]);
-        if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-        {
-            print_error("[ERROR] dup2() failed");
-            exit(EXIT_FAILURE);
-        }
-        safe_close(pipefd[1]);
-
-        if (left->op_type == OP_PIPE)
-        {
-            exit(execute_pipe_command(left->left, left->right));
-        }
-        else
-        {
-            custom_exec(left->args[0], left->args);
-            print_error("[ERROR] Failed to execute %s", left->args[0]);
-            exit(EXIT_FAILURE);
-        }
+        waitpid(pids[i], &status, 0);
+        if (i == cmd_count - 1)
+            last_status = WIFEXITED(status) ? WEXITSTATUS(status) : EXIT_FAILURE;
     }
 
-    pid_t right_pid = fork();
-    if (right_pid == -1)
-    {
-        print_error("[ERROR] fork() failed");
-        safe_close(pipefd[0]);
-        safe_close(pipefd[1]);
-        kill(left_pid, SIGTERM);
-        waitpid(left_pid, NULL, 0);
-        return EXIT_FAILURE;
-    }
+    free_if_needed(commands);
+    free_if_needed(pids);
 
-    if (right_pid == 0)
-    {
-        safe_close(pipefd[1]);
-        if (dup2(pipefd[0], STDIN_FILENO) == -1)
-        {
-            print_error("[ERROR] dup2() failed");
-            exit(EXIT_FAILURE);
-        }
-        safe_close(pipefd[0]);
-
-        custom_exec(right->args[0], right->args);
-        print_error("[ERROR] Failed to execute %s", right->args[0]);
-        exit(EXIT_FAILURE);
-    }
-
-    safe_close(pipefd[0]);
-    safe_close(pipefd[1]);
-
-    int left_status, right_status;
-    waitpid(left_pid, &left_status, 0);
-    waitpid(right_pid, &right_status, 0);
-
-    return (WIFEXITED(left_status) && WIFEXITED(right_status)) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return last_status;
 }
 
 int execute_background_command(command_node_t *node)
@@ -293,11 +289,16 @@ int execute_redirection_command(command_node_t *left, command_node_t *right, ope
 
 int custom_exec(char *command, char **args)
 {
+    if (command == NULL)
+        return -1;
+
     // Custom commands
     if (is_custom_command(command))
     {
         execute_custom_command(command, args);
     }
+
+    // Only reach here for non-custom commands
     return execvp(command, args);
 }
 
@@ -311,7 +312,7 @@ int execute_command_tree(command_node_t *node)
     switch (node->op_type)
     {
     case OP_PIPE:
-        status = execute_pipe_command(node->left, node->right);
+        status = execute_pipe_command(node);
         break;
     case OP_SEQ:
         if (node->left != NULL)

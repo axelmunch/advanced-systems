@@ -74,4 +74,18 @@ int get_var_values(const char *token, char *name, char *value);
  */
 int set_env_var(const char *token);
 
+/**
+ * @brief Get the operator string for debugging print
+ * @param op Operator type
+ * @return const char* Operator string
+ */
+const char *get_operator_str(operator_t op);
+
+/**
+ * @brief Print command tree for debugging purposes
+ * @param command_node_t* node root node of the command tree
+ * @param int level level of the command tree
+ */
+void print_command_tree(command_node_t *node, int level);
+
 #endif // UTILS_H

@@ -21,11 +21,10 @@ int execute_single_command(char **args);
 
 /**
  * @brief Execute a pipe command
- * @param left Left command
- * @param right Right command
+ * @param node Command node root of the tree
  * @return int Exit status
  */
-int execute_pipe_command(command_node_t *left, command_node_t *right);
+int execute_pipe_command(command_node_t *node);
 
 /**
  * @brief Execute a background command

@@ -23,9 +23,12 @@ Test(integration, test_chained_pipes)
 
     FILE *output = cr_get_redirected_stdout();
     char* expected_output = "1\n";
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
 }
 
 Test(integration, test_chained_commands)
@@ -46,6 +49,15 @@ Test(integration, test_chained_redir)
 
     int status = execute_command_tree(tree->root);
     cr_assert_eq(status, EXIT_SUCCESS, "Executing chained redirections should succeed, got %d", status);
+
+    FILE *output = cr_get_redirected_stdout();
+    char* expected_output = "Redirect succeeded\n";
+    char buffer[BUFFER_SIZE];
+    fgets(buffer, sizeof(buffer), output);
+    cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
 }
 
 Test(integration, test_command_with_env)
@@ -70,7 +82,7 @@ Test(integration, test_env_in_single_quote)
     FILE *output = cr_get_redirected_stdout();
     char* expected_output = "Hello World\n";
 
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
 
@@ -90,7 +102,7 @@ Test(integration, test_env_in_double_quotes)
     FILE *output = cr_get_redirected_stdout();
     char* expected_output = "Hello World\n";
 
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
 
@@ -110,9 +122,45 @@ Test(integration, test_final_boss_env)
     FILE *output = cr_get_redirected_stdout();
     char* expected_output = "totooooooo titiiiiii!!!!!!!!!!! tutututututututuu???????????       OK, stop maintenant c'est bon. That's all Folks!\n";
 
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_pipe_and_command)
+{
+    char *input = "ls -l | grep Makefile && ps aux | grep '^root'";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing pipe and command should succeed, got %d", status);
+
+    FILE *output = cr_get_redirected_stdout();
+    char buffer[256];
+
+    // Read the output of the first command
+    while (fgets(buffer, sizeof(buffer), output) != NULL)
+    {
+        if (strstr(buffer, "Makefile") != NULL)
+        {
+            break;
+        }
+    }
+    cr_assert_not_null(strstr(buffer, "Makefile"), "Output should contain 'Makefile'");
+
+    // Read the output of the second command
+    while (fgets(buffer, sizeof(buffer), output) != NULL)
+    {
+        if (strstr(buffer, "root") != NULL)
+        {
+            break;
+        }
+    }
+    cr_assert_not_null(strstr(buffer, "root"), "Output should contain 'root'");
 
     free_command_node(tree->root);
     free_if_needed(tree);

@@ -25,7 +25,7 @@ char *dup_optarg_str()
     char *str = NULL;
     if (optarg != NULL)
     {
-        str = strndup(optarg, MAX_INPUT);
+        str = strndup(optarg, MAX_INPUT_LENGTH);
         if (str == NULL)
         {
             print_error("[ERROR] strndup() failed");
@@ -86,7 +86,7 @@ void parse_options(int argc, char **argv)
 
 void print_prompt()
 {
-    char cwd[MAX_INPUT];
+    char cwd[MAX_INPUT_LENGTH];
     char *username = getenv("USER");
 
     if (getcwd(cwd, sizeof(cwd)) != NULL)

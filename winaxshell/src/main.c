@@ -2,7 +2,7 @@
 
 int interactive_mode(void) // TODO: refactor
 {
-    char input[MAX_INPUT];
+    char input[MAX_INPUT_LENGTH];
     command_tree_t *command_tree = NULL;
 
     while (1)
@@ -20,9 +20,8 @@ int interactive_mode(void) // TODO: refactor
         if (input_len > 0 && input[input_len - 1] != '\n')
         {
             errno = EOVERFLOW;
-            print_error("Input too long. Maximum allowed is %d characters.\n", MAX_INPUT - 1);
-            while (getchar() != '\n' && !feof(stdin))
-                ; // Clear input buffer
+            print_error("Input too long. Maximum allowed is %d characters.\n", MAX_INPUT_LENGTH - 1);
+            while (getchar() != '\n' && !feof(stdin)); // Clear input buffer
             continue;
         }
 
@@ -32,7 +31,7 @@ int interactive_mode(void) // TODO: refactor
         if (strlen(input) == 0)
             continue;
 
-        if (strcmp(input, "exit") == 0) // exit command, to improve
+        if (strcmp(input, "exit") == 0) // exit command, to improve so we can exit with error code
         {
             print_generic(STDOUT_FILENO, GREEN_COLOR "Bye! Thanks for using WinAxShell!\n" RESET_COLOR);
             break;
@@ -57,9 +56,7 @@ int batch_mode(int argc, char **argv)
 
     char *input = get_requested_command();
     if (input != NULL)
-    {
         status = execute_command(input, command_tree);
-    }
 
     return status;
 }
@@ -73,13 +70,9 @@ int main(int argc, char **argv)
     int status = EXIT_SUCCESS;
 
     if (argc == 1)
-    {
         status = interactive_mode();
-    }
     else
-    {
         status = batch_mode(argc, argv);
-    }
 
     return status;
 }
