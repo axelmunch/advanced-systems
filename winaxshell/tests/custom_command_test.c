@@ -210,8 +210,8 @@ Test(custom_command, test_ls_custom)
     int status = execute_command_tree(tree->root);
     cr_assert_eq(status, EXIT_SUCCESS, "Executing ls_custom with pipe command should succeed");
 
-    FILE* output = cr_get_redirected_stdout();
-    FILE* err = cr_get_redirected_stderr();
+    FILE *output = cr_get_redirected_stdout();
+    FILE *err = cr_get_redirected_stderr();
 
     char output_buffer[BUFFER_SIZE];
     char err_buffer[BUFFER_SIZE];

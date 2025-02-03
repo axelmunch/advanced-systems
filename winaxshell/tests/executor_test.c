@@ -1,6 +1,9 @@
 #include <criterion/criterion.h>
 #include <criterion/hooks.h>
 #include <criterion/redirect.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
 #include "executor.h"
 #include "parser.h"
 
@@ -179,7 +182,7 @@ Test(executor, test_execute_command_success)
     cr_assert_eq(status, EXIT_SUCCESS, "Simple command `ls -l` should succeed");
 }
 
-Test(executor, test_execute_command_null_input) 
+Test(executor, test_execute_command_null_input)
 {
     command_tree_t *tree = NULL;
     int status = execute_command(NULL, tree);
@@ -200,4 +203,37 @@ Test(executor, test_execute_command_complex)
     char *input = "ls -l | grep test && echo success";
     int status = execute_command(input, tree);
     cr_assert_eq(status, EXIT_SUCCESS, "Complex command should execute successfully");
+}
+
+Test(executor, test_custom_exec)
+{
+    char *args[] = {"ls", NULL};
+    int status = custom_exec("ls", args);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing `ls` should succeed");
+}
+
+Test(executor, test_custom_exec_null_command)
+{
+    char *args[] = {NULL};
+    int status = custom_exec(NULL, args);
+    int expected = -1;
+    cr_assert_eq(status, expected, "Executing NULL command should fail, got %d, expected %d", status, expected);
+}
+
+Test(executor, test_redirect_empty_command)
+{
+    int status = execute_redirection_command(NULL, NULL, OP_REDIR_OUT);
+    cr_assert_eq(status, EXIT_FAILURE, "Redirecting empty command should fail");
+}
+
+Test(executor, test_invalid_redirect_type)
+{
+    command_node_t *left = create_command_node();
+    command_node_t *right = create_command_node();
+
+    int status = execute_redirection_command(left, right, 666);
+    cr_assert_eq(status, EXIT_FAILURE, "Invalid redirect type should fail");
+
+    free_command_node(left);
+    free_command_node(right);
 }

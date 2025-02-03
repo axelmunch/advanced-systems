@@ -40,7 +40,7 @@ $(MOCKS_DIR):
 	@mkdir -p $(MOCKS_DIR)
 
 %.o:%.c | $(BIN_DIR)
-	$(CC) $(CFLAGS) $(GCOVFLAGS) $< $(LDFLAGS) -o $@
+	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
 $(EXEC): $(OBJ)
 	$(CC) -o $(BIN_DIR)/$@ -Wall $(LDFLAGS) $(OBJ)
@@ -59,7 +59,7 @@ doc:
 
 gcov: $(GEXEC)
 	@echo "$(YELLOW)=== Running Unit Tests with Coverage ===$(NC)"
-	$(GCOV_DIR)/$(GEXEC) 
+	$(GCOV_DIR)/$(GEXEC) --verbose --jobs=1 --color=always
 
 	@echo "Generating Coverage Report..."
 	@find ./ -name '*.gcda' -exec mv {} $(GCOV_DIR)/ \;
