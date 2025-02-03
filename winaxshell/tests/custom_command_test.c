@@ -232,3 +232,12 @@ Test(custom_command, test_custom_command_main_process_invalid)
     bool result = execute_custom_command_main_process(input, NULL);
     cr_assert_eq(result, false, "pwd is not a custom command main process");
 }
+
+Test(custom_command, test_custom_command_main_process_valid)
+{
+    char *command = "help";
+    char *args[] = {"help", NULL};
+
+    bool result = execute_custom_command_main_process(command, args);
+    cr_assert_eq(result, true, "help is a custom command main process");
+}

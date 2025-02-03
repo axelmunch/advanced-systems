@@ -9,6 +9,7 @@ static const char *custom_commands_list[] = {
 
 static const char *custom_commands_main_process_list[] = {
     "cd",
+    "help",
     NULL};
 
 bool is_custom_command(char *command)
