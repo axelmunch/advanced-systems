@@ -161,8 +161,8 @@ int get_var_values(const char *token, char *name, char *value)
 int set_env_var(const char *token)
 {
     // Get values from get_var_values
-    char name[MAX_INPUT];
-    char value[MAX_INPUT];
+    char name[MAX_INPUT_LENGTH];
+    char value[MAX_INPUT_LENGTH];
     int ret = get_var_values(token, name, value);
     if (ret < 0)
         return ret;
