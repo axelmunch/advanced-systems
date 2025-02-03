@@ -15,7 +15,6 @@ YELLOW=\033[1;33m
 NC=\033[0m
 
 GCOVFLAGS=-O0 --coverage -lgcov -Wall -g
-
 LCOV_REPORT=report.info
 
 SRC=$(wildcard $(SRC_DIR)/*.c)
@@ -51,15 +50,15 @@ $(TEST_OBJ): %.o: %.c
 $(TEST_EXEC): $(TEST_OBJ) $(OBJ_NO_MAIN) $(MOCKS_DIR)
 	$(CC) -o $(BIN_DIR)/$@ $(TEST_OBJ) $(OBJ_NO_MAIN) $(LDFLAGS) $(TEST_LDFLAGS)
 
-$(GEXEC): $(GEXEC) $(TEST_OBJ) $(OBJ_NO_MAIN) $(MOCKS_DIR)
-	$(CC) $(GCOVFLAGS) -o $(GCOV_DIR)/$@ -Wall $(LDFLAGS) $(TEST_OBJ) $(OBJ_NO_MAIN) $(TEST_LDFLAGS)
+$(GEXEC): $(TEST_OBJ) $(OBJ_NO_MAIN) $(MOCKS_DIR)
+	$(CC) $(GCOVFLAGS) -o $(GCOV_DIR)/$@ $(LDFLAGS) $(TEST_OBJ) $(OBJ_NO_MAIN) $(TEST_LDFLAGS)
 
 doc:
 	doxygen $(DOC_DIR)/doxygen.conf
 
 gcov: $(GEXEC)
 	@echo "$(YELLOW)Running Unit Tests with Coverage...$(NC)"
-	$(GCOV_DIR)/$(GEXEC) --verbose --jobs=1 --color=always
+	$(GCOV_DIR)/$(GEXEC) 
 
 	find ./ -name '*.gcda' -exec mv {} $(GCOV_DIR)/ \;
 	find ./ -name '*.gcno' -exec mv {} $(GCOV_DIR)/ \;
