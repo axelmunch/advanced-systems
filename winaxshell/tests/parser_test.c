@@ -61,6 +61,10 @@ Test(parser, test_get_operator_type)
     cr_assert_eq(get_operator_type("||"), OP_OR, "should return OP_OR");
     cr_assert_eq(get_operator_type(";"), OP_SEQ, "should return OP_SEQ");
     cr_assert_eq(get_operator_type("&"), OP_BG, "should return OP_BG");
+    cr_assert_eq(get_operator_type(">"), OP_REDIR_OUT, "should return OP_REDIR_OUT");
+    cr_assert_eq(get_operator_type("<"), OP_REDIR_IN, "should return OP_REDIR_IN");
+    cr_assert_eq(get_operator_type(">>"), OP_APPEND, "should return OP_APPEND");
+    cr_assert_eq(get_operator_type("<<"), OP_HEREDOC, "should return OP_HEREDOC");
     cr_assert_eq(get_operator_type(NULL), OP_NONE, "NULL should return OP_NONE");
     cr_assert_eq(get_operator_type("@"), OP_NONE, "Unknown operator should return OP_NONE");
 }

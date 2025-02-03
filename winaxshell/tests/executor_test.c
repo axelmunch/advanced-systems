@@ -8,7 +8,7 @@ command_node_t *node;
 command_node_t *left;
 command_node_t *right;
 
-void setup(void)
+void executor_setup(void)
 {
     cr_redirect_stderr();
     cr_redirect_stdout();
@@ -35,7 +35,7 @@ void setup(void)
     right->right = NULL;
 }
 
-TestSuite(executor, .init = setup);
+TestSuite(executor, .init = executor_setup);
 
 Test(executor, test_null_node)
 {

@@ -17,6 +17,11 @@
 #define MAX_PATH_LENGTH 4096
 
 /**
+ * @brief Maximum prompt length for testing purposes
+ */
+#define PROMPT_MAX_LENGTH (MAX_PATH_LENGTH + 256)  // just for testing
+
+/**
  * @brief Maximum buffer size for the shell
  */
 #define BUFFER_SIZE 1024
