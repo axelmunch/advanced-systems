@@ -225,3 +225,10 @@ Test(custom_command, test_ls_custom)
     free_command_node(tree->root);
     free_if_needed(tree);
 }
+
+Test(custom_command, test_custom_command_main_process_invalid)
+{
+    char *input = "pwd";
+    bool result = execute_custom_command_main_process(input, NULL);
+    cr_assert_eq(result, false, "pwd is not a custom command main process");
+}
