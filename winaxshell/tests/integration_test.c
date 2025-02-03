@@ -142,7 +142,6 @@ Test(integration, test_pipe_and_command)
     FILE *output = cr_get_redirected_stdout();
     char buffer[256];
 
-    // Read the output of the first command
     while (fgets(buffer, sizeof(buffer), output) != NULL)
     {
         if (strstr(buffer, "Makefile") != NULL)
@@ -152,7 +151,6 @@ Test(integration, test_pipe_and_command)
     }
     cr_assert_not_null(strstr(buffer, "Makefile"), "Output should contain 'Makefile'");
 
-    // Read the output of the second command
     while (fgets(buffer, sizeof(buffer), output) != NULL)
     {
         if (strstr(buffer, "root") != NULL)
@@ -164,4 +162,9 @@ Test(integration, test_pipe_and_command)
 
     free_command_node(tree->root);
     free_if_needed(tree);
+}
+
+Test(integration, test_failed_operator)
+{
+    
 }

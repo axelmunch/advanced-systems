@@ -163,3 +163,41 @@ Test(executor, test_op_heredoc)
     int status = execute_command_tree(node);
     cr_assert_eq(status, EXIT_SUCCESS, "`cat << Makefile` should succeed");
 }
+
+Test(executor, test_execute_invalid_op)
+{
+    node->op_type = 666;
+    int status = execute_command_tree(node);
+    cr_assert_eq(status, EXIT_FAILURE, "Invalid operator should fail");
+}
+
+Test(executor, test_execute_command_success)
+{
+    command_tree_t *tree = NULL;
+    char *input = "ls -l";
+    int status = execute_command(input, tree);
+    cr_assert_eq(status, EXIT_SUCCESS, "Simple command `ls -l` should succeed");
+}
+
+Test(executor, test_execute_command_null_input) 
+{
+    command_tree_t *tree = NULL;
+    int status = execute_command(NULL, tree);
+    cr_assert_eq(status, EXIT_FAILURE, "NULL input should fail");
+}
+
+Test(executor, test_execute_command_parse_error)
+{
+    command_tree_t *tree = NULL;
+    char *input = "|||";
+    int status = execute_command(input, tree);
+    cr_assert_eq(status, EXIT_FAILURE, "Invalid command should fail parsing");
+}
+
+Test(executor, test_execute_command_complex)
+{
+    command_tree_t *tree = NULL;
+    char *input = "ls -l | grep test && echo success";
+    int status = execute_command(input, tree);
+    cr_assert_eq(status, EXIT_SUCCESS, "Complex command should execute successfully");
+}

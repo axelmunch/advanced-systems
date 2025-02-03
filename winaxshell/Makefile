@@ -40,7 +40,7 @@ $(MOCKS_DIR):
 	@mkdir -p $(MOCKS_DIR)
 
 %.o:%.c | $(BIN_DIR)
-	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
+	$(CC) $(CFLAGS) $(GCOVFLAGS) $< $(LDFLAGS) -o $@
 
 $(EXEC): $(OBJ)
 	$(CC) -o $(BIN_DIR)/$@ -Wall $(LDFLAGS) $(OBJ)
