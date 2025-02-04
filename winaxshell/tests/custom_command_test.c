@@ -226,6 +226,24 @@ Test(custom_command, test_ls_custom)
     free_if_needed(tree);
 }
 
+Test(custom_command, test_ls_custom_no_path)
+{
+    int status = ls(NULL);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing ls_custom without path should succeed");
+}
+
+Test(custom_command, test_ls_custom_failure)
+{
+    int status = ls("/nonexistent_directory");
+    cr_assert_eq(status, EXIT_FAILURE, "Executing ls_custom with invalid path should fail");
+}
+
+Test(custom_command, test_ls_custom_file)
+{
+    int status = ls("Makefile");
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing ls_custom with file should succeed");
+}
+
 Test(custom_command, test_custom_command_main_process_invalid)
 {
     char *input = "pwd";
