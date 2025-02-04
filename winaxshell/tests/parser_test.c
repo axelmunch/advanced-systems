@@ -1,6 +1,15 @@
 #include <criterion/criterion.h>
+#include <criterion/redirect.h>
 #include <string.h>
 #include "parser.h"
+
+void parser_setup(void)
+{
+    cr_redirect_stderr();
+    cr_redirect_stdout();
+}
+
+TestSuite(parser, .init = parser_setup);
 
 Test(parser, test_create_command_node)
 {
@@ -131,4 +140,25 @@ Test(parser, test_quoted_env_var)
 
     free_command_node(tree->root);
     free_if_needed(tree);
+}
+
+Test(parser, test_handle_overload_arguments)
+{
+    command_node_t *node = create_command_node();
+    cr_assert_not_null(node, "Node should not be NULL");
+
+    errno = 0;
+    int result = handle_argument(node, "arg1", MAX_ARGS + 1);
+    cr_assert_eq(errno, E2BIG, "errno should be set to E2BIG");
+    cr_assert_eq(result, EXIT_FAILURE, "handle_argument should return EXIT_FAILURE, got %d", result);
+}
+
+Test(parser, test_handle_argument_null_var)
+{
+    command_node_t *node = create_command_node();
+    cr_assert_not_null(node, "Node should not be NULL");
+
+    int result = handle_argument(node, "$NONEXISTENT", 0);
+    cr_assert_stdout_eq_str("", "stdout should be empty");
+    cr_assert_eq(result, EXIT_SUCCESS, "handle_argument should return EXIT_SUCCESS, got %d", result);
 }
