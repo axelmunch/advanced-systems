@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <errno.h>
 #include "helper.h"
 #include "constants.h"
 
@@ -10,6 +11,12 @@ void redirect_setup(void)
 {
     cr_redirect_stdout();
     cr_redirect_stderr();
+}
+
+char *mock_malloc_fail(size_t size)
+{
+    (void)size;
+    return NULL;
 }
 
 TestSuite(helper, .init = redirect_setup);
@@ -91,4 +98,45 @@ Test(helper, test_parse_options_invalid)
     optind = 1;
     parse_options(argc, argv);
     cr_assert(1); // Should not crash
+}
+
+Test(helper, test_print_prompt)
+{
+    print_prompt();
+    cr_assert_stdout_neq_str(""); // Should print the prompt
+}
+
+Test(helper, test_parse_help)
+{
+    char *argv[] = {"binary", "--help", NULL};
+
+    show_help(argv);
+    cr_assert_stdout_neq_str(""); // Should print usage
+}
+
+Test(helper, test_show_parameters_verbose)
+{
+    show_parameters(true);
+}
+
+Test(helper, test_show_parameters_non_verbose)
+{
+    show_parameters(false);
+    cr_assert_stdout_eq_str(""); // Should not print parameters
+}
+
+Test(helper, test_dup_optarg_str_valid)
+{
+    optarg = "test_string";
+    char *result = dup_optarg_str();
+    cr_assert_not_null(result);
+    cr_assert_str_eq(result, "test_string");
+    free(result);
+}
+
+Test(helper, test_dup_optarg_str_null)
+{
+    optarg = NULL;
+    char *result = dup_optarg_str();
+    cr_assert_null(result);
 }

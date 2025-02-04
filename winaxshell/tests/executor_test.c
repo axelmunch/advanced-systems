@@ -237,3 +237,20 @@ Test(executor, test_invalid_redirect_type)
     free_command_node(left);
     free_command_node(right);
 }
+
+Test(executor, test_signal_handler)
+{
+    signal(SIGCHLD, sigchld_handler);
+
+    pid_t child_pid = fork();
+    cr_assert_neq(child_pid, -1, "Fork failed");
+
+    if (child_pid == 0) {
+        _exit(42);  // Child exits with status 42
+    }
+
+    usleep(100000); // Give time for handler
+
+    fflush(stdout);
+    cr_assert_stdout_neq_str(""); // Should print the prompt
+}
