@@ -22,7 +22,7 @@ Test(integration, test_chained_pipes)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing chained pipes should succeed, got %d", status);
 
     FILE *output = cr_get_redirected_stdout();
-    char* expected_output = "1\n";
+    char *expected_output = "1\n";
     char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
@@ -51,7 +51,7 @@ Test(integration, test_chained_redir)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing chained redirections should succeed, got %d", status);
 
     FILE *output = cr_get_redirected_stdout();
-    char* expected_output = "Redirect succeeded\n";
+    char *expected_output = "Redirect succeeded\n";
     char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
@@ -80,7 +80,7 @@ Test(integration, test_env_in_single_quote)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable in quotes should succeed");
 
     FILE *output = cr_get_redirected_stdout();
-    char* expected_output = "Hello World\n";
+    char *expected_output = "Hello World\n";
 
     char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
@@ -100,7 +100,7 @@ Test(integration, test_env_in_double_quotes)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable in quotes should succeed, got %d", status);
 
     FILE *output = cr_get_redirected_stdout();
-    char* expected_output = "Hello World\n";
+    char *expected_output = "Hello World\n";
 
     char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
@@ -120,7 +120,7 @@ Test(integration, test_final_boss_env)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing final boss env command should succeed, got %d", status);
 
     FILE *output = cr_get_redirected_stdout();
-    char* expected_output = "totooooooo titiiiiii!!!!!!!!!!! tutututututututuu???????????       OK, stop maintenant c'est bon. That's all Folks!\n";
+    char *expected_output = "totooooooo titiiiiii!!!!!!!!!!! tutututututututuu???????????       OK, stop maintenant c'est bon. That's all Folks!\n";
 
     char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
@@ -164,7 +164,79 @@ Test(integration, test_pipe_and_command)
     free_if_needed(tree);
 }
 
-Test(integration, test_failed_operator)
+Test(integration, test_alias_create)
 {
-    
+    char *input = "alias a='ls -l' ; a";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_FAILURE, "Alias should not yet be defined, got %d", status);
+
+    input = "a";
+    tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing alias command should succeed, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_alias_unalias)
+{
+    char *input = "alias a='ls -l' ; unalias a ; a";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_FAILURE, "Alias command unaliased should fail, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_alias_list)
+{
+    char *input = "alias a='true' ; alias b='true' ; alias c='true' ; alias";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing alias command should succeed, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_alias_redefine)
+{
+    char *input = "alias a='exit 1' ; alias a='exit 0'";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing alias command should succeed, got %d", status);
+
+    input = "a";
+    tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Alias should be replaced, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_free_alias)
+{
+    set_alias("a", "toto");
+    set_alias("b", "titi");
+
+    cr_assert_eq(get_alias_count(), 2, "There should be 2 aliases, got %d", get_alias_count());
+
+    free_aliases();
+    cr_assert_eq(get_alias_count(), 0, "There should be 0 aliases after freeing, got %d", get_alias_count());
 }

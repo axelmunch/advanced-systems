@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include "constants.h"
 #include "typedef.h"
 #include "print.h"
 
@@ -56,6 +57,15 @@ void add_history_entry(const char *entry);
  * @return char* value of the environment variable
  */
 char *get_env_var(const char *token);
+
+/**
+ * @brief Parse a variable
+ * @param const char* token token to parse
+ * @param char* name name of the variable
+ * @param char* value value of the variable
+ * @return int 0 if successful, -1 otherwise
+ */
+int get_var_values(const char *token, char *name, char *value);
 
 /**
  * @brief Set the environment variable value

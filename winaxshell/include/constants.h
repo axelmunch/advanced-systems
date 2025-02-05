@@ -32,6 +32,11 @@
 #define MAX_ARGS 256
 
 /**
+ * @brief Maximum number of alias supported
+ */
+#define MAX_ALIAS 128
+
+/**
  * @brief Binary options string linked to the binary options declaration (getopt)
  * @see man 3 getopt_long or getopt
  */
@@ -99,6 +104,11 @@
  * @brief Equal sign character
  */
 #define EQUAL_SIGN '='
+
+/**
+ * @brief Home environment variable
+ */
+#define HOME_ENV_VAR "HOME"
 
 /**
  * @brief History file path
