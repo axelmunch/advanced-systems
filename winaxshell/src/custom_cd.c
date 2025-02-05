@@ -41,7 +41,7 @@ bool cd(int argc, char **args)
         // ~
         else if (strcmp(args[1], "~") == 0)
         {
-            param = getenv("HOME");
+            param = getenv(HOME_ENV_VAR);
             if (param == NULL)
             {
                 print_error("[ERROR] HOME environment variable not set");

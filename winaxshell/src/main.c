@@ -45,6 +45,7 @@ int interactive_mode(void) // TODO: refactor
         free_command_node(command_tree->root);
         free_if_needed(command_tree);
     }
+    free_aliases();
 
     return EXIT_SUCCESS;
 }

@@ -6,8 +6,10 @@
 #include <string.h>
 #include <unistd.h>
 #include "print.h"
+#include "constants.h"
 #include "custom_ls.h"
 #include "custom_cd.h"
+#include "alias.h"
 
 /**
  * @brief Test if a command is a custom command
