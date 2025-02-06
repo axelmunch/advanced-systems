@@ -19,10 +19,12 @@ LCOV_REPORT=report.info
 
 SRC=$(wildcard $(SRC_DIR)/*.c)
 OBJ=$(SRC:.c=.o)
+OBJ_GCOV=$(SRC:.c=.gcov.o)
 EXEC=winaxshell
 
 TEST_SRC=$(wildcard $(TEST_DIR)/*.c)
 OBJ_NO_MAIN=$(filter-out $(SRC_DIR)/main.o, $(OBJ))
+OBJ_GCOV_NO_MAIN=$(filter-out $(SRC_DIR)/main.gcov.o, $(OBJ_GCOV))
 TEST_OBJ=$(TEST_SRC:.c=.o)
 TEST_EXEC=winaxshell_tests
 
@@ -42,6 +44,9 @@ $(MOCKS_DIR):
 %.o:%.c | $(BIN_DIR)
 	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
+%.gcov.o:%.c | $(BIN_DIR)
+	$(CC) $(CFLAGS) $(GCOVFLAGS) $< $(LDFLAGS) -o $@
+
 $(EXEC): $(OBJ)
 	$(CC) -o $(BIN_DIR)/$@ -Wall $(LDFLAGS) $(OBJ)
 
@@ -51,8 +56,8 @@ $(TEST_OBJ): %.o: %.c
 $(TEST_EXEC): $(TEST_OBJ) $(OBJ_NO_MAIN) $(MOCKS_DIR)
 	$(CC) -o $(BIN_DIR)/$@ $(TEST_OBJ) $(OBJ_NO_MAIN) $(LDFLAGS) $(TEST_LDFLAGS)
 
-$(GEXEC): $(TEST_OBJ) $(OBJ_NO_MAIN) $(MOCKS_DIR)
-	$(CC) $(GCOVFLAGS) -o $(GCOV_DIR)/$@ $(LDFLAGS) $(TEST_OBJ) $(OBJ_NO_MAIN) $(TEST_LDFLAGS)
+$(GEXEC): $(TEST_OBJ) $(OBJ_GCOV_NO_MAIN) $(MOCKS_DIR)
+	$(CC) $(GCOVFLAGS) -o $(GCOV_DIR)/$@ $(LDFLAGS) $(TEST_OBJ) $(OBJ_GCOV_NO_MAIN) $(TEST_LDFLAGS)
 
 doc:
 	doxygen $(DOC_DIR)/doxygen.conf
@@ -87,7 +92,7 @@ memcheck:
 
 clean:
 	@echo "$(YELLOW)=== Cleaning up compile files ===$(NC)"
-	rm -rf $(OBJ) $(TEST_OBJ)
+	rm -rf $(OBJ) $(OBJ_GCOV) $(TEST_OBJ)
 	rm -f /tmp/proc-exercise*
 	find . -type f -name "*.gcda" -delete
 	find . -type f -name "*.gcno" -delete
