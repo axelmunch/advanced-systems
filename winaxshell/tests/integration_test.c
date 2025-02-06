@@ -186,7 +186,7 @@ Test(integration, test_alias_create)
 
 Test(integration, test_alias_unalias)
 {
-    char *input = "alias a='ls -l' ; unalias a ; a";
+    char *input = "alias a='ls -l' ; alias b='jarjar' ; unalias a ; unalias a ; a";
     command_tree_t *tree = parse_command(input);
     cr_assert_not_null(tree, "Tree should not be NULL");
 
@@ -240,3 +240,36 @@ Test(integration, test_free_alias)
     free_aliases();
     cr_assert_eq(get_alias_count(), 0, "There should be 0 aliases after freeing, got %d", get_alias_count());
 }
+
+Test(integration, test_get_alias_name)
+{
+    set_alias("a", "toto");
+    set_alias("b", "titi");
+
+    int status = get_alias_name_by_index(-1, "test");
+    cr_assert_eq(status, -1, "Should return -1 for invalid index, got %d", status);
+
+    free_aliases();
+}
+
+Test(integration, test_get_alias_command)
+{
+    set_alias("a", "toto");
+    set_alias("b", "titi");
+
+    char *nonexistent = get_alias_command("nonexistent");
+    cr_assert_null(nonexistent, "Should return NULL for nonexistent alias");
+}
+
+// Test(integration, test_unset_alias_failed)
+// {
+//     int status = unset_alias("nonexistent");
+
+//     cr_assert_eq(status, -1, "Should return -1 for nonexistent alias");
+
+//     set_alias("a", "toto");
+//     set_alias("b", "titi");
+
+//     status = unset_alias("a");
+
+// }
