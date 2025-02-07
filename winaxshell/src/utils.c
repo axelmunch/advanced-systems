@@ -203,10 +203,10 @@ const char *get_operator_str(operator_t op_type)
 
 void print_command_tree(command_node_t *node, int depth)
 {
-    int show_debug = 1;
+    // int show_debug = 1;
 
-    if (!show_debug)
-        return;
+    // if (!show_debug)
+    //     return;
 
     if (!node)
         return;

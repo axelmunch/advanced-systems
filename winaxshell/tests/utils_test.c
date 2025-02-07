@@ -195,3 +195,26 @@ Test(utils, test_add_history_entry_failure)
     add_history_entry("test command");
     cr_assert_stderr_neq_str("");
 }
+
+Test(utils, test_get_var_values)
+{
+    char name[MAX_INPUT_LENGTH];
+    char value[MAX_INPUT_LENGTH];
+    cr_assert_eq(get_var_values("name= value", name, value), 0);
+    cr_assert_str_eq(name, "name");
+    cr_assert_str_eq(value, "value");
+
+    cr_assert_eq(get_var_values("name=", name, value), 0);
+    cr_assert_str_eq(name, "name");
+    cr_assert_str_eq(value, "");
+
+    cr_assert_eq(get_var_values("name='random value'", name, value), 0);
+    cr_assert_str_eq(name, "name");
+    cr_assert_str_eq(value, "random value");
+}
+
+Test(utils, test_print_command_tree_null)
+{
+    print_command_tree(NULL, 0);
+    cr_assert_stdout_eq_str("");
+}
