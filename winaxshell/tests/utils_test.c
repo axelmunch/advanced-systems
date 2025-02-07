@@ -124,6 +124,12 @@ Test(utils, test_safe_open_permission_denied, .exit_code = EXIT_FAILURE)
     unlink(test_file);
 }
 
+Test(utils, test_failed_safe_close, .exit_code = EXIT_FAILURE)
+{
+    safe_close(-1);
+    cr_assert_stderr_eq_str("[ERROR] close() failed\n");
+}
+
 Test(utils, test_set_env_var_errors)
 {
     cr_assert_eq(set_env_var("invalid"), -1);
@@ -166,4 +172,9 @@ Test(utils, test_get_operator_str)
     cr_assert_str_eq(get_operator_str(OP_APPEND), "APPEND");
     cr_assert_str_eq(get_operator_str(OP_HEREDOC), "HEREDOC");
     cr_assert_str_eq(get_operator_str((operator_t)100), "UNKNOWN");
+}
+
+Test(utils, test_add_history_entry_failure)
+{
+    
 }
