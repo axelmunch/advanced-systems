@@ -130,6 +130,21 @@ Test(utils, test_failed_safe_close, .exit_code = EXIT_FAILURE)
     cr_assert_stderr_eq_str("[ERROR] close() failed\n");
 }
 
+Test(utils, test_get_env_var)
+{
+    cr_assert_null(get_env_var("TEST"));
+
+    char *result = get_env_var("$NONEXISTENT_VAR");
+    cr_assert_str_eq(result, "");
+    free_if_needed(result);
+
+    setenv("TEST_VAR", "test_value", 1);
+    result = get_env_var("$TEST_VAR");
+    cr_assert_str_eq(result, "test_value");
+    free_if_needed(result);
+    unsetenv("TEST_VAR");
+}
+
 Test(utils, test_set_env_var_errors)
 {
     cr_assert_eq(set_env_var("invalid"), -1);
@@ -176,5 +191,7 @@ Test(utils, test_get_operator_str)
 
 Test(utils, test_add_history_entry_failure)
 {
-    
+    unsetenv(HOME_ENV_VAR);
+    add_history_entry("test command");
+    cr_assert_stderr_neq_str("");
 }
