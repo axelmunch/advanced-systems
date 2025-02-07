@@ -63,16 +63,22 @@ int batch_mode(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
-    parse_options(argc, argv);
+    bool command_mode;
+    bool no_execute;
+
+    parse_options(argc, argv, &command_mode, &no_execute);
     check_requirements(argc, argv);
-    show_parameters(get_verbose_mode());
+    show_parameters(get_verbose_mode(), command_mode);
 
     int status = EXIT_SUCCESS;
 
-    if (argc == 1)
-        status = interactive_mode();
-    else
+    if(no_execute)
+        return status;
+
+    if (command_mode)
         status = batch_mode(argc, argv);
+    else
+        status = interactive_mode();
 
     return status;
 }
