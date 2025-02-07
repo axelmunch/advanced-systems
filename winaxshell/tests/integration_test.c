@@ -229,3 +229,34 @@ Test(integration, test_alias_redefine)
     free_command_node(tree->root);
     free_if_needed(tree);
 }
+
+Test(integration, test_kill_background_command)
+{
+    char *input = "sleep 1000 &";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing background command should succeed, got %d", status);
+
+    FILE *output = cr_get_redirected_stdout();
+    char buffer[256];
+    fgets(buffer, sizeof(buffer), output);
+
+    int pid;
+    cr_assert_eq(sscanf(buffer, "[%d]", &pid), 1, "Failed to get background process PID");
+    cr_assert_gt(pid, 0, "Invalid PID value: %d", pid);
+
+    cr_assert_eq(kill(pid, SIGTERM), 0, "Failed to send SIGTERM to process %d", pid);
+
+    usleep(10000);
+
+    char termination_buffer[256];
+    fgets(termination_buffer, sizeof(termination_buffer), output);
+    char expected_msg[256];
+    snprintf(expected_msg, sizeof(expected_msg), "[%d] Process killed by signal %d", pid, SIGTERM);
+    cr_assert_not_null(strstr(termination_buffer, expected_msg), "Expected termination message not found: %s", expected_msg);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
