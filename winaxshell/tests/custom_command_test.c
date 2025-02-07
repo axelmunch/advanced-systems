@@ -55,7 +55,7 @@ Test(custom_command, test_cd_tilde)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing cd command should succeed");
 
     char cwd[MAX_PATH_LENGTH];
-    char *expected = getenv("HOME");
+    char *expected = getenv(HOME_ENV_VAR);
     char *result = getcwd(cwd, sizeof(cwd));
     cr_assert_str_eq(expected, result, "Current working directory should be %s, got %s", expected, result);
 
@@ -138,6 +138,27 @@ Test(custom_command, test_cd_same_directory)
     char new_cwd[MAX_PATH_LENGTH];
     getcwd(new_cwd, sizeof(new_cwd));
     cr_assert_str_eq(cwd, new_cwd);
+}
+
+Test(custom_command, test_cd_previous_path)
+{
+    char cwd[MAX_PATH_LENGTH];
+    getcwd(cwd, sizeof(cwd));
+
+    char *input = "cd ..";
+    command_tree_t *tree = parse_command(input);
+    int status = execute_command_tree(tree->root);
+
+    cr_assert_eq(status, EXIT_SUCCESS);
+
+    char new_cwd[MAX_PATH_LENGTH];
+    getcwd(new_cwd, sizeof(new_cwd));
+
+    input = "cd -";
+    tree = parse_command(input);
+    status = execute_command_tree(tree->root);
+
+    cr_assert_eq(status, EXIT_SUCCESS);
 }
 
 Test(custom_command, test_pwd)

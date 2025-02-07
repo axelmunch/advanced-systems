@@ -4,13 +4,15 @@ static char *latest_cd_path = NULL;
 
 bool cd(int argc, char **args)
 {
-    // Default path
-    char *param = getenv("HOME");
-    if (param == NULL)
+    char *home = getenv(HOME_ENV_VAR);
+    if (home == NULL)
     {
         print_error("[ERROR] HOME environment variable not set");
         return false;
     }
+
+    // Default path
+    char *param = home;
 
     if (latest_cd_path == NULL)
     {
@@ -37,17 +39,8 @@ bool cd(int argc, char **args)
         // -
         if (strcmp(args[1], "-") == 0)
             param = latest_cd_path;
-
-        // ~
         else if (strcmp(args[1], "~") == 0)
-        {
-            param = getenv(HOME_ENV_VAR);
-            if (param == NULL)
-            {
-                print_error("[ERROR] HOME environment variable not set");
-                return false;
-            }
-        }
+            param = home;
         else
             param = args[1];
     }
