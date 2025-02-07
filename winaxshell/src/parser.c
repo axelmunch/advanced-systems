@@ -43,7 +43,7 @@ command_tree_t *create_command_tree()
     tree->root = create_command_node();
     if (tree->root == NULL)
     {
-        free(tree);
+        free_if_needed(tree);
         return NULL;
     }
 
@@ -103,11 +103,12 @@ int handle_argument(command_node_t *current, const char *token, size_t index)
     {
         errno = ENOMEM;
         print_error("[ERROR] Failed to duplicate argument string");
+        free_if_needed(stored_value);
         return EXIT_FAILURE;
     }
 
     if (current->args[index] != NULL)
-        free_if_needed(current->args[index]); // Free any existing argument
+        free_if_needed(current->args[index]); // free_if_needed any existing argument
 
     current->args[index] = stored_value;
 
@@ -152,7 +153,7 @@ static void insert_pipe_node(command_tree_t *tree, command_node_t *new_node)
         tree->root = new_node;
     else
         parent->right = new_node;
-        
+
     new_node->left = current;
 }
 
@@ -179,24 +180,67 @@ command_tree_t *parse_command(const char *input)
     command_node_t *current = tree->root;
     size_t arg_index = 0;
     char *next_token = NULL;
+    char *previous_token = NULL;
     char *token = enhanced_strtok(input_copy, CMD_DELIMITER, &next_token);
 
     while (token != NULL)
     {
-        if (strchr(token, EQUAL_SIGN) != NULL)
+        // Handle alias expansion safely
+        int index = get_alias_index(token);
+        if (index != -1 && !(previous_token != NULL && strcmp(previous_token, "unalias") == 0))
         {
-            if (set_env_var(token) != 0)
+            char *alias_command = get_alias_command(token);
+            if (alias_command == NULL)
             {
-                print_error("[ERROR] Failed to set environment variable");
+                print_error("[ERROR] Failed to retrieve alias command");
                 free_command_node(tree->root);
                 free_if_needed(tree);
                 free_if_needed(input_copy);
                 return NULL;
             }
-            token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
+
+            size_t expanded_size = strlen(alias_command) + (next_token ? strlen(next_token) : 0) + 2;
+            char *expanded_command = malloc(expanded_size);
+            if (!expanded_command)
+            {
+                print_error("[ERROR] Memory allocation failed for alias expansion");
+                free_if_needed(alias_command);
+                free_command_node(tree->root);
+                free_if_needed(tree);
+                free_if_needed(input_copy);
+                return NULL;
+            }
+
+            snprintf(expanded_command, expanded_size, "%s %s", alias_command, next_token ? next_token : "");
+            free_if_needed(alias_command);
+            free_if_needed(input_copy);
+            input_copy = expanded_command;
+            next_token = NULL;
+            token = enhanced_strtok(input_copy, CMD_DELIMITER, &next_token);
             continue;
         }
 
+        // Handle environment variable assignment safely
+        if (strchr(token, EQUAL_SIGN) != NULL)
+        {
+            if (!(previous_token != NULL && strcmp(previous_token, "alias") == 0))
+            {
+                if (set_env_var(token) != 0)
+                {
+                    print_error("[ERROR] Failed to set environment variable");
+                    free_command_node(tree->root);
+                    free_if_needed(tree);
+                    free_if_needed(input_copy);
+                    return NULL;
+                }
+                free_if_needed(previous_token);
+                previous_token = strdup(token);
+                token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
+                continue;
+            }
+        }
+
+        // Handle operators
         operator_t op = get_operator_type(token);
         if (op != OP_NONE)
         {
@@ -218,18 +262,24 @@ command_tree_t *parse_command(const char *input)
             current = new_node->right;
             arg_index = 0;
         }
+        // Handle arguments
         else if (handle_argument(current, token, arg_index++) == EXIT_FAILURE)
         {
+            print_error("[ERROR] Failed to handle argument");
             free_command_node(tree->root);
             free_if_needed(tree);
             free_if_needed(input_copy);
             return NULL;
         }
+
+        free_if_needed(previous_token);
+        previous_token = strdup(token);
         token = enhanced_strtok(NULL, CMD_DELIMITER, &next_token);
     }
 
     current->args[arg_index] = NULL;
     free_if_needed(input_copy);
+    free_if_needed(previous_token);
     return tree;
 }
 
@@ -288,6 +338,8 @@ char *handle_env_assignment(char *str, const char *delim, char **next_token)
         last_allocated = quote_end;
         return str;
     }
+
+    free_if_needed(quote_end);
 
     return NULL;
 }
@@ -390,7 +442,7 @@ char *handle_quoted_string(char *str, char quote, char **next_token)
         else
             result = strdup(str);
 
-        return result; // enhanced_strtok will free this
+        return result; // enhanced_strtok will free_if_needed this
     }
     return NULL;
 }
@@ -401,7 +453,7 @@ char *enhanced_strtok(char *str, const char *delim, char **next_token)
 
     if (last_allocated != NULL)
     {
-        free_if_needed(last_allocated); // Free any previously result
+        free_if_needed(last_allocated); // free_if_needed any previously result
         last_allocated = NULL;
     }
 

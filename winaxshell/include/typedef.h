@@ -53,4 +53,14 @@ typedef struct
     command_node_t *root;
 } command_tree_t;
 
+/**
+ * @brief Alias structure
+ * @param name Alias name
+ * @param command Alias command
+ */
+typedef struct {
+    char *name;
+    char *command;
+} alias_t;
+
 #endif // TYPEDEF_H

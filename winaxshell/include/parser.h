@@ -5,6 +5,7 @@
 #include "typedef.h"
 #include "constants.h"
 #include "utils.h"
+#include "alias.h"
 
 /**
  * @brief Create a new command node
