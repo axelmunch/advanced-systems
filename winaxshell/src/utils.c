@@ -190,33 +190,47 @@ void print_command_tree(command_node_t *node, int depth)
     if (!node)
         return;
 
-    for (int i = 0; i < depth; i++)
-        print("  ");
+    print("%s", CYAN_COLOR);
 
-    print("Node: op_type=%s, args=[", get_operator_str(node->op_type));
+    if(depth == 0)
+        print("Root: ");
+
+    print("OP=%s%s%s, args=[%s", YELLOW_COLOR, get_operator_str(node->op_type), CYAN_COLOR, YELLOW_COLOR);
 
     if (node->args)
     {
         for (int i = 0; node->args[i] != NULL; i++)
-            print("%s%s", i > 0 ? ", " : "", node->args[i] ? node->args[i] : "NULL");
+            print("%s%s", i > 0 ? CYAN_COLOR "," YELLOW_COLOR " " : "", node->args[i] ? node->args[i] : "NULL");
     }
-    print("]\n");
+    print("%s]%s\n", CYAN_COLOR, RESET_COLOR);
 
     if (node->left)
     {
-        for (int i = 0; i < depth; i++)
-            print("  ");
+        print("%s", CYAN_COLOR);
+        for (int i = 0; i <= depth; i++)
+        {
+            if(i == depth)
+                print("|-- ");
+            else
+                print("|   ");
+        }
 
-        print("Left child:\n");
+        print("Left: ");
         print_command_tree(node->left, depth + 1);
     }
 
     if (node->right)
     {
-        for (int i = 0; i < depth; i++)
-            print("  ");
+        print("%s", CYAN_COLOR);
+        for (int i = 0; i <= depth; i++)
+        {
+            if(i == depth)
+                print("|-- ");
+            else
+                print("|   ");
+        }
 
-        print("Right child:\n");
+        print("Right: ");
         print_command_tree(node->right, depth + 1);
     }
 }
