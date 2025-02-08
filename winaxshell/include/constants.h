@@ -76,6 +76,16 @@
 #define BLUE_COLOR "\033[1;34m"
 
 /**
+ * @brief Shell cyan color
+ */
+ #define CYAN_COLOR "\033[1;36m"
+
+/**
+ * @brief Shell yellow color
+ */
+ #define YELLOW_COLOR "\033[1;33m"
+
+/**
  * @brief Command delimiters
  */
 #define CMD_DELIMITER " \t\n"

@@ -57,17 +57,22 @@ Test(helper, test_parse_options_command)
 {
     char *argv[] = {"program", "-c", "test_cmd", NULL};
     int argc = 3;
+    bool command_mode = false;
+    bool no_execute = false;
     optind = 1;
-    parse_options(argc, argv);
+    parse_options(argc, argv, &command_mode, &no_execute);
     cr_assert_str_eq(get_requested_command(), "test_cmd");
+    cr_assert_eq(command_mode, true, "Command mode should be enabled");
 }
 
 Test(helper, test_parse_options_command_null)
 {
     char *argv[] = {"program", "-c", NULL};
     int argc = 2;
+    bool command_mode = false;
+    bool no_execute = false;
     optind = 1;
-    parse_options(argc, argv);
+    parse_options(argc, argv, &command_mode, &no_execute);
     cr_assert_null(get_requested_command(), "Requested command should be NULL");
 }
 
@@ -75,8 +80,10 @@ Test(helper, test_parse_options_verbose)
 {
     char *argv[] = {"program", "-v", NULL};
     int argc = 2;
+    bool command_mode = false;
+    bool no_execute = false;
     optind = 1;
-    parse_options(argc, argv);
+    parse_options(argc, argv, &command_mode, &no_execute);
     cr_assert_eq(get_verbose_mode(), 1, "Verbose mode should be enabled");
     set_verbose_mode(false);
 }
@@ -85,8 +92,10 @@ Test(helper, test_parse_options_help)
 {
     char *argv[] = {"program", "-h", NULL};
     int argc = 2;
+    bool command_mode = false;
+    bool no_execute = false;
     optind = 1;
-    parse_options(argc, argv);
+    parse_options(argc, argv, &command_mode, &no_execute);
     fflush(stdout);
     cr_assert_stdout_eq_str("USAGE: program " USAGE_SYNTAX "\n\n" USAGE_PARAMS "\n");
 }
@@ -95,8 +104,10 @@ Test(helper, test_parse_options_invalid)
 {
     char *argv[] = {"program", "-x", NULL};
     int argc = 2;
+    bool command_mode = false;
+    bool no_execute = false;
     optind = 1;
-    parse_options(argc, argv);
+    parse_options(argc, argv, &command_mode, &no_execute);
     cr_assert(1); // Should not crash
 }
 
@@ -116,12 +127,12 @@ Test(helper, test_parse_help)
 
 Test(helper, test_show_parameters_verbose)
 {
-    show_parameters(true);
+    show_parameters(true, false);
 }
 
 Test(helper, test_show_parameters_non_verbose)
 {
-    show_parameters(false);
+    show_parameters(false, false);
     cr_assert_stdout_eq_str(""); // Should not print parameters
 }
 

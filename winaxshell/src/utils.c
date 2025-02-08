@@ -203,41 +203,50 @@ const char *get_operator_str(operator_t op_type)
 
 void print_command_tree(command_node_t *node, int depth)
 {
-    // int show_debug = 1;
-
-    // if (!show_debug)
-    //     return;
-
     if (!node)
         return;
 
-    for (int i = 0; i < depth; i++)
-        print_generic(STDERR_FILENO, "  ");
+    print("%s", CYAN_COLOR);
 
-    print_generic(STDERR_FILENO, "Node: op_type=%s, args=[", get_operator_str(node->op_type));
+    if(depth == 0)
+        print("Root: ");
+
+    print("OP=%s%s%s, args=[%s", YELLOW_COLOR, get_operator_str(node->op_type), CYAN_COLOR, YELLOW_COLOR);
 
     if (node->args)
     {
         for (int i = 0; node->args[i] != NULL; i++)
-            print_generic(STDERR_FILENO, "%s%s", i > 0 ? ", " : "", node->args[i] ? node->args[i] : "NULL");
+            print("%s%s", i > 0 ? CYAN_COLOR "," YELLOW_COLOR " " : "", node->args[i] ? node->args[i] : "NULL");
     }
-    print_generic(STDERR_FILENO, "]\n");
+    print("%s]%s\n", CYAN_COLOR, RESET_COLOR);
 
     if (node->left)
     {
-        for (int i = 0; i < depth; i++)
-            print_generic(STDERR_FILENO, "  ");
+        print("%s", CYAN_COLOR);
+        for (int i = 0; i <= depth; i++)
+        {
+            if(i == depth)
+                print("|-- ");
+            else
+                print("|   ");
+        }
 
-        print_generic(STDERR_FILENO, "Left child:\n");
+        print("Left: ");
         print_command_tree(node->left, depth + 1);
     }
 
     if (node->right)
     {
-        for (int i = 0; i < depth; i++)
-            print_generic(STDERR_FILENO, "  ");
+        print("%s", CYAN_COLOR);
+        for (int i = 0; i <= depth; i++)
+        {
+            if(i == depth)
+                print("|-- ");
+            else
+                print("|   ");
+        }
 
-        print_generic(STDERR_FILENO, "Right child:\n");
+        print("Right: ");
         print_command_tree(node->right, depth + 1);
     }
 }
