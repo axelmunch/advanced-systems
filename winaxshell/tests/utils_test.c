@@ -84,11 +84,15 @@ Test(utils, test_print_command_tree)
     node->left = NULL;
     node->right = NULL;
 
+
+    set_verbose_mode(true);
     print_command_tree(node, 0);
 
-    fflush(stderr);
-    // cr_assert_stderr_neq_str("");
-    cr_assert(1); // Should not crash
+    fflush(stdout);
+
+    char *expected = CYAN_COLOR"Root: OP="YELLOW_COLOR"PIPE"CYAN_COLOR", args=["YELLOW_COLOR"ls"CYAN_COLOR"]"RESET_COLOR"\n";
+    
+    cr_assert_stdout_eq_str(expected);
 
     free_command_node(node);
 }
