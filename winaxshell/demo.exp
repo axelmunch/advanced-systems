@@ -1,7 +1,7 @@
 #!/usr/bin/expect
 
 set timeout -1
-spawn ./bin/winaxshell ;
+spawn -noecho ./bin/winaxshell ;
 
 proc exec_command {text} {
     expect -re ".*\\$ "
@@ -10,19 +10,10 @@ proc exec_command {text} {
     sleep 1.5
 }
 
-exec_command "clear"
-
-exec_command "ls"
-
+exec_command "ls -l"
 exec_command "echo 'Hello World'"
-
 exec_command "pwd"
-
 exec_command "ps f | nl | nl | nl | nl"
-
-exec_command "cd /root"
-
 exec_command "exit"
-expect -re "Bye! Thanks for using WinAxShell!"
 
-expect eof
+expect -re "Bye! Thanks for using WinAxShell!"
