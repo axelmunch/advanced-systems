@@ -8,7 +8,7 @@ proc type_command {text} {
     # Wait for winaxshell prompt
     expect -re ".*\\$ "
 
-    set send_human {.1 .3 .1 .1 .1}
+    set send_human {.05 .1 .05 .05 .05}
     send_user -h "$text\n"
 
     send -- "$text\r"
