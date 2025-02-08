@@ -2,6 +2,6 @@ echo "Welcome to the WinAxShell!"
 ls -l
 ls -l | grep Makefile
 ls -l | grep Makefile && echo "Makefile exists!!!"
-cat < Makefile > output && echo "Redirect Makefile into output" && false || "Test OR operator OK"
+cat < Makefile > mocks/output && echo "Redirect Makefile into output" && false || echo "Test OR operator OK"
 ps | nl | nl | nl | nl | nl | nl | nl | grep 'nl' | wc -l && echo "nl process are 7" && echo "Test chained pipes"
 
