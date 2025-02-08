@@ -39,10 +39,11 @@ void show_help(char **argv)
     print_generic(STDOUT_FILENO, "USAGE: %s %s\n\n%s\n", argv[0], USAGE_SYNTAX, USAGE_PARAMS);
 }
 
-void show_parameters(bool verbose_mode)
+void show_parameters(bool verbose_mode, bool command_mode)
 {
-    print("** PARAMS **\n%-8s: %d\n",
-          "verbose", verbose_mode);
+    print("** PARAMS **\n%-8s: %d\n%-8s: %d\n",
+          "verbose", verbose_mode,
+          "command", command_mode);
 }
 
 void check_requirements(int argc, char **argv)
@@ -50,8 +51,11 @@ void check_requirements(int argc, char **argv)
     return;
 }
 
-void parse_options(int argc, char **argv)
+void parse_options(int argc, char **argv, bool *command_mode, bool *no_execute)
 {
+    *no_execute = false;
+    *command_mode = false;
+
     int opt = -1;
     int opt_idx = -1;
 
@@ -70,6 +74,11 @@ void parse_options(int argc, char **argv)
                     errno = EINVAL;
                     print_error("[ERROR] Command is NULL");
                 }
+
+                if(!*no_execute)
+                {
+                    *command_mode = true;
+                }
             }
             break;
         case 'v':
@@ -77,8 +86,11 @@ void parse_options(int argc, char **argv)
             break;
         case 'h':
             show_help(argv);
+            *no_execute = true;
+            *command_mode = false;
             break;
         default:
+            *no_execute = true;
             break;
         }
     }
