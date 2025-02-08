@@ -92,7 +92,7 @@ memcheck:
 
 demo:
 	@echo "$(YELLOW)=== Running WinAxShell demo ===$(NC)"
-	@expect demo.exp
+	@expect winaxshellbot.exp
 
 clean:
 	@echo "$(YELLOW)=== Cleaning up compile files ===$(NC)"
