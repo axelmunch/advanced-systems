@@ -90,6 +90,10 @@ memcheck:
 	@echo "$(YELLOW)=== Running Valgrind ===$(NC)"
 	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(EXEC)
 
+demo:
+	@echo "$(YELLOW)=== Running WinAxShell demo ===$(NC)"
+	@expect demo.exp
+
 clean:
 	@echo "$(YELLOW)=== Cleaning up compile files ===$(NC)"
 	rm -rf $(OBJ) $(OBJ_GCOV) $(TEST_OBJ)

@@ -1,1 +1,0 @@
-ls -l | head -n 5 | grep Makefile | wc -l && echo Makefile exists || echo Makefile does not exist
