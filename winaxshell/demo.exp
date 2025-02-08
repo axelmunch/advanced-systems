@@ -3,12 +3,11 @@
 set timeout -1
 spawn ./bin/winaxshell ;
 
-set send_human {.4 .4 .2 .5 100}
-
 proc exec_command {text} {
     expect -re ".*\\$ "
     
-    send -h "$text\r"
+    send -- "$text\r"
+    sleep 1.5
 }
 
 exec_command "clear"
@@ -20,6 +19,8 @@ exec_command "echo 'Hello World'"
 exec_command "pwd"
 
 exec_command "ps f | nl | nl | nl | nl"
+
+exec_command "cd /root"
 
 exec_command "exit"
 expect -re "Bye! Thanks for using WinAxShell!"
