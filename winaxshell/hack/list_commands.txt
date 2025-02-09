@@ -1,0 +1,18 @@
+echo "Welcome to the WinAxShell Demo!"
+cat < Makefile > mocks/output && echo "Redirect Makefile into output" && false || echo "Test OR operator OK"
+ps | nl | nl | nl | nl | nl | nl | nl | grep 'nl' | wc -l && echo "nl process are 7" && echo "Test chained pipes OK"
+echo "This is our ls_custom command ...." && ls_custom ; echo "Cool, right ?"
+echo "This is our built-in pwd command ...." && pwd && echo "Test pwd command OK"
+ls -l | head -n 5 | head -n 4 | head -n 3 | tail -n 1 | wc -l && echo "Test chained pipes OK"
+ls -l | head -n 5 ; echo 'Hello, World!' ; echo 'Goodbye, World!' ; echo 'The end.' && true || false && echo "Test sequential command OK"
+cat < Makefile > mocks/output.txt && echo 'Redirect succeeded' || echo 'Failed to redirect' && echo "Test redirection command OK"
+a='Hello, World!' b='Goodbye, World!' c='The end,;:!@#$%^&*()' ; echo $a ; echo $b ; echo $c && echo 'All environment variables set' || echo 'Failed to set environment variables' && echo "Test env variable no quotes OK"
+a="Hello" b="World" ; echo '$a $b'
+a='totooooooo' ; b=titiiiiii!!!!!!!!!!! ; c=tutututututututuu??????????? ; d="OK, stop maintenant c'est bon. That's all Folks!" ; echo "$a $b $c       $d" && echo 'All environment variables set' && echo "Test env variable in quote OK"
+ls -l | grep Makefile && ps aux | grep '^root' && echo "Test pipes with AND operator OK"
+alias ll='ls -lah' ; alias tellmewhoIam='whoami' ; alias gobackhome='cd ~' ; alias whereami='pwd'
+ll && tellmewhoIam && gobackhome && whereami && echo "Test alias OK"
+sleep 10 & ; echo "Some background process running ..."
+echo "OK real fun begins!" && ./bin/winaxshell -v -c "./bin/winaxshell -v -c 'echo WinAxShell can run deep recursive batch mode! && ps | nl | nl | nl | nl | nl | nl | nl'" && echo "Test batch mode OK"
+author1="AxelMunch - PythonMaster" author2="WRKT - LinuxEnjoyer" ; echo "This shell was made with love by $author1 & $author2"
+echo "Test over!"

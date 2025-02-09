@@ -36,10 +36,8 @@ Le service est installé et accessible !
 
 Pour arrêter le service, lancez la commande `docker stop <nom_container>` ou `<id_container>` :
 
-Pour stopper le service, lancez la commande suivante :
-
 ```shell
-docker stop jenkins-statefull
+docker stop jenkins-stateless
 ```
 
 Le service sera tout de même listés dans la liste des conteneurs qui seront en arrêt par la commande :
@@ -60,12 +58,12 @@ Cette seconde version du service sera accessible par l'adresse suivante: [http:/
 
 ### Using `docker compose`
 
-Pour installer Jenkins as a Service, nous pouvons opter par l'utilisation de `docker-compose.yaml`.
+Pour installer Jenkins as a Service, nous pouvons opter par l'utilisation de [docker-compose.yaml](./docker-compose.yaml).
 
 Pour cela, il suffit de lancer la commande suivante :
 
 ```bash
-docker-compose up -d
+docker-compose up -d # Rajoutez -d pour lancer le service en mode daemon (en background)
 ```
 
 Ce service livré avec Docker Compose sera accessible par l'adresse : [http://localhost:8082](http://localhost:8082).

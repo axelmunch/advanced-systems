@@ -14,6 +14,7 @@ static const char *custom_commands_main_process_list[] = {
     "cd",
     "alias",
     "unalias",
+    "help",
     NULL};
 
 bool is_custom_command(char *command)
@@ -131,7 +132,7 @@ bool execute_custom_command_main_process(char *command, char **args)
         if(argc == 1)
         {
             for(int i = 0; i < get_alias_count(); i++) {
-                char name[MAX_INPUT];
+                char name[MAX_INPUT_LENGTH];
                 get_alias_name_by_index(i, name);
                 char *command = get_alias_command(name);
                 print_generic(STDOUT_FILENO, "alias %s='%s'\n", name, command);
@@ -147,8 +148,8 @@ bool execute_custom_command_main_process(char *command, char **args)
             return false;
         }
 
-        char name[MAX_INPUT];
-        char value[MAX_INPUT];
+        char name[MAX_INPUT_LENGTH];
+        char value[MAX_INPUT_LENGTH];
         int ret = get_var_values(args[1], name, value);
         if (ret < 0)
             return false;

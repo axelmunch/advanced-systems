@@ -22,7 +22,7 @@ Test(integration, test_chained_pipes)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing chained pipes should succeed, got %d", status);
 
     FILE *output = cr_get_redirected_stdout();
-    char* expected_output = "1\n";
+    char *expected_output = "1\n";
     char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
@@ -51,7 +51,7 @@ Test(integration, test_chained_redir)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing chained redirections should succeed, got %d", status);
 
     FILE *output = cr_get_redirected_stdout();
-    char* expected_output = "Redirect succeeded\n";
+    char *expected_output = "Redirect succeeded\n";
     char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
     cr_assert_str_eq(buffer, expected_output, "Output should be '%s', got '%s'", expected_output, buffer);
@@ -80,7 +80,7 @@ Test(integration, test_env_in_single_quote)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable in quotes should succeed");
 
     FILE *output = cr_get_redirected_stdout();
-    char* expected_output = "Hello World\n";
+    char *expected_output = "Hello World\n";
 
     char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
@@ -100,7 +100,7 @@ Test(integration, test_env_in_double_quotes)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing command with environment variable in quotes should succeed, got %d", status);
 
     FILE *output = cr_get_redirected_stdout();
-    char* expected_output = "Hello World\n";
+    char *expected_output = "Hello World\n";
 
     char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
@@ -120,7 +120,7 @@ Test(integration, test_final_boss_env)
     cr_assert_eq(status, EXIT_SUCCESS, "Executing final boss env command should succeed, got %d", status);
 
     FILE *output = cr_get_redirected_stdout();
-    char* expected_output = "totooooooo titiiiiii!!!!!!!!!!! tutututututututuu???????????       OK, stop maintenant c'est bon. That's all Folks!\n";
+    char *expected_output = "totooooooo titiiiiii!!!!!!!!!!! tutututututututuu???????????       OK, stop maintenant c'est bon. That's all Folks!\n";
 
     char buffer[BUFFER_SIZE];
     fgets(buffer, sizeof(buffer), output);
@@ -142,7 +142,6 @@ Test(integration, test_pipe_and_command)
     FILE *output = cr_get_redirected_stdout();
     char buffer[256];
 
-    // Read the output of the first command
     while (fgets(buffer, sizeof(buffer), output) != NULL)
     {
         if (strstr(buffer, "Makefile") != NULL)
@@ -152,7 +151,6 @@ Test(integration, test_pipe_and_command)
     }
     cr_assert_not_null(strstr(buffer, "Makefile"), "Output should contain 'Makefile'");
 
-    // Read the output of the second command
     while (fgets(buffer, sizeof(buffer), output) != NULL)
     {
         if (strstr(buffer, "root") != NULL)
@@ -188,7 +186,7 @@ Test(integration, test_alias_create)
 
 Test(integration, test_alias_unalias)
 {
-    char *input = "alias a='ls -l' ; unalias a ; a";
+    char *input = "alias a='ls -l' ; alias b='jarjar' ; unalias a ; unalias a ; a";
     command_tree_t *tree = parse_command(input);
     cr_assert_not_null(tree, "Tree should not be NULL");
 
@@ -227,6 +225,37 @@ Test(integration, test_alias_redefine)
 
     status = execute_command_tree(tree->root);
     cr_assert_eq(status, EXIT_SUCCESS, "Alias should be replaced, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_kill_background_command)
+{
+    char *input = "sleep 1000 &";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "Executing background command should succeed, got %d", status);
+
+    FILE *output = cr_get_redirected_stdout();
+    char buffer[256];
+    fgets(buffer, sizeof(buffer), output);
+
+    int pid;
+    cr_assert_eq(sscanf(buffer, "[%d]", &pid), 1, "Failed to get background process PID");
+    cr_assert_gt(pid, 0, "Invalid PID value: %d", pid);
+
+    cr_assert_eq(kill(pid, SIGTERM), 0, "Failed to send SIGTERM to process %d", pid);
+
+    usleep(10000);
+
+    char termination_buffer[256];
+    fgets(termination_buffer, sizeof(termination_buffer), output);
+    char expected_msg[256];
+    snprintf(expected_msg, sizeof(expected_msg), "[%d] Process killed by signal %d", pid, SIGTERM);
+    cr_assert_not_null(strstr(termination_buffer, expected_msg), "Expected termination message not found: %s", expected_msg);
 
     free_command_node(tree->root);
     free_if_needed(tree);

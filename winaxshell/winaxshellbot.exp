@@ -1,0 +1,30 @@
+#!/usr/bin/expect
+
+set timeout -1
+
+spawn -noecho ./bin/winaxshell
+
+proc type_command {text} {
+    # Wait for winaxshell prompt
+    expect -re ".*\\$ "
+
+    set send_human {.05 .1 .05 .05 .05}
+    send_user -h "$text\n"
+
+    send -- "$text\r"
+    sleep 1
+}
+
+set cmdfile "./hack/list_commands.txt"
+set fd [open $cmdfile r]
+
+while {[gets $fd line] >= 0} {
+    if {[string trim $line] eq ""} {
+        continue
+    }
+    type_command $line
+}
+close $fd
+
+type_command "exit"
+expect -re "Bye! Thanks for using WinAxShell!"

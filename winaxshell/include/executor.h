@@ -13,6 +13,13 @@
 #include "custom_commands.h"
 
 /**
+ * @brief Signal handler for SIGCHLD to handle child processes for background
+ * @param signo Signal number
+ * @return void
+ */
+void sigchld_handler(int signo);
+
+/**
  * @brief Execute a single command
  * @param args Command arguments
  * @return int Exit status

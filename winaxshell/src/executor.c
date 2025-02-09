@@ -1,11 +1,6 @@
 #include "executor.h"
 
-/**
- * @brief Internal signal handler for SIGCHLD
- * @param signo Signal number
- * @return void
- */
-static void sigchld_handler(int signo)
+void sigchld_handler(int signo)
 {
     int status;
     pid_t pid;
@@ -157,7 +152,7 @@ int execute_pipe_command(command_node_t *node)
                 print_error("[ERROR] %s", commands[i]->args[0]);
                 exit(EXIT_FAILURE);
             }
-            exit(EXIT_SUCCESS); // Should not reach here
+            exit(EXIT_SUCCESS);
         }
 
         if (i > 0)
