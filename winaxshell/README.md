@@ -26,11 +26,11 @@ Les commandes sont lancées par des processus fils laissant au père le rôle d'
 - Mode verbeux pour affichage du debug et de l'arbre de parsing `./bin/winaxshell -v`
 - Intégration continue avec lancement des tests `make tests`
 
-## Ressources
+<!-- ## Ressources
 
 [Lien vers la documentation]()
 
-[Lien vers le rapport de couverture]()
+[Lien vers le rapport de couverture]() -->
 
 ## Installation
 
