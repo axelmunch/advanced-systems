@@ -13,6 +13,6 @@ ls -l | grep Makefile && ps aux | grep '^root' && echo "Test pipes with AND oper
 alias ll='ls -lah' ; alias tellmewhoIam='whoami' ; alias gobackhome='cd ~' ; alias whereami='pwd'
 ll && tellmewhoIam && gobackhome && whereami && echo "Test alias OK"
 sleep 10 & ; echo "Some background process running ..."
-echo "OK real fun begins!" && ./bin/winaxshell -v -c "./bin/winaxshell -v -c 'echo WinAxShell can run deep recursive batch mode! && ps | nl | nl | nl | nl | nl | nl | nl'" && echo "Test batch mode OK"
+echo "OK real fun begins!" && cd - && ./bin/winaxshell -v -c "./bin/winaxshell -v -c 'echo WinAxShell can run deep recursive batch mode! && ps | nl | nl | nl | nl | nl | nl | nl'" && echo "Test batch mode OK"
 author1="AxelMunch - PythonMaster" author2="WRKT - LinuxEnjoyer" ; echo "This shell was made with love by $author1 & $author2"
 echo "Test over!"
