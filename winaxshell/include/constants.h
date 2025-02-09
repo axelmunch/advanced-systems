@@ -81,6 +81,11 @@
  #define YELLOW_COLOR "\033[1;33m"
 
 /**
+ * @brief Shell gray color
+ */
+#define GRAY_COLOR "\033[1;30m"
+
+/**
  * @brief Command delimiters
  */
 #define CMD_DELIMITER " \t\n"
