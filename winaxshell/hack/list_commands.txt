@@ -1,24 +1,24 @@
 # Commands run by WinAxShell Bot
-echo "Welcome to the WinAxShell Showcase!"
+cowsay -f tux "Welcome to the WinAxShell showcase!!!"
 
 # FM01 – Simple commands
 ls -l
 ps
 who
-cowsay -f tux "Hello from WinAxShell"
 
 # FM02 – Combined commands with control operators and redirections
-echo "Listing top 5 files" && ls -l | head -n 5 > mocks/topfiles.txt || echo "Failed to list files"
-cat < mocks/topfiles.txt && echo "Displayed top files"
-cat < mocks/topfiles.txt >> /tmp/topfiles.txt
+echo "Listing top 5 files" && ls -l | head -n 5 > mocks/topfiles.txt && echo "Simple redirection OK" || echo "Failed to list files"
+cat < mocks/topfiles.txt && echo "Displayed top files" && echo "Redirect input OK"
+cat < mocks/topfiles.txt >> /tmp/topfiles.txt && echo "Multiple redirect with append OK"
 
 # FM03 – Executing built-in commands
 pwd && echo "Displayed current directory"
-cd && pwd
+cd && pwd && echo "Chained custom command OK"
 cd - && echo "Built-in command execution complete"
 
 # FM04 – Command persistence (assuming your shell writes commands to history)
-echo "This command should appear in the history file" ; cd $HOME && cat .winaxshell_history | tail -n 5 && cd -
+echo "This command should appear in the history file"
+cd $HOME && cat .winaxshell_history | tail -n 5 && cd -
 
 # FM05 – Batch mode invocation example (using the -c switch)
 ./bin/winaxshell -c "echo 'Batch mode OK!'"
