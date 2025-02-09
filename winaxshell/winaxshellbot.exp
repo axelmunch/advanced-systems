@@ -19,7 +19,8 @@ set cmdfile "./hack/list_commands.txt"
 set fd [open $cmdfile r]
 
 while {[gets $fd line] >= 0} {
-    if {[string trim $line] eq ""} {
+    set line [string trim $line]
+    if {$line eq "" || [regexp {^#} $line]} {
         continue
     }
     type_command $line
