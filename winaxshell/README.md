@@ -72,7 +72,7 @@ Voici les paquets nécessaires afin d'utiliser les différentes commandes Makefi
 
 `make demo`
 
-![Shell Demo](demo.webm)
+[Shell demo](https://github.com/user-attachments/assets/e6930947-2480-4277-bb1e-a24ffb318f78)
 
 ## Exemples
 
