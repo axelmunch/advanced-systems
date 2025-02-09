@@ -79,10 +79,12 @@ package: gcov doc all
 	@tar cvfz $(AR_NAME) ./*
 
 run:
+	@clear
 	@echo "$(BLUE)=== Running WinAxShell ===$(NC)"
 	@./$(BIN_DIR)/$(EXEC)
 
 tests:
+	@clear
 	@echo "$(YELLOW)=== Running WinAxShell test suite ===$(NC)"
 	@./$(BIN_DIR)/$(TEST_EXEC) --verbose --jobs=1 --color=always
 
@@ -91,6 +93,7 @@ memcheck:
 	@valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(BIN_DIR)/$(EXEC)
 
 demo:
+	@clear
 	@echo "$(YELLOW)=== Running WinAxShell demo ===$(NC)"
 	@expect winaxshellbot.exp
 

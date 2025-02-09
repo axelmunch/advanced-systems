@@ -114,6 +114,7 @@ void print_prompt()
 
 void predator_shake(void)
 {
+    print_generic(STDOUT_FILENO, "\n");
     static const char *art_lines[] = {
         "    .................      . .:.:-.# ...........................................",
         "      ...............  @*%#+:-:=#@@* .........................................  ",
@@ -143,4 +144,6 @@ void predator_shake(void)
     size_t num_lines = sizeof(art_lines) / sizeof(art_lines[0]);
     for (size_t i = 0; i < num_lines; i++)
         print_generic(STDOUT_FILENO, GRAY_COLOR "%s\n" RESET_COLOR, art_lines[i]);
+    
+    print_generic(STDOUT_FILENO, "\n");
 }
