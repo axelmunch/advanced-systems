@@ -57,4 +57,10 @@ void parse_options(int argc, char **argv, bool *command_mode, bool *no_execute);
  */
 void print_prompt();
 
+/**
+ * @brief Print the iconic predator shake
+ * @return void
+ */
+void predator_shake();
+
 #endif // HELPER_H
