@@ -18,7 +18,7 @@ cd && pwd
 cd - && echo "Built-in command execution complete"
 
 # FM04 – Command persistence (assuming your shell writes commands to history)
-echo "This command should appear in the history file"
+echo "This command should appear in the history file" ; cd $HOME && cat .winaxshell_history | tail -n 5 && cd -
 
 # FM05 – Batch mode invocation example (using the -c switch)
 ./bin/winaxshell -c "echo 'Batch mode OK!'"
