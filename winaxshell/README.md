@@ -68,11 +68,11 @@ Voici les paquets nécessaires afin d'utiliser les différentes commandes Makefi
 
 `make tests`
 
-!(Shell tests)[tests_screenshot.png]
+![Shell tests](tests_screenshot.png)
 
 `make demo`
 
-!(Shell Demo)[demo.webm]
+![Shell Demo](demo.webm)
 
 ## Exemples
 
