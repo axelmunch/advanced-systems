@@ -24,8 +24,8 @@ echo "This command should appear in the history file"
 ./bin/winaxshell -c "echo 'Batch mode OK!'"
 
 # FM06 – Creation of environment variables
-VAR1="Hello" VAR2="World" && echo "$VAR1 $VAR2"
-a='Hello, World!' b='Goodbye, World!' c='Persistence test' ; echo "$a" && echo "$b" && echo "$c"
+a="Hello" b="World" ; echo "$a $b"
+a='Hello, World!' b='Goodbye, World!' c='Overwriting env test' ; echo "$a" && echo "$b" && echo "$c"
 
 # FM07 – Using alias commands
 alias ll='ls -lah' ; alias tellmewhoIam='whoami' ; alias whereami='pwd'
