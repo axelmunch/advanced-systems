@@ -41,7 +41,7 @@ jobs:
             mv doc/ public/
       - name: Build GCOV Report
         run: |
-            sudo apt install lcov -y
+            sudo apt install lcov libcriterion-dev -y
             make gcov
             mv gcov/ public/
       - name: Upload artifact
