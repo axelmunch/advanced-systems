@@ -28,11 +28,13 @@ Les commandes sont lancées par des processus fils laissant au père le rôle d'
 - Mode verbeux pour affichage du debug et de l'arbre de parsing `./bin/winaxshell -v`
 - Intégration continue avec lancement des tests `make tests`
 
-<!-- ## Ressources
+## Ressources
 
-[Lien vers la documentation]()
+[Présentation du projet](https://axelmunch.github.io/advanced-systems/)
 
-[Lien vers le rapport de couverture]() -->
+[Documentation](https://axelmunch.github.io/advanced-systems/doc/html/index.html)
+
+[Rapport de couverture](https://axelmunch.github.io/advanced-systems/gcov/report/index.html)
 
 ## Installation
 
@@ -65,6 +67,8 @@ Voici les paquets nécessaires afin d'utiliser les différentes commandes Makefi
 `make gcov` : Génération du rapport de couverture
 
 `make memtest` : Recherche de fuites de mémoire en mode interactif avec Valgrind
+
+`man doc/man/winaxshell/main.c.3` : Consultation de la documentation man (requiert la génération de la documentation `make doc`)
 
 ## Exemples
 
