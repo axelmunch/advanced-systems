@@ -3,6 +3,8 @@
 - Axel Munch [🐍 GitHub](https://github.com/axelmunch)
 - Winness Rakotozafy [🐧 GitHub](https://github.com/WRKT)
 
+[WinAxShell demo](https://github.com/user-attachments/assets/ea25d5a9-a347-483e-ba22-a109d5088bbc)
+
 ## Objectif
 
 L'objectif de ce projet est de réaliser l'implémentation d'un interpréteur de commande "MiniShell" similaire à bash dans une version simplifiée. Au lancement, ce dernier doit pouvoir afficher un prompt en attente de la saisie d'une commande ou d'un sous-ensemble de commandes.
@@ -63,16 +65,6 @@ Voici les paquets nécessaires afin d'utiliser les différentes commandes Makefi
 `make gcov` : Génération du rapport de couverture
 
 `make memtest` : Recherche de fuites de mémoire en mode interactif avec Valgrind
-
-## Démonstration
-
-`make tests`
-
-![Shell tests](tests_screenshot.png)
-
-`make demo`
-
-[Shell demo](https://github.com/user-attachments/assets/e6930947-2480-4277-bb1e-a24ffb318f78)
 
 ## Exemples
 
