@@ -11,7 +11,7 @@ proc type_command {text} {
     set send_human {.05 .1 .05 .05 .05}
     send_user -h "$text\n"
 
-    send_user -- "Command : "
+    send_user -- "Command: "
     send -- "$text\r"
     sleep 1
 }

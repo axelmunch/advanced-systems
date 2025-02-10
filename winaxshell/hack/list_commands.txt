@@ -1,5 +1,5 @@
 # Commands run by WinAxShell Bot
-cowsay -f tux "Welcome to the WinAxShell showcase!!!"
+cowsay -f tux "Welcome to the WinAxShell showcase \o/"
 
 # FM01 – Simple commands
 ls -l
@@ -48,7 +48,7 @@ ls -l | head -n 5 ; echo 'Hello, World!' ; echo 'Goodbye, World!' ; echo 'The en
 a='Hello, World!' b='Goodbye, World!' c='The end,;:!@#$%^&*()' ; echo $a ; echo $b ; echo $c && echo 'All environment variables set' || echo 'Failed to set environment variables' && echo "Test env variable no quotes OK"
 
 # Pipes with operator
-ls -l | grep Makefile && ps aux | grep '^root' && echo "Test pipes with AND operator OK" && cd /root | grep nonexistent || echo "Test pipes with OR operator OK"
+ls -l | grep Makefile && ps aux | grep '^root' | head -n 3 && echo "Test pipes with AND operator OK" && cd /root | grep nonexistent || echo "Test pipes with OR operator OK"
 
 # Batch mode showcase!
 echo "OK real fun begins!" ; ./bin/winaxshell -v -c "./bin/winaxshell -v -c 'echo WinAxShell can run deep recursive batch mode! && ps | nl | nl | nl | nl | nl | nl | nl'" && echo "Test batch mode OK"
