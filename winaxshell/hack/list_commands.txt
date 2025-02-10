@@ -1,5 +1,5 @@
 # Commands run by WinAxShell Bot
-cowsay -f tux "Welcome to the WinAxShell showcase \o/"
+cowsay -f tux " Welcome to the WinAxShell showcase \o/"
 
 # FM01 – Simple commands
 ls -l
