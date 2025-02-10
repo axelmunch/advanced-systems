@@ -1,6 +1,6 @@
 #include "custom_cd.h"
 
-static char *latest_cd_path = NULL;
+static char latest_cd_path[MAX_PATH_LENGTH] = {0};
 
 bool cd(int argc, char **args)
 {
@@ -12,18 +12,15 @@ bool cd(int argc, char **args)
     }
 
     // Default path
-    char *param = home;
+    const char *param = home;
 
-    if (latest_cd_path == NULL)
+    if (latest_cd_path[0] == '\0') // Initialize
     {
-        char cwd[MAX_PATH_LENGTH];
-        if (getcwd(cwd, sizeof(cwd)) == NULL)
+        if (getcwd(latest_cd_path, sizeof(latest_cd_path)) == NULL)
         {
             print_error("[ERROR] getcwd");
             return false;
         }
-
-        latest_cd_path = strdup(cwd);
     }
 
     if (argc > 2)
@@ -36,7 +33,6 @@ bool cd(int argc, char **args)
     // Input path
     if (argc == 2)
     {
-        // -
         if (strcmp(args[1], "-") == 0)
             param = latest_cd_path;
         else if (strcmp(args[1], "~") == 0)
@@ -52,14 +48,15 @@ bool cd(int argc, char **args)
         print_error("[ERROR] getcwd");
         return false;
     }
-    if (strcmp(cwd, latest_cd_path) != 0)
-        latest_cd_path = strdup(cwd);
 
     if (chdir(param) == -1)
     {
         print_error("[ERROR] cd");
         return false;
     }
+
+    if (strcmp(cwd, latest_cd_path) != 0)
+        strcpy(latest_cd_path, cwd);
 
     return true;
 }
