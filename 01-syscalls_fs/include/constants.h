@@ -9,6 +9,7 @@
   -o, --output OUTPUT_FILE : output file (required for copy/reverse)\n\
   -c, --copy   : copy file content\n\
   -r, --reverse  : reverse file content\n\
+  -b, --buffered : enable custom buffered mode\n\
   -l, --list : list files and directory\n\
   -v, --verbose : enable *verbose* mode\n\
   -h, --help    : display this help\n\
