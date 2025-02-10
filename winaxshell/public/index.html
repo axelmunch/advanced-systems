@@ -2,70 +2,104 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>WinAxShell Documentation</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+  <title>WinAxShell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
   <style>
+    /* Dark mode styling */
     body {
-      font-family: 'Inter', sans-serif;
+      background-color: #121212;
+      color: #eee;
+      font-family: 'JetBrains Mono', sans-serif;
       margin: 0;
-      padding: 2rem;
-      background: #f0f2f5;
-      color: #333;
-      line-height: 1.6;
+      padding: 0;
     }
-    h1 {
+
+    /* Center title */
+    header h1 {
       text-align: center;
-      margin-bottom: 2rem;
+      padding: 1rem;
     }
+
+    /* Mini logo styling */
+    header h1 img.mini-logo {
+      width: 50px;
+      height: auto;
+    }
+
+    /* Fancy menu buttons */
     nav {
-      display: flex;
-      justify-content: center;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
+      text-align: center;
+      padding: 1rem;
     }
+
     nav a {
-      display: inline-block;
-      padding: 0.75rem 1.5rem;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      color: #fff;
       text-decoration: none;
-      font-weight: 600;
-      transition: background 0.3s, transform 0.3s;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background: linear-gradient(145deg, #444, #222);
+      margin: 0 0.5rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid #333;
+      border-radius: 8px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s, background 0.2s, filter 0.2s;
+      display: inline-flex;
+      align-items: center;
     }
+
     nav a:hover {
-      background: #eff0f5;
-      transform: translateY(-2px);
-      border-color: #ccc;
-    }
-    a:hover {
-      filter: brightness(1.1);
+      background: linear-gradient(145deg, #555, #333);
       transform: scale(1.05);
+      border-color: #666;
+      filter: brightness(1.2);
     }
+
+    /* Nav icon styling */
+    .nav-icon {
+      width: 20px;
+      height: auto;
+      margin-right: 0.5rem;
+      padding: 0;
+    }
+
+    /* Ensure video and gif have the same width */
     img, video {
       display: block;
       margin: 0 auto;
+      width: 60%;
       max-width: 100%;
       height: auto;
       padding: 2rem;
     }
-
   </style>
-</head>
-<body>
-  <h1>Welcome to WinAxShell</h1>
-  <nav>
-    <a href="doc/html/index.html">WinAxShell Documentation</a>
-    <a href="gcov/report/index.html">GCOV Code Report</a>
-    <a href="https://github.com/axelmunch/advanced-systems/winaxshell">Github Repo</a>
-  </nav>
+  </head>
+  <body>
+    <header>
+      <h1>🐍 Welcome to WinAxShell! 🐧</h1>
+    </header>
 
-  <video controls mute autoplay loop>
-    <source src="assets/demo.mp4" type="video/mp4">
-  </video>
+    <nav>
+      <a href="doc/html/index.html">
+        <img class="nav-icon" src="assets/doc.png" alt="Docs Icon">
+        WinAxShell Docs
+      </a>
+      <a href="gcov/report/index.html">
+        <img class="nav-icon" src="assets/gcov.png" alt="GCOV Icon">
+        GCOV Code Report
+      </a>
+      <a href="https://github.com/axelmunch/advanced-systems/winaxshell">
+        <img class="nav-icon" src="assets/github.png" alt="GitHub Icon">
+        Github Repo
+      </a>
+    </nav>
 
-  <img src="assets/predator-handshake.gif">
+    <video controls muted autoplay loop>
+      <source src="assets/demo.mp4" type="video/mp4">
+    </video>
 
+    <img src="assets/predator-handshake.gif">
+  </body>
+  </html>
 </body>
 </html>
