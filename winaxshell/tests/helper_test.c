@@ -151,3 +151,9 @@ Test(helper, test_dup_optarg_str_null)
     char *result = dup_optarg_str();
     cr_assert_null(result);
 }
+
+Test(helper, test_predator_shake)
+{
+    predator_shake();
+    cr_assert_stdout_neq_str(""); // Should print the iconic predator shake
+}

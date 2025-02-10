@@ -34,6 +34,7 @@ int interactive_mode(void) // TODO: refactor
         if (strcmp(input, "exit") == 0) // exit command, to improve so we can exit with error code
         {
             print_generic(STDOUT_FILENO, GREEN_COLOR "Bye! Thanks for using WinAxShell!\n" RESET_COLOR);
+            predator_shake();
             break;
         }
 

@@ -1,18 +1,60 @@
-echo "Welcome to the WinAxShell Demo!"
-cat < Makefile > mocks/output && echo "Redirect Makefile into output" && false || echo "Test OR operator OK"
+# Commands run by WinAxShell Bot
+cowsay -f tux " Welcome to the WinAxShell showcase \o/"
+
+# FM01 – Simple commands
+ls -l
+ps
+who
+
+# FM02 – Combined commands with control operators and redirections
+echo "Listing top 5 files" && ls -l | head -n 5 > mocks/topfiles.txt && echo "Simple redirection OK" || echo "Failed to list files"
+cat < mocks/topfiles.txt && echo "Displayed top files" && echo "Redirect input OK"
+cat < mocks/topfiles.txt >> /tmp/topfiles.txt && echo "Multiple redirect with append OK"
+
+# FM03 – Executing built-in commands
+pwd && echo "Displayed current directory"
+cd && pwd && echo "Chained custom command OK"
+cd - && echo "Built-in command execution complete"
+
+# FM04 – Command persistence (assuming your shell writes commands to history)
+echo "This command should appear in the history file"
+cd $HOME && cat .winaxshell_history | tail -n 5 && cd -
+
+# FM05 – Batch mode invocation example (using the -c switch)
+./bin/winaxshell -c "echo 'Batch mode OK!'"
+
+# FM06 – Creation of environment variables
+a="Hello" b="World" ; echo "$a $b"
+a='Hello, World!' b='Goodbye, World!' c='Overwriting env test' ; echo "$a" && echo "$b" && echo "$c"
+
+# FM07 – Using alias commands
+alias ll='ls -lah' ; alias tellmewhoIam='whoami' ; alias whereami='pwd'
+ll && tellmewhoIam && whereami && echo "Test alias OK"
+
+# Multiple redirections
+cat < Makefile > mocks/output && echo "Redirect Makefile into output" && false || echo "Test redir OR operator OK" && cat mocks/output >> /tmp/output && diff mocks/output /tmp/output && echo "Test AND redir operator OK"
+
+# Multiple pipes
 ps | nl | nl | nl | nl | nl | nl | nl | grep 'nl' | wc -l && echo "nl process are 7" && echo "Test chained pipes OK"
+
+# Run builtins
 echo "This is our ls_custom command ...." && ls_custom ; echo "Cool, right ?"
 echo "This is our built-in pwd command ...." && pwd && echo "Test pwd command OK"
-ls -l | head -n 5 | head -n 4 | head -n 3 | tail -n 1 | wc -l && echo "Test chained pipes OK"
+
+# Sequential commands
 ls -l | head -n 5 ; echo 'Hello, World!' ; echo 'Goodbye, World!' ; echo 'The end.' && true || false && echo "Test sequential command OK"
-cat < Makefile > mocks/output.txt && echo 'Redirect succeeded' || echo 'Failed to redirect' && echo "Test redirection command OK"
+
+# Some quotes env var
 a='Hello, World!' b='Goodbye, World!' c='The end,;:!@#$%^&*()' ; echo $a ; echo $b ; echo $c && echo 'All environment variables set' || echo 'Failed to set environment variables' && echo "Test env variable no quotes OK"
-a="Hello" b="World" ; echo '$a $b'
-a='totooooooo' ; b=titiiiiii!!!!!!!!!!! ; c=tutututututututuu??????????? ; d="OK, stop maintenant c'est bon. That's all Folks!" ; echo "$a $b $c       $d" && echo 'All environment variables set' && echo "Test env variable in quote OK"
-ls -l | grep Makefile && ps aux | grep '^root' && echo "Test pipes with AND operator OK"
-alias ll='ls -lah' ; alias tellmewhoIam='whoami' ; alias gobackhome='cd ~' ; alias whereami='pwd'
-ll && tellmewhoIam && gobackhome && whereami && echo "Test alias OK"
-sleep 10 & ; echo "Some background process running ..."
-echo "OK real fun begins!" && ./bin/winaxshell -v -c "./bin/winaxshell -v -c 'echo WinAxShell can run deep recursive batch mode! && ps | nl | nl | nl | nl | nl | nl | nl'" && echo "Test batch mode OK"
+
+# Pipes with operator
+ls -l | grep Makefile && ps aux | grep '^root' | head -n 3 && echo "Test pipes with AND operator OK" && cd /root | grep nonexistent || echo "Test pipes with OR operator OK"
+
+# Batch mode showcase!
+echo "OK real fun begins!" ; ./bin/winaxshell -v -c "./bin/winaxshell -v -c 'echo WinAxShell can run deep recursive batch mode! && ps | nl | nl | nl | nl | nl | nl | nl'" && echo "Test batch mode OK"
+
+# Background command
+sleep 3600 & ; ps && echo "Background command OK"
+
+# Authors
 author1="AxelMunch - PythonMaster" author2="WRKT - LinuxEnjoyer" ; echo "This shell was made with love by $author1 & $author2"
-echo "Test over!"
