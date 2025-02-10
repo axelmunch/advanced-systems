@@ -38,7 +38,13 @@ jobs:
         run: make doc && mv doc/ public/
       - name: Build GCOV Report
         run: make gcov && mv gcov/ public/
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: public-folder
+          path: public
   deploy:
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -46,9 +52,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: public-folder
+          path: ./public
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Upload artifact
+      - name: Upload artifact for Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: './public'
