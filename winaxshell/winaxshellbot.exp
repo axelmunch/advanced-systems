@@ -11,6 +11,7 @@ proc type_command {text} {
     set send_human {.05 .1 .05 .05 .05}
     send_user -h "$text\n"
 
+    send_user -- "Command: "
     send -- "$text\r"
     sleep 1
 }
@@ -19,7 +20,8 @@ set cmdfile "./hack/list_commands.txt"
 set fd [open $cmdfile r]
 
 while {[gets $fd line] >= 0} {
-    if {[string trim $line] eq ""} {
+    set line [string trim $line]
+    if {$line eq "" || [regexp {^#} $line]} {
         continue
     }
     type_command $line

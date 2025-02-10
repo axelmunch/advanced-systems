@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WinAxShell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+  <style>
+    /* Dark mode styling */
+    body {
+      background-color: #121212;
+      color: #eee;
+      font-family: 'JetBrains Mono', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Center title */
+    header h1 {
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* Mini logo styling */
+    header h1 img.mini-logo {
+      width: 50px;
+      height: auto;
+    }
+
+    /* Fancy menu buttons */
+    nav {
+      text-align: center;
+      padding: 1rem;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      background: linear-gradient(145deg, #444, #222);
+      margin: 0 0.5rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid #333;
+      border-radius: 8px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s, background 0.2s, filter 0.2s;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    nav a:hover {
+      background: linear-gradient(145deg, #555, #333);
+      transform: scale(1.05);
+      border-color: #666;
+      filter: brightness(1.2);
+    }
+
+    /* Nav icon styling */
+    .nav-icon {
+      width: 20px;
+      height: auto;
+      margin-right: 0.5rem;
+      padding: 0;
+    }
+
+    /* Ensure video and gif have the same width */
+    img, video {
+      display: block;
+      margin: 0 auto;
+      width: 60%;
+      max-width: 100%;
+      height: auto;
+      padding: 2rem;
+    }
+  </style>
+  </head>
+  <body>
+    <header>
+      <h1>🐍 Welcome to WinAxShell! 🐧</h1>
+    </header>
+
+    <nav>
+      <a href="doc/html/index.html">
+        <img class="nav-icon" src="assets/doc.png" alt="Docs Icon">
+        WinAxShell Docs
+      </a>
+      <a href="gcov/report/index.html">
+        <img class="nav-icon" src="assets/gcov.png" alt="GCOV Icon">
+        GCOV Code Report
+      </a>
+      <a href="https://github.com/axelmunch/advanced-systems/tree/main/winaxshell">
+        <img class="nav-icon" src="assets/github.png" alt="GitHub Icon">
+        Github Repo
+      </a>
+    </nav>
+
+    <video controls muted autoplay loop>
+      <source src="assets/demo.mp4" type="video/mp4">
+    </video>
+
+    <img src="assets/predator-handshake.gif">
+  </body>
+  </html>
+</body>
+</html>
