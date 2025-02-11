@@ -2,6 +2,8 @@ name: CI WinAxShell docs
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'winaxshell/**'
   pull_request:
