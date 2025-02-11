@@ -54,14 +54,14 @@ Test(alias, test_set_alias_overflow)
         sprintf(command, "t%d", i);
         set_alias(alias, command);
     }
-
+    
     char *command_final = "alias";
-    char *args_final[] = {"alias", "a", NULL};
+    char *args_final[] = {"alias", "a=a'", NULL};
 
     errno = EXIT_SUCCESS;
 
     bool result = execute_custom_command_main_process(command_final, args_final);
-    cr_assert_eq(result, false, "Should return false when trying to set too many aliases");
+    cr_assert_eq(result, false, "Should return false when trying to set too many aliases %d", get_alias_count());
 
     free_aliases();
 }
