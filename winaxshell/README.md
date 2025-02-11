@@ -39,6 +39,7 @@ Les commandes sont lancées par des processus fils laissant au père le rôle d'
 ## Installation
 
 Voici les paquets nécessaires afin d'utiliser les différentes commandes Makefile du projet :
+
 - `build-essential`
 - `doxygen`
 - `graphviz`
@@ -98,9 +99,9 @@ cat < Makefile > mocks/output.txt && echo 'Redirect succeeded' || echo 'Failed t
 exit
 ```
 
-# The end!
+## The end! 🎉
 
-```
+```text
     .................      . .:.:-.# ...........................................
       ...............  @*%#+:-:=#@@* .........................................
   .    ...............  @@@#+@@@%**@@  .....................................

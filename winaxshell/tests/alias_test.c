@@ -54,7 +54,7 @@ Test(alias, test_set_alias_overflow)
         sprintf(command, "t%d", i);
         set_alias(alias, command);
     }
-    
+
     char *command_final = "alias";
     char *args_final[] = {"alias", "a=a'", NULL};
 
