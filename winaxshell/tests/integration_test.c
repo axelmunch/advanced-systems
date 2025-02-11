@@ -256,6 +256,32 @@ Test(integration, test_alias_redefine)
     free_if_needed(tree);
 }
 
+Test(integration, test_ls_custom_with_param)
+{
+    char *input = "ls_custom .";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_SUCCESS, "ls_custom command with path should succeed, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_ls_custom_too_many_args)
+{
+    char *input = "ls_custom a a";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_FAILURE, "ls_custom command with too many arguments should fail, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
 Test(integration, test_kill_background_command)
 {
     char *input = "sleep 1000 &";

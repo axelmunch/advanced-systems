@@ -280,3 +280,13 @@ Test(custom_command, test_custom_command_main_process_valid)
     bool result = execute_custom_command_main_process(command, args);
     cr_assert_eq(result, true, "help is a custom command main process");
 }
+
+Test(custom_command, test_custom_command_not_valid, .exit_code = EXIT_FAILURE)
+{
+    char *command = "abc";
+    char *args[] = {"abc", NULL};
+
+    errno = EXIT_SUCCESS;
+    execute_custom_command(command, args);
+    cr_assert_eq(errno, EINVAL, "abc is not a valid custom command");
+}
