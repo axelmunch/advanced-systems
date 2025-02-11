@@ -11,7 +11,7 @@ L'objectif de ce projet est de réaliser l'implémentation d'un interpréteur de
 
 Les commandes sont lancées par des processus fils laissant au père le rôle d'interpréteur. Ce dernier doit attendre la fin du/des processus fils pour afficher le résultat d'exécution du/des commande(s) soumises. Certaines commandes et variables devront être internes (fonctionnalités built-in), c'est-à-dire, directement prises en compte par le code.
 
-# Fonctionnalités
+## Fonctionnalités
 
 > [!IMPORTANT]  
 > L'utilisation des opérateurs requiert l'insertion d'espaces entre les commandes. Voir les différents exemples ci-dessous.

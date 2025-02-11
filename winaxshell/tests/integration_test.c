@@ -184,6 +184,19 @@ Test(integration, test_alias_create)
     free_if_needed(tree);
 }
 
+Test(integration, test_alias_too_many_args)
+{
+    char *input = "alias a a";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_FAILURE, "Alias command with too many arguments should fail, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
 Test(integration, test_alias_unalias)
 {
     char *input = "alias a='ls -l' ; alias b='jarjar' ; unalias a ; unalias a ; a";
@@ -192,6 +205,19 @@ Test(integration, test_alias_unalias)
 
     int status = execute_command_tree(tree->root);
     cr_assert_eq(status, EXIT_FAILURE, "Alias command unaliased should fail, got %d", status);
+
+    free_command_node(tree->root);
+    free_if_needed(tree);
+}
+
+Test(integration, test_alias_unalias_too_many_args)
+{
+    char *input = "unalias a a";
+    command_tree_t *tree = parse_command(input);
+    cr_assert_not_null(tree, "Tree should not be NULL");
+
+    int status = execute_command_tree(tree->root);
+    cr_assert_eq(status, EXIT_FAILURE, "Unalias command with too many arguments should fail, got %d", status);
 
     free_command_node(tree->root);
     free_if_needed(tree);
