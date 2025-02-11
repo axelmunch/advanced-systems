@@ -6,9 +6,6 @@ on:
       - main
     paths:
       - 'winaxshell/**'
-  pull_request:
-    paths:
-      - 'winaxshell/**'
   workflow_dispatch:
 
 defaults:
