@@ -2,9 +2,8 @@ name: CI WinAxShell docs
 
 on:
   push:
-    paths:
-      - 'winaxshell/**'
-  pull_request:
+    branches:
+      - main
     paths:
       - 'winaxshell/**'
   workflow_dispatch:
