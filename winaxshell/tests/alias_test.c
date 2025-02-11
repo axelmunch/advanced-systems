@@ -3,6 +3,7 @@
 #include <criterion/hooks.h>
 #include <string.h>
 #include "alias.h"
+#include "custom_commands.h"
 
 void alias_setup(void)
 {
@@ -54,10 +55,13 @@ Test(alias, test_set_alias_overflow)
         set_alias(alias, command);
     }
 
-    char *alias = "a100";
-    char *command = "t100";
-    int status = set_alias(alias, command);
-    cr_assert_eq(status, -1, "Should return -1 for alias overflow, got %d", status);
+    char *command_final = "alias";
+    char *args_final[] = {"alias", "a", NULL};
+
+    errno = EXIT_SUCCESS;
+
+    bool result = execute_custom_command_main_process(command_final, args_final);
+    cr_assert_eq(result, false, "Should return false when trying to set too many aliases");
 
     free_aliases();
 }

@@ -265,6 +265,13 @@ Test(integration, test_ls_custom_with_param)
     int status = execute_command_tree(tree->root);
     cr_assert_eq(status, EXIT_SUCCESS, "ls_custom command with path should succeed, got %d", status);
 
+    input = "ls_custom /nonexistent_directory";
+    command_tree_t *tree2 = parse_command(input);
+    cr_assert_not_null(tree2, "Tree should not be NULL");
+
+    status = execute_command_tree(tree2->root);
+    cr_assert_eq(status, EXIT_FAILURE, "ls_custom command with invalid path should fail, got %d", status);
+
     free_command_node(tree->root);
     free_if_needed(tree);
 }
